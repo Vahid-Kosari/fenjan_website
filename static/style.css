@@ -1,0 +1,165 @@
+html, body{
+    font-size: 62.5%;
+    padding: 0rem;
+    margin: 0rem;
+    background-color: #E0D8CD;
+    background-image: url(/src/images/background-D.png);
+}
+body{
+    display: grid;
+}
+.container{
+    position: relative;
+    min-width: 100%;
+    min-height: 100%;
+    display: grid;
+    grid-area: 1/2/2/3;
+    grid-template-columns: 73rem 48rem 10rem 14rem;
+    grid-template-rows: 20rem 5rem 35rem 15rem 15rem;
+}
+
+/* /////////////////////////////////////////////////////// */
+
+.Side-P1-D{
+    grid-area: 1/4/7/5;
+    justify-self: end;
+}
+.orange-dina-D {
+    grid-area: 1/1/5/2;
+    margin-top: 4rem;
+    width: 71.4rem;
+}
+.wellhead{
+    font-size: 5.9rem;
+    grid-area: 1/2/2/5;
+}
+.underhead{
+    grid-area: 1/2/2/3;
+    margin-top: 13rem;
+    font-size: 2rem;
+    text-align: justify;
+}
+.intro-1 {
+    grid-area: 3/2/4/4;
+    text-align: justify;
+    font-size: 2.7rem;
+}
+.orange-cups-D{
+    grid-area: 4/2/5/3;
+}
+.dev{
+    margin-top: 7rem;
+    font-size: 2.3rem;
+    grid-area: 5/1/6/2;
+    display: flex;
+    justify-content: center;
+}
+.dev-i-G{
+    margin-top: 13rem;
+    margin-left: 25rem;
+    grid-area: 5/1/6/2;
+}
+.dev-i-M{
+    margin-top: 13rem;
+    margin-left: 31rem;
+    grid-area: 5/1/6/2;
+}
+.dev-i-L{
+    margin-top: 13rem;
+    margin-left: 37rem;
+    grid-area: 5/1/6/2;
+}
+
+/* //////////////////////////////////////////////////////// */
+
+.intro-2{
+    grid-area: 7/1/8/2;
+    margin-left: 13rem;
+    margin-top: 25rem;
+    text-align: justify;
+    font-size: 2.7rem;
+}
+.guide-dina-D{
+    margin-top: 10rem;
+    grid-area: 7/4/8/5;
+    justify-self: end;
+}
+.Side-P2-D{
+    margin-top: 0.6rem;
+    grid-area: 7/1/8/2;
+}
+
+/* //////////////////////////////////////////////////////// */
+
+.Side-P3-D{
+    margin-top: 0.6rem;
+    grid-area: 8/4/9/5;
+    justify-self: end;
+}
+.intro-3{
+    grid-area: 8/1/9/2;
+    margin-left: 13rem;
+    margin-top: 12rem;
+    text-align: justify;
+    font-size: 2.3rem;   
+}
+.secretary-dina-D{
+    margin-top: 41rem;
+    grid-area: 8/1/9/2;
+}
+/* //////////////////////////////////////////////////////// */
+
+.Reg-Form{
+    font-size: 2.3rem;
+    display: grid;
+    grid-area: 8/2/9/3;
+    grid-template-columns: repeat(5, minmax(10rem, auto));
+    grid-template-rows: repeat(6, minmax(10rem, auto));
+
+}
+
+.Form-box{
+    display: grid;
+    grid-area: 3/2/6/6;
+    background-image: url(/src/images/Form-back-Rec-P3-D.png);
+    background-position: 0rem 1.5rem;
+    background-repeat: no-repeat;
+    grid-template-rows: 3rem 5rem 5rem 5rem 4rem 4rem 4rem 4rem 4rem;
+    grid-template-columns: 10rem 3rem 2rem auto;
+}
+.Form-box .title{
+    margin-left: 0;
+    grid-area: 1/1/2/5;
+    margin-top: -3.5rem;
+}
+label{
+    margin-left: 2rem;
+    align-self: center;
+}
+.name-input, .email-input{
+    grid-column-start: 3;
+    align-self: center;
+    width: 24rem;
+}
+input{
+    grid-column-start: 4;
+    outline: none;
+    border: 4px solid #4b4b4b;
+    border-radius: 5rem;
+    align-self: center;
+    height: 2.7rem;
+    width: 20rem;
+    font-size: 1.5rem;
+}
+input:focus{
+    border: 4px dashed #4b4b4b;
+}
+
+/* //////////////////////////////////////////////////////// */
+
+.footer{
+    grid-area: 8/1/9/5;
+    position: absolute;
+    margin-left: 8rem;
+    bottom: 0rem;
+}
