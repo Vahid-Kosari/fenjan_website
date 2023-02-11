@@ -1,27 +1,32 @@
 html, body{
     font-size: 62.5%;
-    padding: 0rem;
-    margin: 0rem;
+    padding: 0;
+    margin: 0;
     background-color: #E0D8CD;
+}
+
+.p34-m{
+    display: none;
 }
 
 .main{
     display: grid;
     justify-items: center;
+    width: 100%;
 }
+
+/* /////////////////////////////////////////////////////// */
+/* Page 1 */
 
 .p1{
     display: inline-grid;
     grid-template: 
     "dina well" 42.5rem
     "dina intro" 29.3rem
-    "dev cups" 1fr
-    "dev side" 7rem
+    "dev cups" 23.2rem
+    "dev side" 7rem 
     / 73.6rem 72rem;
 }
-
-/* /////////////////////////////////////////////////////// */
-/* Page 1 */
 
 .p1 .side{
     grid-area: well;
@@ -30,7 +35,6 @@ html, body{
 .p1 .dina{
     grid-area: dina;
     margin-top: 9.5rem;
-    width: 71.4rem;
 }
 .p1 .wellhead{
     grid-area: well;
@@ -53,15 +57,13 @@ html, body{
 .p1 .cups{
     grid-area: cups;
 }
-.p1 .developer p{
-    display: inline-flexbox;
-}
 .p1 .developer{
     margin-top: 13rem;
     font-size: 2.3rem;
     grid-area: dev;
     justify-items: center;
     justify-self: center;
+    z-index: 2;
 }
 .p1 .developer .icons{
     grid-area: dev;
@@ -70,6 +72,9 @@ html, body{
 
 /* //////////////////////////////////////////////////////// */
 /* Page 2 */
+.p2 .p1-intro{
+    display: none;
+}
 .p2{
     display: inline-grid;
     grid-template: "intro dina" 1fr / 72rem 73.6rem;
@@ -120,13 +125,14 @@ html, body{
 .p3 .dina{
     grid-area: dina;
 }
+
 /* //////////////////////////////////////////////////////// */
 
 .p3 .registration{
     grid-area: form;
     margin-top: 30rem;
     width: 39.3rem;
-    height: 41rem;
+    height: 39rem;
     font-size: 2.3rem;
     background-color: #899A83;
     border-radius: 5%;
@@ -204,7 +210,8 @@ html, body{
     justify-self: center;
 }
 .p3 .registration #keyword4{
-    grid-area: key4;align-self: center;
+    grid-area: key4;
+    align-self: center;
     justify-self: center;
 }
 .p3 .registration #keyword5{
@@ -219,4 +226,243 @@ html, body{
     position: absolute;
     margin-left: 8rem;
     bottom: 0rem;
+}
+
+
+/* //////////////////////////////////////////////////////// */
+/* //////////////////////////////////////////////////////// */
+
+@media screen and (max-width: 700px ) {
+    .p1 .cups, .intro{
+        display: none;
+    }
+    .side{
+        display: none;
+    }
+
+    /* ////////////////////////////////// */
+    /* page 1 */
+
+    .p1{
+        display: inline-grid;
+        grid-template: 
+        "first" 23.5rem
+        "second" 8rem
+        "third" 10rem
+        / 39rem;
+    }
+    .p1 .dina{
+        grid-area: first;
+        margin-top: 3.6rem;
+        width: 18rem;
+    }
+    .p1 .wellhead{
+        grid-area: first;
+        margin-top: 8.5rem;
+        width: 18rem;
+        font-size: 3.8rem;
+        justify-self: end;
+    }
+    .p1 .underhead{
+        grid-area: second;
+        margin: 0 3.3rem;
+        margin-left: 4rem;
+        width: 31rem;
+        font-size: 1.9rem;
+    }
+    .p1 .developer{
+        grid-area: third;
+        margin-top: 0;
+        width: 34.5rem;
+        font-size: 1.5rem;
+    }
+    .p1 .developer .icons{
+        margin-left: 0;
+    }
+    
+    /* ////////////////////////////////// */
+    /* Page 2 */
+    
+    .p2 .intro{
+        display: none;
+    }
+    .p2{
+        grid-template: 
+        "p2" 23rem/ 39rem;
+        margin-top: 3rem;
+    }
+    .p2 .p1-intro{
+        display: inline;
+        grid-area: p2;
+        width: 18.5rem;
+        margin-left: 1rem;
+        font-size: 1.5rem;
+        text-align: justify;
+    }
+    .p2 .dina{
+        grid-area: p2;
+        margin: 0;
+        width: 21rem;
+    }
+
+    /* ////////////////////////////////// */
+    /* Page 3 and 4 for Mobile */
+
+    .p34-m{
+        display: inline-grid;
+        grid-template:
+        "twoM" 25rem
+        "threeM" 30rem
+        / 39rem;
+        margin-top: 3rem;
+    }
+    .p34-m .dina-2m{
+        grid-area: twoM;
+    }
+    .p34-m .intro-1{
+        grid-area: twoM;
+        width: 17rem;
+        justify-self: end;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+        text-align: justify;
+    }
+    .p34-m .intro-2{
+        grid-area: threeM;
+        width: 21rem;
+        margin-left: 1rem;
+        font-size: 1.5rem;
+        text-align: justify;
+    }
+    .p34-m .dina-3m{
+        grid-area: threeM;
+        justify-self: end;
+    }
+
+    /* ////////////////////////////////// */
+    /* Page 3 */
+
+    .p3{
+        position: relative;
+        display: inline-grid;
+        grid-template:
+        "intro" 18rem
+        "form" 35rem
+        / 39rem;
+    }
+    .p3 .intro{
+        display: inline;
+        grid-area: intro;
+        margin: 1rem;
+        width: 37rem;
+        text-align: justify;
+        font-size: 1.5rem;
+    }
+    .p3 .dina{
+        grid-area: form;
+        width: 21rem;
+    }
+
+    /* ////////////////////////////////// */
+
+    .p3 .registration{
+        display: inline-grid;
+        grid-area: form;
+        justify-self: end;
+        margin-right: 1rem;
+        margin-top: 3rem;
+        width: 18rem;
+        height: 29rem;
+        font-size: 1.2rem;
+        background-color: #899A83;
+        border-radius: 5%;
+        background-clip: padding-box;
+        grid-template: 
+        "title" 1rem
+        "nlable" 2rem
+        "name" 3rem
+        "elable" 2rem
+        "email" 3rem
+        "klable" 2rem
+        "key1" 3rem
+        "key2" 3rem
+        "key3" 3rem
+        "key4" 3rem
+        "key5" 3rem
+        / 18rem;
+    }
+    .p3 .registration .title{
+        grid-area: title;
+        margin-top: -1.5rem;
+        margin-left: 1rem;
+    }
+    .p3 .registration input{
+        outline: none;
+        border: 2px solid #4b4b4b;
+        border-radius: 5rem;
+        align-self: center;
+        height: 2rem;
+        width: 15rem;
+        font-size: 1.2rem;
+    }
+    .p3 .registration input:focus{
+        border: 2px dashed #4b4b4b;
+    }
+    .p3 .registration .name-lable{
+        grid-area: nlable;
+        margin-left: 2rem;
+        align-self: center;
+    }
+    .p3 .registration .name-input{
+        grid-area: name;
+        align-self: center;
+        justify-self: center;
+        width: 15rem;
+    }
+    .p3 .registration .email-lable{
+        grid-area: elable;
+        margin-left: 2rem;
+        align-self: center;
+    }
+    .p3 .registration .email-input{
+        grid-area: email;
+        align-self: center;
+        justify-self: center;
+        width: 15rem;
+    }
+    .p3 .registration .keywords-lable{
+        grid-area: klable;
+        margin-left: 2rem;
+        align-self: center;
+    }
+    .p3 .registration #keyword1{
+        grid-area: key1;
+        align-self: center;
+        justify-self: center;
+    }
+    .p3 .registration #keyword2{
+        grid-area: key2;
+        align-self: center;
+        justify-self: center;
+    }
+    .p3 .registration #keyword3{
+        grid-area: key3;
+        align-self: center;
+        justify-self: center;
+    }
+    .p3 .registration #keyword4{
+        grid-area: key4;
+        align-self: center;
+        justify-self: center;
+    }
+    .p3 .registration #keyword5{
+        grid-area: key5;
+        align-self: center;
+        justify-self: center;
+    }
+    /* ////////////////////////////////// */
+    .p3 .down{
+        margin-left: 1rem;
+        width: 37rem;
+    }
 }
