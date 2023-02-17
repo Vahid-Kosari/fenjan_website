@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../../../../../Vahid/Documents/VSC/My-html-and-crash-course-master"
+		},
+		{
+			"path": "../../../../../../../Windows/Users/Vahid/PycharmProjects/flaskProject"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "web_fenjan"
+	}
+}

@@ -145,9 +145,9 @@ html, body{
     "klable ..." 5rem
     "... key1" 4rem
     "... key2" 4rem
-    "... key3" 4rem
-    "... key4" 4rem
-    "... key5" 4rem
+    "but key3" 4rem
+    "but key4" 4rem
+    "but key5" 4rem
     / 11.3rem 28rem;
 }
 
@@ -219,8 +219,40 @@ html, body{
     align-self: center;
     justify-self: center;
 }
+.p3 .map #regbutton{
+    /* grid-area: but; */
+    background: #917662;
+    position: relative;
+}
+/* .regbutton {
+    grid-area: but;
+    width: 120px;
+    height: 80px;
+    background: #917662;
+    position: relative;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+  }
+  .regbutton:before {
+    grid-area: but;
+    content: "";
+    position: absolute;
+    right: 100%;
+    top: 26px;
+    width: 0;
+    height: 0;
+    border-top: 13px solid transparent;
+    border-right: 26px solid #917662;
+    border-bottom: 13px solid transparent;
+  } */
 /* //////////////////////////////////////////////////////// */
 
+.p3 .copyright{
+    grid-area: down;
+    justify-self: center;
+    font-size: 1.56rem;
+}
 .p3 .down{
     grid-area: down;
     position: absolute;
@@ -232,7 +264,7 @@ html, body{
 /* //////////////////////////////////////////////////////// */
 /* //////////////////////////////////////////////////////// */
 
-@media screen and (max-width: 700px ) {
+@media screen and (max-width: 1080px) {
     .p1 .cups, .intro{
         display: none;
     }
@@ -348,6 +380,7 @@ html, body{
         grid-template:
         "intro" 18rem
         "form" 35rem
+        "down" 4rem
         / 39rem;
     }
     .p3 .intro{
@@ -461,6 +494,11 @@ html, body{
         justify-self: center;
     }
     /* ////////////////////////////////// */
+    .p3 .copyright{
+        grid-area: down;
+        justify-self: center;
+        font-size: 1rem;
+    }
     .p3 .down{
         margin-left: 1rem;
         width: 37rem;
