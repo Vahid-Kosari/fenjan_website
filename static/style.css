@@ -122,6 +122,9 @@ html, body{
     text-align: justify;
     font-size: 2.3rem;   
 }
+.p3 .regbutton area#regbutton-m:hover{
+    pointer-events: none;
+}
 .p3 .dina{
     grid-area: dina;
 }
@@ -145,9 +148,9 @@ html, body{
     "klable ..." 5rem
     "... key1" 4rem
     "... key2" 4rem
-    "but key3" 4rem
-    "but key4" 4rem
-    "but key5" 4rem
+    "... key3" 4rem
+    "... key4" 4rem
+    "... key5" 4rem
     / 11.3rem 28rem;
 }
 
@@ -219,11 +222,11 @@ html, body{
     align-self: center;
     justify-self: center;
 }
-.p3 .map #regbutton{
-    /* grid-area: but; */
+/* .p3 .map #regbutton{
+    grid-area: but;
     background: #917662;
     position: relative;
-}
+} */
 /* .regbutton {
     grid-area: but;
     width: 120px;
@@ -390,6 +393,9 @@ html, body{
         width: 37rem;
         text-align: justify;
         font-size: 1.5rem;
+    }
+    .p3 .map .area#regbutton:hover{
+        pointer-events: none;
     }
     .p3 .dina{
         grid-area: form;
