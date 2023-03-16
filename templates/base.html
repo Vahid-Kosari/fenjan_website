@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="/static/style.css">
+        <link rel="stylesheet" href="static/style.css">
         <link rel="icon" type="image/png" href="static/images/Icon.png">
         {% if title %}
             <title>Fenjan - {{ title }}</title>
@@ -23,8 +23,6 @@
                 <img class="side" src="static/images/Side-P1-D.png" alt="Rigth Cloud">
                 <h1 class="wellhead">Welcome to Fenjan!</h1>
                 <h2 class="underhead">Your beloved dinosaur that help you to find your dream PhD positions</h2>
-                {% block consence %}
-                {% endblock %}
                 <img class="dina" src="static/images/mascots/Reciption dina-P1-D.png" alt="Malang Dina">
                 <p class="intro">
                     Fenaja is a tool designed to assist you in finding your dream Ph.D. position.
@@ -74,20 +72,15 @@
             <!-- page 3 -->
             <section class="p3">
                 <img class="side" src="static/images/Side-P3-D.png" alt="Right Cloud">
+                <img class="dina" src="static/images/mascots/Secretary dina-P3-D.png" alt="Secretary Dina" usemap="#regbutton">
                 <map class="regbutton" name="regbutton">
-                    <area target="" alt="Hot Chocolate" title="Hot Chocolate" href="{{ url_for('register') }}" coords="604,341,633,325,673,325,709,333,
+                    <area target="" id="regbutton" alt="Hot Chocolate" title="Hot Chocolate" href="{{ url_for('register') }}" coords="604,341,633,325,673,325,709,333,
                     718,343,715,363,740,361,750,374,752,397,743,413,726,422,709,428,706,448,684,457,654,458,632,455,618,
                     446,617,429,607,380" shape="poly">
-
-                    <!-- <area target="Admit Infos!" alt="regbutton" title="Admit Infos" href= "admin()"
-                     coords="228,442,209,468,195,499,199,534,215,570,239,594,278,619,320,634,321,684,324,728,374,689,418,651,484,
-                     650,548,639,590,623,623,618,638,641,700,633,752,615,796,582,829,540,837,513,834,489,811,456,784,430,746,408,
-                     714,394,703,393,694,375,678,350,657,332,632,317,606,307,568,297,533,297,503,301,473,308,446,319,421,337,405,
-                     355,394,372,364,376,335,382,304,393,277,406,251,421" shape="poly"> -->
+                    <area target="" id="regbutton-m" alt="Hot Chocolate" title="Hot Chocolate" href="{{ url_for('register') }}" coords="149,86,157,82,167,82,176,84,
+                    178,86,177,92,184,91,186,94,187,100,184,104,180,106,176,108,175,113,169,115,162,115,156,115,153,112,153,108,150,96" shape="poly">
                 </map>
-                <img class="dina" src="static/images/mascots/Secretary dina-P3-D.png" alt="Secretary Dina" usemap="#regbutton">
                 <p class="intro">
-
                     Fill out this form if you want to receive a 3 day free trial of personalized email based on your keywords.
                     <br><br>
                     If you want to edit your keywords, fill out the from again with the same email address.
@@ -106,7 +99,6 @@
                     <input class="keywords-input" type="text" id="keyword3" name="keywords">
                     <input class="keywords-input" type="text" id="keyword4" name="keywords">
                     <input class="keywords-input" type="text" id="keyword5" name="keywords">
-
                 </section>
                 <p class="copyright">copyright reserved to Hue {{ year }}</p>
                 <img class="down" src="static/images/footer.png" alt="footer">
