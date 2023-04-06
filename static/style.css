@@ -122,7 +122,7 @@ html, body{
     text-align: justify;
     font-size: 2.3rem;   
 }
-.p3 .regbutton area#regbutton-m:hover{
+.p3 .regbutton area#regbutton:hover{
     pointer-events: none;
 }
 .p3 .dina{
@@ -394,7 +394,7 @@ html, body{
         text-align: justify;
         font-size: 1.5rem;
     }
-    .p3 .map .area#regbutton:hover{
+    .p3 .map .area#regbutton-m:hover{
         pointer-events: none;
     }
     .p3 .dina{

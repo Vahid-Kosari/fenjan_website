@@ -6,18 +6,38 @@ from datetime import datetime
 app = Flask(__name__)
 
 
-acounts = [
+accounts = [
     {
-        'User Name': 'Vahid Kosari',
+        'User_Name': 'Vahid Kosari',
         'Email': 'vahid59m@yahoo.com',
-        'Expire Date': '2023/02/20',
-        'Keywords': '1-salam 2-aleyk 3-qorbanat 4-chera jade bastas? 5-hast dige'
+        'Subscription_Date': '2023/02/20',
+        'Expire_Date': '2023/12/20',
+        'Keywords': '1-salam 2-aleyk 3-qorbanat 4-chera jade bastas? 5-hast dige',
+        'status': 'active'
     },
     {
-        'User Name': 'Hue Salari',
+        'User_Name': 'Nahid Kosari',
+        'Email': 'vahid59m@yahoo.com',
+        'Subscription_Date': '2023/02/20',
+        'Expire_Date': '2023/02/20',
+        'Keywords': '11-salam 2-aleyk 3-qorbanat 4-chera jade bastas? 5-hast dige',
+        'status': 'active'
+    },
+    {
+        'User_Name': 'Hue Salari',
         'Email': 'mh-salari@yahoo.com',
-        'Expire Date': '2023/02/20s',
-        'Keywords': '1-Hello 2-aleyk 3-qorbanat 4-chera jade bastas? 5-rah baraye residan hast vali dure'
+        'Subscription_Date': '2023/02/20',
+        'Expire_Date': '2023/02/20s',
+        'Keywords': '1-Hello 2-aleyk 3-qorbanat 4-chera jade bastas? 5-rah baraye residan hast vali dure',
+        'status': 'expired'
+    },
+    {
+        'User_Name': 'VVahid Kosari',
+        'Email': 'vahid59m@yahoo.com',
+        'Subscription_Date': '2023/02/20',
+        'Expire_Date': '2023/02/20',
+        'Keywords': '11-salam 2-aleyk 3-qorbanat 4-chera jade bastas? 5-hast dige',
+        'status': 'active'
     }
 ]
 
@@ -28,11 +48,11 @@ def home():
 
 @app.route("/admin")
 def admin():
-    return render_template('base.html', title='Admin', posts=acounts)
+    return render_template('admin.html', title='Admin', accounts=accounts, year=datetime.now().year)
 
 @app.route("/register")
 def register():
-    return render_template('register.html', title='Register', posts=acounts)
+    return render_template('register.html', title='Register', accounts=accounts)
 
 if __name__ == '__main__':
     app.run(debug=True)

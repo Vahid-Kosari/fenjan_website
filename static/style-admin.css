@@ -1,0 +1,179 @@
+html, body {
+    font-size: 62.5%;
+    padding: 0;
+    margin: 0;
+    background-color: #E0D8CD;
+    justify-items: center;
+}
+
+.main {
+    display: inline-grid;
+    grid-template: 
+    "nav" 16.2rem
+    "act" 85rem
+    "exp" 33rem
+    "dow" 11.5rem
+    / 1fr;
+    width: 100%;
+}
+
+/* /////////////////////////////////////////////////////// */
+/* Top Navigation */
+
+.navigation {
+    grid-area: nav;
+    display: inline-grid;
+    grid-template:
+    "dina well gap homeicon" 1fr
+    /12.5rem 16.5rem 107.3rem 6rem; 
+}
+
+.navigation .admin-dina {
+    grid-area: dina;
+    justify-self: start;
+    margin-top: 1.2rem;
+}
+.navigation .title {
+    grid-area: well;
+    margin-top: 5rem;
+    font-size: 2.8rem;
+}
+.navigation .home-link {
+    grid-area: homeicon;
+    margin-top: 1.4rem;
+    font-size: 1.3rem;
+    justify-self: start;
+}
+.navigation .icon {
+    grid-area: homeicon;
+    justify-self: end;
+}
+
+/* //////////////////////////////////////////////////////// */
+/* Active User Section */
+
+.active {
+    grid-area: act;
+    /* width: 100%; */
+    /* justify-items: center; */
+    display: inline-grid;
+    grid-template:
+    "title" 5rem
+    "items" 80rem
+    / 1fr;
+}
+.active h2 {
+    grid-area: title;
+    margin-left: 3rem;
+    margin-top: 1.5rem;
+    font-size: 2.5rem;
+}
+.active .active-user-dic {
+    grid-area: items;
+    margin: 1rem 3rem 1.5rem 3rem;
+    display: inline-grid;
+    grid-template: 
+    repeat(3, 25rem) / repeat(3, 45rem);
+    gap: 1.5rem;
+    font-size: 1.8rem;
+}
+.active .active-user-dic .for-background {
+    background-color: #E7F0F6;
+    border-radius: 1rem;
+}
+.active .active-user-dic p {
+    display: inline-block;
+    margin: 1rem 1.5rem;
+    width: 30rem;
+    text-align: justify;
+}
+/* .active .active-user-dic p h3 {
+    grid-area: items;
+    margin: 0;
+    font-size: 1.6rem;
+} */
+
+/* //////////////////////////////////////////////////////// */
+/* Expired User Section */
+
+.expired {
+    grid-area: exp;
+    display: inline-grid;
+    grid-template: 
+    "xtitle" 6rem 
+    "xitems" 25rem 
+    / 1fr;
+}
+.expired h2 {
+    grid-area: xtitle;
+    margin-left: 3rem;
+    margin-top: 1.5rem;
+    font-size: 2.5rem;
+}
+.expired .expired-user-dic {
+    grid-area: xitems;
+    margin: 1rem 3rem 1.5rem 3rem;
+    display: inline-grid;
+    grid-template-columns: repeat(3, 45rem);
+    gap: 1.5rem;
+    font-size: 1.8rem;
+}
+.expired .expired-user-dic .for-background {
+    background-color: #E7F0F6;
+    border-radius: 1rem;
+}
+.expired .expired-user-dic p {
+    display: inline-block;
+    margin: 1rem 1.5rem;
+    width: 30rem;
+    text-align: justify;
+}
+
+/* //////////////////////////////////////////////////////// */
+/* Below Section */
+
+.below {
+    grid-area: dow;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.below .copyright {
+    margin-top: 5rem;
+    margin-bottom: 0;
+    align-self: center;
+    font-size: 1.56rem;
+}
+.below .footer{
+    align-self: end;
+    /* margin-left: 3.8rem; */
+}
+
+
+/* //////////////////////////////////////////////////////// */
+/* //////////////////////////////////////////////////////// */
+
+@media screen and (max-width: 1080px) {
+/* Top Navigation */
+
+    
+    /* ////////////////////////////////// */
+/* Active User Section */
+    
+  
+    /* ////////////////////////////////// */
+/* Expired User Section */
+
+    /* ////////////////////////////////// */
+/* Below Section */
+
+    .below .copyright{
+        grid-area: dow;
+        justify-self: center;
+        font-size: 1rem;
+    }
+    .below{
+        margin-left: 1rem;
+        width: 37rem;
+    }
+}
