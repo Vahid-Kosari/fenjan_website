@@ -25,7 +25,7 @@
                 <div class="active-user-dic">
                     {% for account in accounts %}
                         {% if account.status == 'active' %}
-                            <div class="for-background">
+                            <div class="user-frame">
                                 <p>
                                     User Name: {{ account.User_Name }}
                                     <br>
@@ -39,6 +39,10 @@
                                     <br>
                                     {{ account.Keywords }}
                                 </p>
+                                <div class="buttons">
+                                    <button class="edit-button" type="button">Edit</button>
+                                    <button class="delete-button" type="button">Delete</button>
+                                </div>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -51,19 +55,23 @@
                 <div class="expired-user-dic">
                     {% for account in accounts %}
                         {% if account.status == 'expired' %}
-                                <div class="for-background">
+                                <div class="user-frame">
                                     <p>
                                         User Name: {{ account.User_Name }}
                                         <br>
                                         Email: {{ account.Email }}
                                         <br>
-                                        Expire Date: {{ account.Expire_Date }}
-                                        <br>
                                         Subscription Date: {{ account.Subscription_Date }}
+                                        <br>
+                                        Expire Date: {{ account.Expire_Date }}
                                         <br>Keywords:
                                         <br>
                                         {{ account.Keywords }}
                                     </p>
+                                    <div class="buttons">
+                                        <button class="edit-button" onclick="window.location.href='{{ url_for('edit_function') }}'" type="button">Edit</button>
+                                        <button class="delete-button" type="button">Delete</button>
+                                    </div>
                                 </div>
                         {% endif %}
                     {% endfor %}

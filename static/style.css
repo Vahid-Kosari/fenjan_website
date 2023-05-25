@@ -251,15 +251,18 @@ html, body{
   } */
 /* //////////////////////////////////////////////////////// */
 
-.p3 .copyright{
+.p3 p.copyright{
+    position: absolute;
+    margin-top: 5rem;
+    z-index: 1;
     grid-area: down;
     justify-self: center;
     font-size: 1.56rem;
 }
-.p3 .down{
+.p3 .footer{
     grid-area: down;
     position: absolute;
-    margin-left: 8rem;
+    justify-self: center;
     bottom: 0rem;
 }
 
@@ -501,12 +504,16 @@ html, body{
     }
     /* ////////////////////////////////// */
     .p3 .copyright{
+        position: absolute;
+        margin-top: 2.9rem;
+        z-index: 1;
         grid-area: down;
         justify-self: center;
         font-size: 1rem;
     }
-    .p3 .down{
-        margin-left: 1rem;
+    .p3 .footer{
+        /* margin-left: 1rem; */
+        /* transform: translateX(-50%); */
         width: 37rem;
     }
 }

@@ -17,6 +17,11 @@ html, body {
     width: 100%;
 }
 
+a:link, :visited, :active, :hover{
+    text-decoration: none;
+    color: unset;
+  }
+
 /* /////////////////////////////////////////////////////// */
 /* Top Navigation */
 
@@ -54,8 +59,6 @@ html, body {
 
 .active {
     grid-area: act;
-    /* width: 100%; */
-    /* justify-items: center; */
     display: inline-grid;
     grid-template:
     "title" 5rem
@@ -67,6 +70,7 @@ html, body {
     margin-left: 3rem;
     margin-top: 1.5rem;
     font-size: 2.5rem;
+    color: #346F28;
 }
 .active .active-user-dic {
     grid-area: items;
@@ -77,7 +81,8 @@ html, body {
     gap: 1.5rem;
     font-size: 1.8rem;
 }
-.active .active-user-dic .for-background {
+.active .active-user-dic .user-frame {
+    position: relative;
     background-color: #E7F0F6;
     border-radius: 1rem;
 }
@@ -87,10 +92,37 @@ html, body {
     width: 30rem;
     text-align: justify;
 }
-/* .active .active-user-dic p h3 {
-    grid-area: items;
-    margin: 0;
+.active .active-user-dic .buttons {
+    position: absolute;
+    margin-top: 15rem;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.active .active-user-dic .buttons .edit-button, .delete-button {
+    width: 10rem;
+    height: 2.5rem;
+    margin: 0.5rem 0;
+    padding: 0;
     font-size: 1.6rem;
+    color: white;
+    border-radius: 2rem;
+    background-color: #346F28;
+    border: 0.2rem solid black;
+    cursor: pointer;
+}
+.active .active-user-dic .buttons .edit-button {
+    background-color: #346F28;
+}
+.active .active-user-dic .buttons .delete-button {
+    background-color: #DD4545;
+}
+
+/* .active .active-user-dic p h3 {
+    display: none;
+    margin: 1rem 1.5rem;
+    width: 30rem;
+    text-align: justify;
 } */
 
 /* //////////////////////////////////////////////////////// */
@@ -100,7 +132,7 @@ html, body {
     grid-area: exp;
     display: inline-grid;
     grid-template: 
-    "xtitle" 6rem 
+    "xtitle" 5rem 
     "xitems" 25rem 
     / 1fr;
 }
@@ -109,16 +141,19 @@ html, body {
     margin-left: 3rem;
     margin-top: 1.5rem;
     font-size: 2.5rem;
+    color: #A80453;
 }
 .expired .expired-user-dic {
     grid-area: xitems;
     margin: 1rem 3rem 1.5rem 3rem;
     display: inline-grid;
     grid-template-columns: repeat(3, 45rem);
+    grid-template-rows: 25rem;
     gap: 1.5rem;
     font-size: 1.8rem;
 }
-.expired .expired-user-dic .for-background {
+.expired .expired-user-dic .user-frame {
+    position: relative;
     background-color: #E7F0F6;
     border-radius: 1rem;
 }
@@ -128,26 +163,81 @@ html, body {
     width: 30rem;
     text-align: justify;
 }
+.expired .expired-user-dic .buttons {
+    position: absolute;
+    margin-top: 15rem;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.expired .expired-user-dic .buttons .edit-button, .delete-button {
+    width: 10rem;
+    height: 2.5rem;
+    margin: 0.5rem 0;
+    padding: 0;
+    font-size: 1.6rem;
+    color: white;
+    border-radius: 2rem;
+    background-color: #346F28;
+    border: 0.2rem solid black;
+    cursor: pointer;
+}
+.expired .expired-user-dic .buttons .edit-button {
+    background-color: #346F28;
+}
+.expired .expired-user-dic .buttons .delete-button {
+    background-color: #DD4545;
+}
 
 /* //////////////////////////////////////////////////////// */
 /* Below Section */
 
-.below {
+/* .below {
     grid-area: dow;
     display: flex;
+    display: inline-block;
     flex-direction: column;
-    justify-content: space-between;
-}
-.below .copyright {
-    margin-top: 5rem;
-    margin-bottom: 0;
-    align-self: center;
-    font-size: 1.56rem;
-}
-.below .footer{
-    align-self: end;
+    justify-content: end;
+} */
+/* .below {
+    display: inline-block;
+} */
+/* .below p.copyright { */
+    /* margin-top: 5rem; */
+    /* margin-bottom: 0; */
+    /* display: block; */
+    /* position: absolute; */
+    /* margin: 4rem auto 0; */
+    /* margin-top: 4rem; */
+    /* z-index: 1; */
+    /* margin-left: 50rem; */
+    /* grid-area: dow; */
+    /* justify-self: center; */
+    /* align-items: center; */
+    /* align-content: center; */
+    /* text-align: center; */
+    /* align-self: self-start; */
+    /* font-size: 1.56rem; */
+/* } */
+/* .below img.footer{ */
+    /* align-self: flex-end; */
+    /* align-items: end; */
     /* margin-left: 3.8rem; */
-}
+    /* display: inline-block; */
+    /* position: absolute; */
+    /* grid-area: dow; */
+    /* margin-bottom: 0; */
+    /* margin-top: 4.4rem; */
+    /* width: 130rem; */
+    /* justify-self: flex-end; */
+/* } */
+
+
+section .below { position: relative; grid-area: dow; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+
+p.copyright { position: absolute; font-size: 1.56rem; margin-top: 9rem; z-index: 1; text-align: center; transform: translateX(-50%);}
+
+.footer { position: absolute; margin-top: 6.5rem; height: auto; max-width: 128rem; align-self: center; transform: translateX(-50%); }
 
 
 /* //////////////////////////////////////////////////////// */
@@ -167,7 +257,7 @@ html, body {
     /* ////////////////////////////////// */
 /* Below Section */
 
-    .below .copyright{
+    /* .below .copyright{
         grid-area: dow;
         justify-self: center;
         font-size: 1rem;
@@ -175,5 +265,5 @@ html, body {
     .below{
         margin-left: 1rem;
         width: 37rem;
-    }
+    } */
 }
