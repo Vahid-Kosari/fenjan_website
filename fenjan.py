@@ -1,7 +1,7 @@
 import mysql.connector
 import json
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 from flask import Flask, render_template
 from datetime import datetime
@@ -16,8 +16,8 @@ class Customer:
     expiration_date: str
     keywords: list
 
-@dataclass
-class CustomerDatabase:
+# @dataclass
+# class CustomerDatabase:
     
 
 
@@ -80,7 +80,7 @@ def register():
 
 @app.route("/edit_function")
 def edit_function():
-    return render_template('home.html')
+    return render_template('home.html', year=datetime.now().year)
 
 # def delete_function():
 #     return render_template('home.html')
