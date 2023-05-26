@@ -5,8 +5,8 @@ To run the application go to the project root and run the "fenjan.py" app under 
 
 2-setup environmets variables for Flask as:
     export FLASK_APP=fenjan.py
-    export FLASK_ENV=development
-    export FLASK_DEBUG=1 (NOT necessary because we added this:     app.run(debug=True))
+    export FLASK_ENV=development #You may receive this: 'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+    export FLASK_DEBUG=1 (NOT necessary because we've added this:     app.run(debug=True))
 
 3-run the app by: flask run
 
@@ -21,5 +21,5 @@ Press CTRL+C to quit
 * Debugger PIN: 239-541-107
 
 4-Follow the http://127.0.0.1:5000 by ctrl + click
-
+    This step will be updated, while appliacation completed!
 Enjoy

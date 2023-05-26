@@ -1,24 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="/static/style-admin.css">
-        <link rel="icon" type="image/png" href="/static/images/Icon.png">
-        <title>Fenjan Admin</title>
-    </head>
-    <body class="main">
+{% extends "admin-base.html" %}
 
-            <!-- Top Navigation -->
-            <section class="navigation">
-                <img class="admin-dina" src="/static/images/mascots/Admin dina.png" alt="Admin Dina">
-                <h1 class="title">Fenjan<br>Admin Panel</h1>
-                <a class="home-link" href="{{ url_for('home') }}">Home</a>
-                <img class="icon" src="/static/images/mascots/Admin Icon.png" alt="Admin Icon">
-            </section>
-
-
+{% block content %}
             <!-- Active User Section -->
             <section class="active">
                 <h2>Active accounts</h2>
@@ -78,10 +60,4 @@
                 </div>
             </section>
 
-            <!-- Below Section -->
-            <section class="below">
-                <p class="copyright">copyright reserved to Hue {{ year }}</p>
-                <img class="footer" src="/static/images/footer.png" alt="footer">
-            </section>
-    </body>
-</html>
+{% endblock content %}
