@@ -1,0 +1,80 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="{% static 'fenjan/src/favicon.png' %}" /> <!-- Icon source: https://www.iconarchive.com -->
+        <link rel="stylesheet" href="{% static 'fenjan/styles.css' %}">
+        <title>Fenjan</title>
+    </head>
+    <body class="main">
+
+        <!-- page 1 -->
+        <section class="p1">
+            <img class="side" src="{% static 'fenjan/src/images/Side-P1-D.png' %}" alt="Right Cloud">
+            <h1 class="wellhead">Welcome to Fenjan!</h1>
+            <h2 class="underhead">Your beloved dinosaur that help you to find your dream PhD positions</h2>
+            <img class="dina" src="{% static 'fenjan/src/images/mascots/Reciption dina-P1-D.png' %}" alt="Malang Dina">
+            <p class="intro">
+                Fenaja is a tool designed to assist you in finding your dream Ph.D. position.
+                We understand that searching through social media platforms for Ph.D. positions can be tedious and time-consuming.
+                That's why we've developed Fenjan, it simplifies the process and saves your valuable time.
+            </p>
+            <img class="cups" src="{% static 'fenjan/src/images/mascots/Cups-P1-D.png' %}" alt="Orange Cups">
+            <footer class="developer">
+                <p class="text">Developed by: Hue (MohammadHossein) Salari</p>
+                <section class="icons">
+                    <img class="G-icon" src="{% static 'fenjan/src/images/Git icon-P1-D.png' %}" alt="Git Icon">
+                    <img class="M-icon" src="{% static 'fenjan/src/images/Mastodon icon-P1-D.png' %}" alt="Mastodon Icon">
+                    <img class="L-icon" src="{% static 'fenjan/src/images/Linked icon-P1-D.png' %}" alt="Linked Icon">
+                </section>
+            </footer>
+        </section>
+
+        <!-- page 2 -->
+        <section class="p2">
+            <img class="side" src="{% static 'fenjan/src/images/Side-P2-D.png' %}" alt="Left Cloud">
+            <img class="dina" src="{% static 'fenjan/src/images/mascots/Guide dina-P2-D.png' %}" alt="Guide Dina">
+            <p class="intro">
+
+                Fenjan is expertly crafted to scour the latest posts and tweets on Twitter and LinkedIn, bringing you the most recent Ph.D. positions in your field. This ensures that you are always up-to-date and won't miss any opportunity.
+                <br><br>
+                The information is delivered to you via a user-friendly email feature, guaranteeing you have immediate access to the data you need, so you can focus on your research and leave the rest to us. We look forward to supporting you on your academic journey.
+            </p>
+        </section>
+
+        <!-- page 3 -->
+        <section class="p3">
+            <img class="side" src="{% static 'fenjan/src/images/Side-P3-D.png' %}" alt="Right Cloud">
+            <img class="dina" src="{% static 'fenjan/src/images/mascots/Secretary dina-P3-D.png' %}" alt="Secretary Dina">
+            <p class="intro">
+
+                Fill out this form if you want to receive a 3 day free trial of personalized email based on your keywords.
+                <br><br>
+                If you want to edit your keywords, fill out the from again with the same email address.
+                <br><br>
+                If you want to receive the emails after the first 3 days, or you want to add more than 5 keywords, send an email to “ai.hue.app@gmial.com” so we can talk about it in more details.
+            </p>
+            <section class="registration">
+                <label class="title">Free trial registration form</label>
+                <label class="name-lable" for="name">Name:</label>
+                <input class="name-input" type="text" id="name" name="name"><br>
+                <label class="email-lable" for="email">Email:</label>
+                <input class="email-input" type="email" id="email" name="email"><br>
+                <label class="keywords-lable" for="keywords">Keywords:</label><br>
+                <input class="keywords-input" type="text" id="keyword1" name="keywords"><br>
+                <input class="keywords-input" type="text" id="keyword2" name="keywords"><br>
+                <input class="keywords-input" type="text" id="keyword3" name="keywords"><br>
+                <input class="keywords-input" type="text" id="keyword4" name="keywords"><br>
+                <input class="keywords-input" type="text" id="keyword5" name="keywords"><br>
+                <!-- <img class="Form-back-D" src="{% static 'fenjan/src/images/Form-back-Rec-P3-D.png' %}" alt="Form BackGround"> -->
+            </section>
+            <img class="down" src="{% static 'fenjan/src/images/footer.png' %}" alt="footer">
+        </section>
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>

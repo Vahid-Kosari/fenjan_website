@@ -1,0 +1,223 @@
+html, body{
+    font-size: 62.5%;
+    padding: 0rem;
+    margin: 0rem;
+    background-color: #E0D8CD;
+}
+
+.main{
+    display: grid;
+    justify-items: center;
+}
+
+.p1{
+    display: inline-grid;
+    grid-template: 
+    "dina well" 42.5rem
+    "dina intro" 29.3rem
+    "dev cups" 1fr
+    "dev side" 7rem
+    / 73.6rem 72rem;
+}
+
+/* /////////////////////////////////////////////////////// */
+/* Page 1 */
+
+.p1 .side{
+    grid-area: well;
+    justify-self: end;
+}
+.p1 .dina{
+    grid-area: dina;
+    margin-top: 9.5rem;
+    width: 71.4rem;
+}
+.p1 .wellhead{
+    grid-area: well;
+    margin-top: 17rem;
+    font-size: 5.9rem;
+}
+.p1 .underhead{
+    grid-area: well;
+    width: 47rem;
+    margin-top: 25rem;
+    font-size: 2.3rem;
+    text-align: justify;
+}
+.p1 .intro{
+    grid-area: intro;
+    width: 47rem;
+    text-align: justify;
+    font-size: 2.7rem;
+}
+.p1 .cups{
+    grid-area: cups;
+}
+.p1 .developer p{
+    display: inline-flexbox;
+}
+.p1 .developer{
+    margin-top: 13rem;
+    font-size: 2.3rem;
+    grid-area: dev;
+    justify-items: center;
+    justify-self: center;
+}
+.p1 .developer .icons{
+    grid-area: dev;
+    margin-left: 15rem;
+}
+
+/* //////////////////////////////////////////////////////// */
+/* Page 2 */
+.p2{
+    display: inline-grid;
+    grid-template: "intro dina" 1fr / 72rem 73.6rem;
+}
+.p2 .intro{
+    display: inline;
+    grid-area: intro;
+    width: 61rem;
+    margin-left: 13rem;
+    margin-top: 25rem;
+    text-align: justify;
+    font-size: 2.7rem;
+}
+.p2 .dina{
+    display: inline;
+    grid-area: dina;
+    margin-top: 10rem;
+    justify-self: end;
+}
+.p2 .side{
+    grid-area: intro;
+}
+
+/* //////////////////////////////////////////////////////// */
+/* Page 3 */
+
+.p3{
+    position: relative;
+    display: inline-grid;
+    grid-template: 
+    "intro form" 38.5rem
+    "dina form" 56.2rem
+    "down down" 7.5rem
+    / 82.6rem 63rem;
+}
+.p3 .side{
+    grid-area: form;
+    justify-self: end;
+}
+.p3 .intro{
+    grid-area: intro;
+    width: 57rem;
+    margin-left: 13rem;
+    margin-top: 12rem;
+    text-align: justify;
+    font-size: 2.3rem;   
+}
+.p3 .dina{
+    grid-area: dina;
+}
+/* //////////////////////////////////////////////////////// */
+
+.p3 .registration{
+    grid-area: form;
+    margin-top: 30rem;
+    width: 39.3rem;
+    height: 41rem;
+    font-size: 2.3rem;
+    background-color: #899A83;
+    border-radius: 5%;
+    background-clip: padding-box;
+    display: inline-grid;
+    grid-template:
+    "title title" 2rem
+    "nlable name" 5rem
+    "elable email" 5rem
+    "klable ..." 5rem
+    "... key1" 4rem
+    "... key2" 4rem
+    "... key3" 4rem
+    "... key4" 4rem
+    "... key5" 4rem
+    / 11.3rem 28rem;
+}
+
+.p3 .registration .title{
+    grid-area: title;
+    margin-top: -3rem;
+}
+.p3 .registration input{
+    outline: none;
+    border: 4px solid #4b4b4b;
+    border-radius: 5rem;
+    align-self: center;
+    height: 2.7rem;
+    width: 20rem;
+    font-size: 1.5rem;
+}
+.p3 .registration input:focus{
+    border: 4px dashed #4b4b4b;
+}
+.p3 .registration .name-lable{
+    grid-area: nlable;
+    margin-left: 2rem;
+    align-self: center;
+}
+.p3 .registration .name-input{
+    grid-area: name;
+    align-self: center;
+    justify-self: center;
+    width: 24rem;
+}
+.p3 .registration .email-lable{
+    grid-area: elable;
+    margin-left: 2rem;
+    align-self: center;
+}
+.p3 .registration .email-input{
+    grid-area: email;
+    align-self: center;
+    justify-self: center;
+    width: 24rem;
+}
+.p3 .registration .keywords-lable{
+    grid-area: klable;
+    margin-left: 2rem;
+    align-self: center;
+}
+.p3 .registration #keyword1{
+    grid-area: key1;
+    align-self: center;
+    justify-self: center;
+}
+.p3 .registration #keyword2{
+    grid-area: key2;
+    align-self: center;
+    justify-self: center;
+}
+.p3 .registration #keyword3{
+    grid-area: key3;
+    align-self: center;
+    justify-self: center;
+}
+.p3 .registration #keyword4{
+    grid-area: key4;
+    align-self: center;
+    justify-self: center;
+}
+.p3 .registration #keyword5{
+    grid-area: key5;
+    align-self: center;
+    justify-self: center;
+}
+/* //////////////////////////////////////////////////////// */
+
+.p3 .down{
+    grid-area: down;
+    position: absolute;
+    margin-left: 8rem;
+    bottom: 0rem;
+}
