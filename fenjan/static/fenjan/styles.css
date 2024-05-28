@@ -67,7 +67,10 @@ html, body{
     grid-area: dev;
     margin-left: 15rem;
 }
-
+/* should be revised to work properly to remove underline */
+.icons .a{
+    text-decoration: none;
+}
 /* //////////////////////////////////////////////////////// */
 /* Page 2 */
 .p2{
@@ -122,7 +125,18 @@ html, body{
 }
 /* //////////////////////////////////////////////////////// */
 
+/* form, input, label, textarea, select { 
+    margin: 0;
+    padding: 0;
+    border: none;
+    font: inherit;
+    color: inherit;
+    background: none;
+    box-sizing: border-box;
+} */
+
 .p3 .registration{
+    position: relative;
     grid-area: form;
     margin-top: 30rem;
     width: 39.3rem;
@@ -131,21 +145,23 @@ html, body{
     background-color: #899A83;
     border-radius: 5%;
     background-clip: padding-box;
-    display: inline-grid;
+    display: grid;
     grid-template:
     "title title" 2rem
-    "nlable name" 5rem
-    "elable email" 5rem
-    "klable ..." 5rem
-    "... key1" 4rem
-    "... key2" 4rem
-    "... key3" 4rem
-    "... key4" 4rem
-    "... key5" 4rem
+    "nlabel name" 5rem
+    "elabel email" 5rem
+    "klabel ." 5rem
+    ". key1" 4rem
+    ". key2" 4rem
+    ". key3" 4rem
+    ". key4" 4rem
+    ". key5" 4rem
     / 11.3rem 28rem;
 }
 
 .p3 .registration .title{
+    display: inline-block;
+    position: absolute;
     grid-area: title;
     margin-top: -3rem;
 }
@@ -161,30 +177,37 @@ html, body{
 .p3 .registration input:focus{
     border: 4px dashed #4b4b4b;
 }
-.p3 .registration .name-lable{
-    grid-area: nlable;
+.p3 .registration .name-label{
+    display: inline-block;
+    position: relative;
+    grid-area: nlabel;
+    margin-top: 3rem;
     margin-left: 2rem;
-    align-self: center;
 }
 .p3 .registration .name-input{
+    display: inline-block;
+    position: relative;
     grid-area: name;
     align-self: center;
     justify-self: center;
     width: 24rem;
+    margin-left: 11.3rem;
+    margin-top: 2rem;
 }
-.p3 .registration .email-lable{
-    grid-area: elable;
+.p3 .registration .email-label{
+    grid-area: elabel;
     margin-left: 2rem;
     align-self: center;
 }
-.p3 .registration .email-input{
+.p3 .registration .email-input{ 
     grid-area: email;
     align-self: center;
     justify-self: center;
     width: 24rem;
+    margin-left: 11.3rem;
 }
-.p3 .registration .keywords-lable{
-    grid-area: klable;
+.p3 .registration .keywords-label{
+    grid-area: klabel;
     margin-left: 2rem;
     align-self: center;
 }
@@ -192,26 +215,31 @@ html, body{
     grid-area: key1;
     align-self: center;
     justify-self: center;
+    margin-left: 11.3rem;
 }
 .p3 .registration #keyword2{
     grid-area: key2;
     align-self: center;
     justify-self: center;
+    margin-left: 11.3rem;
 }
 .p3 .registration #keyword3{
     grid-area: key3;
     align-self: center;
     justify-self: center;
+    margin-left: 11.3rem;
 }
 .p3 .registration #keyword4{
     grid-area: key4;
     align-self: center;
     justify-self: center;
+    margin-left: 11.3rem;
 }
 .p3 .registration #keyword5{
     grid-area: key5;
     align-self: center;
     justify-self: center;
+    margin-left: 11.3rem;
 }
 /* //////////////////////////////////////////////////////// */
 
