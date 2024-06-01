@@ -11,6 +11,16 @@
         <title>Fenjan</title>
     </head>
     <body class="main">
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+         {% endif %}
 
         <!-- page 1 -->
         <section class="p1">
@@ -102,11 +112,42 @@
             event.preventDefault();  // Prevent the default anchor click behavior
             var form = document.getElementById('myform');
             
+            if (validateForm()) {
+                form.submit();
+            } else {
+                console.error('Form validation failed');
+            }
+        }
+
+        function validateForm() {
+            var form = document.getElementById('myform');
+            var name = form.querySelector('#name').value;
+            var email = form.querySelector('#email').value;
+            var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            
+            if (name === '') {
+                alert('Name is required');
+                return false;
+            }
+
+            if (email === '' || !emailPattern.test(email)) {
+                alert('Valid email is required');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+    <!-- <script>
+        function submitForm(event) {
+            event.preventDefault();  // Prevent the default anchor click behavior
+            var form = document.getElementById('myform');
+            
             if (form && typeof form.submit === 'function') {
                 form.submit();
             } else {
                 console.error('Form not found or form.submit is not a function');
             }
         }
-    </script>
+    </script> -->
 </html>

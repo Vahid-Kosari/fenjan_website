@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 
 from .models import Customer, RegistrationState
 from django.utils import timezone
+from django.contrib import messages
 
 import json
 
@@ -16,16 +17,20 @@ def register(request):
         email = request.POST["email"]
         # Collect keywords from input fields
         keywords = [request.POST.get(f"keyword{i}", "") for i in range(1, 6)]
-        print("keywords:", keywords)
+        # Remove empty keywords
+        keywords = [keyword for keyword in keywords if keyword]
 
         # Split the name into first and last name
-        name_parts = name.split()
-        if len(name_parts) > 1:
-            first_name = name_parts[0]
-            last_name = " ".join(name_parts[1:])
+        if name and email:
+            name_parts = name.split()
+            if len(name_parts) > 1:
+                first_name = name_parts[0]
+                last_name = " ".join(name_parts[1:])
+            else:
+                first_name = name_parts[0]
+                last_name = ""
         else:
-            first_name = name_parts[0]
-            last_name = ""
+            return redirect("register")
 
         # Use the first name as the username if last name is not provided
         username = (
@@ -34,15 +39,31 @@ def register(request):
             else f"{first_name}.{last_name}".replace(" ", "")
         )
 
-        # Create the customer
-        customer = Customer.objects.create_user(
-            username=username,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            keywords=json.dumps(keywords),
-            registration_state=RegistrationState.TRIAL,
-        )
+        try:
+            # Check if a customer with the provided email already exists
+            customer = Customer.objects.filter(email=email).first()
+
+            if customer:
+                # Update existing customer
+                customer.first_name = first_name
+                customer.last_name = last_name
+                customer.username = username
+                customer.keywords = keywords
+                customer.save()
+                messages.success(request, "Information updated successfully!")
+            else:
+                # Create the customer
+                customer = Customer.objects.create_user(
+                    username=username,
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    keywords=keywords,
+                    registration_state=RegistrationState.TRIAL,
+                )
+                messages.success(request, "Registration successful!")
+        except Exception as e:
+            messages.error(request, f"Registration failed: {e}")
 
         return redirect("index")
 

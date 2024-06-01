@@ -192,7 +192,6 @@ html, body{
     justify-self: center;
     width: 24rem;
     margin-left: 11.3rem;
-    margin-top: 2rem;
 }
 .p3 .registration .email-label{
     grid-area: elabel;
@@ -210,6 +209,9 @@ html, body{
     grid-area: klabel;
     margin-left: 2rem;
     align-self: center;
+}
+.p3 .registration .keywords-input{
+    margin-top: 0.5rem;
 }
 .p3 .registration #keyword1{
     grid-area: key1;
@@ -248,4 +250,22 @@ html, body{
     position: absolute;
     margin-left: 8rem;
     bottom: 0rem;
+}
+
+/* //////////////////////////////////////////////////////// */
+
+.message {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
 }
