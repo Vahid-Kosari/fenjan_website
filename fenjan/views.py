@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
+from django.urls import reverse
 
 from .models import Customer, RegistrationState
 from django.utils import timezone
@@ -7,13 +8,28 @@ from django.contrib import messages
 import json
 
 
-def index(request):
-    return render(request, "fenjan/index.html")
+def index(request, stored_messages="None"):
+
+    # Optionally retrieve messages from Django messages
+    # stored_messages = stored_messages or messages.get_messages(request)
+    stored_messages = request.GET.get("stored_messages", "")
+
+    print("stored_messages from index", stored_messages)
+
+    return render(
+        request,
+        "fenjan/index.html",
+        {
+            "year": timezone.now().year,
+            "stored_messages": stored_messages,  # Pass stored_messages to the template
+        },
+    )
 
 
 def register(request):
     if request.method == "POST":
         name = request.POST["name"]
+        print("name:", name)
         email = request.POST["email"]
         # Collect keywords from input fields
         keywords = [request.POST.get(f"keyword{i}", "") for i in range(1, 6)]
@@ -65,6 +81,24 @@ def register(request):
         except Exception as e:
             messages.error(request, f"Registration failed: {e}")
 
-        return redirect("index")
+        # Add some debug prints to confirm message setting
+        for message in messages.get_messages(request):
+            print(message)
+
+        # Get the stored messages
+        stored_messages = "&".join(f"{m}" for m in messages.get_messages(request))
+        # stored_messages = messages.get_messages(request)
+        print("stored_messages", stored_messages)
+        print("Type of stored_messages:", type(stored_messages))
+
+        # Redirect to index view with messages as query parameters
+        # return HttpResponseRedirect(reverse("index") + "?" + stored_messages)
+        return HttpResponseRedirect(
+            reverse("index") + "?stored_messages=" + stored_messages
+        )
+
+    # Add some debug prints to confirm message setting
+    for message in messages.get_messages(request):
+        print(message)
 
     return render(request, "fenjan/register.html")

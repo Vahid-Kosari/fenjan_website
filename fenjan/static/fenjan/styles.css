@@ -5,6 +5,33 @@ html, body{
     background-color: #E0D8CD;
 }
 
+/* The alert message box */
+.alert {
+    position: absolute;
+    padding: 20px;
+    /*background-color: #f44336; /* Red */
+    color: white;
+    margin-bottom: 15px;
+    font-size: 2rem;
+  }
+  
+  /* The close button */
+  .closebtn {
+    margin-left: 0px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 2rem;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  /* When moving the mouse over the close button */
+  .closebtn:hover {
+    color: black;
+  }
+
 .main{
     display: grid;
     justify-items: center;
@@ -252,6 +279,15 @@ html, body{
     bottom: 0rem;
 }
 
+.p3 p.copyright{
+    grid-area: down;
+    position: absolute;
+    margin-left: 50.6rem;
+    bottom: -1.2rem;
+    font-size: 1.8rem;
+    color: #FFFFFF;
+    z-index: 2;
+}
 /* //////////////////////////////////////////////////////// */
 
 .message {

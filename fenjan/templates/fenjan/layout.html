@@ -9,24 +9,62 @@
         <link rel="icon" type="image/png" href="{% static 'fenjan/src/favicon.png' %}">
         <link rel="stylesheet" href="{% static 'fenjan/styles.css' %}">
         <title>Fenjan</title>
+        <!-- Bootstrap CSS and JS CDN references-->
+        <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"> -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script> -->
     </head>
     <body class="main">
-        
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+        <!-- Display stored_messages -->
+        <!-- <h2>Stored Messages {{ stored_messages }}</h2> -->
+
+        {% if stored_messages %}
+            <div>
+                <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"onclick="this.parentElement.style.display='none';">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </button>
+                    {{ stored_messages }}
+                </div>
+                <!-- <h2>Stored Messages: {{ stored_messages }}</h2> -->
             </div>
-         {% endif %}
+        {% else %}
+            <div>
+                <h2>Stored Messages, else: {{ stored_messages }}</h2>
+            </div>
+        {% endif %}
+
+        <!-- {% if stored_messages %}
+            <div>
+                <h2>Stored Messages:</h2>
+                <ul>
+                    {% for message in stored_messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div>
+                <h2>No Stored Messages</h2>
+            </div>
+        {% endif %} -->
+
+        <!-- {% if messages %} 
+            {% for message in messages %}
+                <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"onclick="this.parentElement.style.display='none';">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %} -->
+
 
         <!-- page 1 -->
         <section class="p1">
             <img class="side" src="{% static 'fenjan/src/images/Side-P1-D.png' %}" alt="Right Cloud">
             <h1 class="wellhead">Welcome to Fenjan!</h1>
-            <h2 class="underhead">Your beloved dinosaur that help you to find your dream PhD positions</h2>
+            <h2 class="underhead">Your beloved dinosaur that helps you to find your dream PhD positions</h2>
             <img class="dina" src="{% static 'fenjan/src/images/mascots/Reciption dina-P1-D.png' %}" alt="Malang Dina">
             <p class="intro">
                 Fenaja is a tool designed to assist you in finding your dream Ph.D. position.
@@ -102,11 +140,13 @@
                 </form>
                 <!-- <img class="Form-back-D" src="{% static 'fenjan/src/images/Form-back-Rec-P3-D.png' %}" alt="Form BackGround"> -->
             </section>
+            <p class="copyright">Developed by Hue and Vahid, All right received {{ year }}</p>
             <img class="down" src="{% static 'fenjan/src/images/footer.png' %}" alt="footer">
         </section>
         {% block body %}
         {% endblock %}
     </body>
+    <script src="{% static 'fenjan/index.js' %}"></script>
     <script>
         function submitForm(event) {
             event.preventDefault();  // Prevent the default anchor click behavior
