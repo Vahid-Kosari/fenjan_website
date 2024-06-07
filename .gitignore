@@ -1,2 +1,5 @@
 *.mkv
 *.env
+fenjan/temp
+fenjan/chromedriver-linux64
+fenjan/.chrome_driver_session
