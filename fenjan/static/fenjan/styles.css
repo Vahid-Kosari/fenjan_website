@@ -6,13 +6,15 @@ html, body{
 }
 
 /* The alert message box */
-.alert {
+.stored_messages {
     position: absolute;
     padding: 20px;
     /*background-color: #f44336; /* Red */
-    color: white;
+    color: #4b4b4b;
     margin-bottom: 15px;
     font-size: 2rem;
+    border: 4px dashed #4b4b4b;
+    border-radius: 2rem;
   }
   
   /* The close button */
