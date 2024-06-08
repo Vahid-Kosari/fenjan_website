@@ -64,11 +64,12 @@ class PositionsDatabase:
 
         # Fetch the rows and create a list of Position objects
         positions = []
-        for (id, title, url, descriptions, date, scraped_on) in cursor:
+        for id, title, url, descriptions, date, scraped_on in cursor:
             positions.append(Position(id, title, url, descriptions, date, scraped_on))
 
         # Close the cursor and connection
         cursor.close()
+        print("positions: ", positions)
 
         return positions
 
@@ -91,6 +92,7 @@ def get_customers_info(dotenv_path):
     customers_db = CustomerDatabase(*get_db_connection_values(dotenv_path))
     customers_cnx = customers_db.connect_to_database()
     customers = customers_db.get_customer_data(table_name="customers")
+    print("customers in get_customers_info() is: ", customers)
     customers_cnx.close()
 
     return customers

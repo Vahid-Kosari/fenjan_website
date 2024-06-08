@@ -321,7 +321,7 @@ def find_positions(driver, phd_keywords):
             # Scroll to bottom of page
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             # Wait for page to load
-            time.sleep(10)
+            time.sleep(3)
             # Extract positions from page source
             new_positions = extract_positions_text(driver.page_source)
             # Convert to set to eliminate duplicates
@@ -350,6 +350,8 @@ def find_positions(driver, phd_keywords):
                 all_positions.remove(result)
             except:
                 pass
+
+    print("all_positions from find_positions() is: ", all_positions)
     # Return list of positions
     return all_positions
 

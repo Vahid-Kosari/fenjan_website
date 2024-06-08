@@ -140,6 +140,9 @@ class CustomerDatabase:
         cursor.close()
 
     def get_customer_data(self, table_name):
+
+        # There is no positions table and if there was no customer, it does not manage the situation.
+
         """
         This function connects to the MySQL database and retrieves the values from the 'positions' table.
         It returns a list of Position objects, where each object represents a row of the table.
@@ -153,6 +156,13 @@ class CustomerDatabase:
         # Fetch the rows and create a list of Position objects
         customers = []
         for name, email, expiration_date, keywords in cursor:
+            print(
+                "🌟🌟🌟name, email, expiration_date, keywords in cursor: 🌟🌟🌟",
+                name,
+                email,
+                expiration_date,
+                keywords,
+            )
             customers.append(
                 Customer(name, email, expiration_date, json.loads(keywords))
             )
