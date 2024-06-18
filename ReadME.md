@@ -7,8 +7,8 @@ To run the Fenjan porject do these:
 2. Install list of requirements.txt
 3. Donwnload the repository into the local
 4. (Optional) To start with a fresh database delete the Sqlite.db and follow the below:
-    python manage.py makemigrations
-    python manage.py migrate
+`python manage.py makemigrations`
+`python manage.py migrate`
 5. On the root directory run the project by this line code:
-    python manage.py runserver
-6.- Open the dedicated ulr in your browser
+`python manage.py runserver`
+6. Open the dedicated ulr in your browser
