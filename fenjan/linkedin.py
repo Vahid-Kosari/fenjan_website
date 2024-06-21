@@ -1,94 +1,3 @@
-# import os
-# import requests
-# from dotenv import load_dotenv
-
-# # Load LinkedIn API credentials from .env file
-# load_dotenv()
-
-# # Set up LinkedIn API credentials
-# CLIENT_ID = os.getenv("CLIENT_ID")
-# CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-# ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-
-
-# # Make a request to the LinkedIn API to search for job listings based on keywords
-# def search_job_listings(keywords):
-#     url = "https://api.linkedin.com/v1/job-search"
-#     params = {
-#         "keywords": ",".join(keywords),
-#         "format": "json",
-#         "oauth2_access_token": ACCESS_TOKEN,
-#     }
-#     response = requests.get(url, params=params)
-#     if response.status_code == 200:
-#         return response.json()
-#     else:
-#         print(f"Error: {response.status_code}")
-#         return None
-
-
-# # Example usage
-# keywords = ["software engineer", "data scientist"]
-# job_listings_data = search_job_listings(keywords)
-# if job_listings_data:
-#     for job in job_listings_data["jobs"]["values"]:
-#         print(job["title"])
-#         print(job["company"]["name"])
-#         print(job["locationDescription"])
-#         print()
-
-
-# from selenium import webdriver
-# from selenium.webdriver.common.keys import Keys
-# import time
-
-
-# def main():
-
-#     # Start a new instance of the Chrome browser
-#     driver = webdriver.Chrome()
-
-#     # Navigate to the LinkedIn website
-#     driver.get("https://www.linkedin.com/jobs")
-
-#     # Find the search input field and enter keywords
-#     search_input = driver.find_element_by_xpath(
-#         "//input[@class='jobs-search-box__text-input jobs-search-box__keyboard-text-input jobs-search-global-typeahead__input']"
-#     )
-#     search_input.send_keys("Software Engineer" + Keys.RETURN)
-
-#     # Wait for the search results to load
-#     time.sleep(5)
-
-#     # Extract job listings from the search results
-#     job_listings = driver.find_elements_by_xpath("//li[@class='result-card']")
-#     for job in job_listings:
-#         title = job.find_element_by_xpath(".//h3").text
-#         company = job.find_element_by_xpath(".//h4").text
-#         location = job.find_element_by_xpath(
-#             ".//span[@class='job-result-card__location']"
-#         ).text
-#         print(title)
-#         print(company)
-#         print(location)
-#         print()
-
-#     # Close the browser
-#     driver.quit()
-
-
-# if __name__ == "__main__":
-#     main()
-# //input[@placeholder='Search jobs']
-# //*[@id="jobs-search-box-keyword-id-ember27"]
-# /html/body/div[6]/header/div/div/div/div[2]/div[2]/div/div/input[1]
-# //*[@id="jobs-search-box-keyword-id-ember27"]
-# //*[@id="keyword-typeahead-instance-ember27"]/div/input[2]
-
-# <input id="jobs-search-box-keyword-id-ember27" class="jobs-search-box__text-input jobs-search-box__keyboard-text-input jobs-search-global-typeahead__input" autocomplete="organization-title" spellcheck="false" role="combobox" aria-autocomplete="list" aria-label="Search by title, skill, or company" aria-activedescendant="" aria-expanded="false" type="text">
-# <input class="jobs-search-box__text-input jobs-search-box__keyboard-text-input jobs-search-box__ghost-text-input" placeholder="Title, skill or company" title="Title, skill or company" aria-label="Search by title, skill, or company" aria-hidden="true" disabled="" aria-required="false" type="text">
-
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -190,73 +99,50 @@ def login_to_linkedin(driver):
     # time.sleep(15)
 
 
+# Extract position text and links from the given LinkedIn search results page source and Return positions as list
 def extract_positions_text(page_source):
     """
     Extract position text and links from the given LinkedIn search results page source
     """
     # Set to store position text and links
     positions = set()
+
     # Create BeautifulSoup object to parse HTML
     soup = BeautifulSoup(page_source.replace("<br>", "\n"), "lxml")
 
-    # print(soup)
-    # soup_export = open("soup.txt", "w")
-    # soup_export.write(soup)
-    # soup_export.close()
-    # Find main search results element
+    # Write the parsed HTML to a file
+    with open("soup.html", "w", encoding="utf-8") as soup_export:
+        soup_export.write(str(soup))
 
-    # search_results = soup.find("main", {"aria-label": "Search results"})
+    # Find main search results element
     search_results = soup.find_all(
         "div",
-        # {"class": "update-components-text relative feed-shared-update-v2__commentary"},
         {
             "class": "update-components-text relative update-components-update-v2__commentary"
         },
     )
-    print(
-        """
-          search_results    search_results    search_results    search_results    search_results
-          search_results:""",
-        search_results,
-    )
+
+    # Write the parsed HTML to a file
+    with open("search_results.html", "w", encoding="utf-8") as soup_export:
+        soup_export.write(str(search_results))
+
     if search_results is None:
         print("Search results element not found.")
         return []
-    # Find all position text elements
-    # print("starting position_elements found")
-    # position_elements = search_results.find(
-    #     "div",
-    #     {"class": "update-components-text relative feed-shared-update-v2__commentary"},
-    # )
-    # print("position_elements found")
 
-    # Add position text to positions set
-    # for position_element in position_elements:
+    """
+    Extract text content related to job positions,
+    format it to be URL-friendly,
+    and then construct a search query string for LinkedIn
+    """
     for result in search_results:
-        print(
-            """
-              result    result    result    result    result    result
-              result:""",
-            result,
-        )
-        position_element = result.find("a", {"class": "app-aware-link"})
-
-        # "div",
-        # {
-        #     "class": "update-components-text relative feed-shared-update-v2__commentary"
-        # },
-        # )
+        # position_element = result.find("a", {"class": "app-aware-link"})
+        position_element = result.find("span", {"class": "text-view-model"})
         if position_element is None:
             print("postion_element in None")
             continue  # Skip if position element is not found
 
         position_text = position_element.text.strip()
-        print(
-            """
-              position_text     position_text     position_text     position_text
-              position_text: """,
-            position_text,
-        )
         # Make the search query text
         search_text = "%20".join(position_text.split()[:10]).replace("#", "%23")
         # Extract links from the text
@@ -269,6 +155,7 @@ def extract_positions_text(page_source):
         # Add the Search link at the end of the position text
         search_url = f"https://www.linkedin.com/search/results/content/?keywords=%22{search_text}%22&origin=GLOBAL_SEARCH_HEADER&sid=L.U&sortBy=%22date_posted%22"
         position_text += f"<br><br>🔎🔗: {search_url}"
+        # Add position text to positions set
         if position_text:
             positions.add(position_text)
 
@@ -276,6 +163,7 @@ def extract_positions_text(page_source):
     return list(positions)
 
 
+# Extract and returns all_positions as list
 def find_positions(driver, phd_keywords):
     # Set to store all positions found
     all_positions = set()
@@ -283,7 +171,7 @@ def find_positions(driver, phd_keywords):
     # Go to a black page to avoid a bog that scrap the timeline
     url = "https://www.linkedin.com/search/results/"
     driver.get(url)
-    time.sleep(5)
+    time.sleep(2)
 
     # Initialize progress bar
     pbar = tqdm(phd_keywords)
@@ -296,14 +184,14 @@ def find_positions(driver, phd_keywords):
             {
                 "Keyword": keyword,
                 "page": page,
-                "TN of founded positions": len(all_positions),
+                "TN of found positions": len(all_positions),
             }
         )
         # Construct URL with keyword
         url = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keyword}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
         # Load page
         driver.get(url)
-        time.sleep(5)
+        time.sleep(2)
         # Extract positions from page source
         positions = extract_positions_text(driver.page_source)
         # Iterate through pages
@@ -321,13 +209,14 @@ def find_positions(driver, phd_keywords):
             # Scroll to bottom of page
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             # Wait for page to load
-            time.sleep(3)
+            time.sleep(2)
             # Extract positions from page source
             new_positions = extract_positions_text(driver.page_source)
             # Convert to set to eliminate duplicates
             new_positions = set(new_positions)
             # Check if positions on current page are the same as previous page
             if new_positions == positions:
+                print("End of the search page for ", keyword)
                 # If so, break out of loop
                 break
             # Update positions
@@ -356,6 +245,7 @@ def find_positions(driver, phd_keywords):
     return all_positions
 
 
+# Filter all_positions from find_positions() based on search_keywords list and returns matching_positions as list
 def filter_positions(all_positions, search_keywords):
     """Filter the list of positions based on search keywords.
 
@@ -381,6 +271,7 @@ def filter_positions(all_positions, search_keywords):
     return matching_positions
 
 
+# Compose and send an email to the specified recipient with a list of positions
 def compose_and_send_email(recipient_email, recipient_name, positions, base_path):
     """Compose and send an email to the specified recipient with a list of positions.
 
@@ -431,6 +322,13 @@ def main():
             )
             # filter positions based on customer keywords
             relevant_positions = filter_positions(all_positions, keywords)
+            # Write the list to a file
+            if relevant_positions:
+                with open(
+                    "relevant_positions.html", "w", encoding="utf-8"
+                ) as relevant_positions_export:
+                    for position in relevant_positions:
+                        relevant_positions_export.write(position + "\n")
             if relevant_positions:
                 log.info(
                     f"Sending email containing {len(relevant_positions)} positions to: {customer.name}"

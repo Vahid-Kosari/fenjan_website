@@ -166,6 +166,19 @@ class CustomerDatabase:
             customers.append(
                 Customer(name, email, expiration_date, json.loads(keywords))
             )
+        if not customers:
+            print("There is no customer. Creating from customers_data.py!!!")
+            from customers_data import customers_data
+
+            for customer in customers_data:
+                name = customer[name]
+                email = customer[email]
+                expiration_date = customer[expiration_date]
+                keywords = customer[keywords]
+
+                query = f"INSERT INTO customers (name, email, expiration_date, keywords)VALUES ('Vahid', 'vahid@ex.com', '2024-05-28', '[]');"
+
+                cursor.execute
 
         # Close the cursor and connection
         cursor.close()
