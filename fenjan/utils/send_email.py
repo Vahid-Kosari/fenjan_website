@@ -29,6 +29,9 @@ import smtplib
 from email.message import EmailMessage
 
 
+print("Current working directory:", os.getcwd())
+
+
 def send_email(to, subject, message, message_type):
     try:
         email_address = os.environ.get("EMAIL_ADDRESS")
@@ -51,16 +54,16 @@ def send_email(to, subject, message, message_type):
 
         print("Email created:\n", msg)
 
-        for part in msg.iter_parts():
-            with open("msg.html", "w", encoding="utf-8") as msg_export:
-                msg_export.write(part.get_payload(decode=True).decode("utf-8"))
+        # for part in msg.iter_parts():
+        with open("msg.html", "w", encoding="utf-8") as msg_export:
+            msg_export.write(str(msg))
         print("Export msg done")
         # send email
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-            print("loging start")
+            smtp.set_debuglevel(1)  # Enable debug output
+            print("Logging in...")
             smtp.login(email_address, email_password)
             print("loging successful")
-            smtp.sen(msg)
             smtp.send_message(msg)
             print("msg sent")
         return True
@@ -78,7 +81,7 @@ if __name__ == "__main__":
   <body>
     <p>Hi,<br>
        Check out the new post on the Mailtrap blog:</p>
-    <p><a href="https://blog.mailtrap.io/2018/09/27/cloud-or-local-smtp-server">SMTP Server for Testing: Cloud-based or Local?</a></p>
+    <p><a href="https://mailtrap.io/blog/python-send-email-gmail">SMTP Server for Testing: Cloud-based or Local?</a></p>
     <p> Feel free to <strong>let us</strong> know what content would be useful for you!</p>
   </body>
 </html>

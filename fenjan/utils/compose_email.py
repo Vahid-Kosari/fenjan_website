@@ -98,6 +98,8 @@ def compose_email(customers_name, positions_source, positions, base_path):
 
     footer_text = 'Developed by <a href="https://hue-salari.ir/" rel="noopener" style="text-decoration: none; color: #52a150;" target="_blank">Hue (MohammadHossein) Salari</a>'
     email_template = email_template.replace("&footer_place_holder", footer_text)
+    with open("email.html", "w", encoding="utf-8") as email_export:
+        email_export.write(str(email_template))
     return email_template
 
 
