@@ -14,7 +14,7 @@ from urlextract import URLExtract
 from utils.send_email import send_email
 
 
-def format_position_summery_text(text):
+def format_position_summary_text(text):
     extractor = URLExtract()
     formatted_text = ""
     text = re.sub(r"\n+", "\n", text)
@@ -86,9 +86,9 @@ def compose_email(customers_name, positions_source, positions, base_path):
         _position_template = position_template.replace(
             "&position_title_place_holder", f"Ph.D. Position {position_num+1}"
         )
-        position_summery = format_position_summery_text(position)
+        position_summary = format_position_summary_text(position)
         _position_template = _position_template.replace(
-            "&position_summery_place_holder", position_summery
+            "&position_summary_place_holder", position_summary
         )
         positions_template += _position_template
 

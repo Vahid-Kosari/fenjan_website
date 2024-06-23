@@ -33,6 +33,7 @@ from utils.send_email import send_email
 from utils.phd_keywords import phd_keywords
 from utils.compose_email import compose_email
 from utils.database_helpers import *
+from .models import Customer, RegistrationState
 
 # Set path for logging
 log_file_path = os.path.join(
@@ -284,6 +285,13 @@ def compose_and_send_email(recipient_email, recipient_name, positions, base_path
     email_content = compose_email(recipient_name, "LinkedIn", positions, base_path)
     send_email(recipient_email, "PhD Positions from LinkedIn", email_content, "html")
 
+# 
+# def set_registration_state(customer, expiration_date):
+#     registration_period = expiration_date - customer.registration_date
+
+#     if expiration_date == None:
+#         customer.registration_state = RegistrationState.TRIAL
+
 
 def main():
 
@@ -305,16 +313,22 @@ def main():
     driver.quit()
     print(f"[info]: Total number of positions: {len(all_positions)}")
     log.info(f"Found {len(all_positions)} posts related to Ph.D. Positions")
+    
+    
     # get yesterday's date
     yesterday = datetime.today() - timedelta(days=1)
 
     # getting customers info from db
     log.info("Getting customers info.")
-    customers = get_customers_info(dotenv_path)
+    # customers = get_customers_info(dotenv_path)
+    customers = Customer.objects.all()
 
     for customer in customers:
-        if customer.expiration_date >= yesterday:
-            log.info(f"Searching for {customer.name} keywords in the founded positions")
+        if customer.expiration_date != None and customer.expiration_date >= yesterday:
+            # customer.registration_state = RegistrationState.REGISTERED
+            log.info(
+                f"Searching for {customer.username} keywords in the founded positions"
+            )
             # get customer keywords and make them lowercase and remove spaces
             keywords = set(
                 [keyword.replace(" ", "").lower() for keyword in customer.keywords]
@@ -331,16 +345,17 @@ def main():
                         relevant_positions_export.write(position + "\n")
             if relevant_positions:
                 log.info(
-                    f"Sending email containing {len(relevant_positions)} positions to: {customer.name}"
+                    f"Sending email containing {len(relevant_positions)} positions to: {customer.username}"
                 )
-                print(f"[info]: Sending email to: {customer.name}")
+                print(f"[info]: Sending email to: {customer.username}")
                 compose_and_send_email(
                     customer.email,
-                    customer.name,
+                    customer.username,
                     relevant_positions,
                     utils_dir_path,
                 )
                 time.sleep(10)
+        else:
 
 
 if __name__ == "__main__":

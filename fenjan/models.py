@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from datetime import datetime, timedelta
+
+
+def default_expiration_date():
+    return timezone.now().date() + timedelta(days=3)
 
 
 # Constants for registration states
@@ -18,6 +23,7 @@ class Customer(AbstractUser):
     )
     keywords = models.JSONField(null=False)
     registration_date = models.DateField(default=timezone.now)
+    expiration_date = models.DateField(default=default_expiration_date)
 
     groups = models.ManyToManyField(
         "auth.Group",

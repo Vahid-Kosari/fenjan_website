@@ -30,7 +30,7 @@ customers_data = [
             "#ML",
         ],
         "name": "Vahid Kosari",
-        "email": "kosari.ma@gmail.com",
+        "email": "vahid59m@gmail.com",
         "expiration_date": datetime(2025, 1, 1),
         "keywords": [
             "computer vision",
