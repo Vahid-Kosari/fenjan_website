@@ -2,6 +2,8 @@
 *.env
 fenjan/temp
 fenjan/chromedriver-linux64
+.chrome_driver_session
+chromedriver-linux64
 fenjan/.chrome_driver_session
 fenjan/output.txt
 fenjan/relevant_positions.html

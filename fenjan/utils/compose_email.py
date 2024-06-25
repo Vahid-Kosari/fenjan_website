@@ -4,6 +4,9 @@
 Created on Des 6 2022
 @author: Hue (MohammadHossein) Salari
 @email:hue.salari@gmail.com
+
+Refactored on Jun 2024 By Vahid Kosari
+@email: kosari.ma@gmail.com
 """
 
 import re

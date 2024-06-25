@@ -5,6 +5,9 @@ Created on Des 6 2022
 @author: Hue (MohammadHossein) Salari
 @email:hue.salari@gmail.com
 
+Refactored on Jun 2024 By Vahid Kosari
+@email: kosari.ma@gmail.com
+
 Sources:
     - https://www.geeksforgeeks.org/scrape-linkedin-using-selenium-and-beautiful-soup-in-python/
     - https://stackoverflow.com/questions/64717302/deprecationwarning-executable-path-has-been-deprecated-selenium-python
@@ -28,12 +31,23 @@ from selenium.webdriver.chrome.service import Service
 
 # from webdriver_manager.chrome import ChromeDriverManager
 
+import sys
+import django
+
+print("Before append: ", sys.path)  # Add this line to debug the Python path
+# Ensure the script can find the settings module
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+print("After append: ", sys.path)  # Add this line to debug the Python path
+# Set up Django environment
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "capstone.settings")
+django.setup()
+
 # import helper functions from other modules
 from utils.send_email import send_email
-from utils.phd_keywords import phd_keywords
+from fenjan.utils.phd_keywords import phd_keywords
 from utils.compose_email import compose_email
 from utils.database_helpers import *
-from .models import Customer, RegistrationState
+from fenjan.models import Customer
 
 # Set path for logging
 log_file_path = os.path.join(
@@ -84,7 +98,7 @@ def login_to_linkedin(driver):
     # Load LinkedIn login page
     driver.get("https://linkedin.com/uas/login")
     # Wait for page to load
-    time.sleep(5)
+    time.sleep(2)
     # Check if already logged in
     if driver.current_url == "https://www.linkedin.com/feed/":
         return
@@ -137,8 +151,8 @@ def extract_positions_text(page_source):
     and then construct a search query string for LinkedIn
     """
     for result in search_results:
-        # position_element = result.find("a", {"class": "app-aware-link"})
-        position_element = result.find("span", {"class": "text-view-model"})
+        position_element = result.find("a", {"class": "app-aware-link"})
+        # position_element = result.find("span", {"class": "text-view-model"})
         if position_element is None:
             print("postion_element in None")
             continue  # Skip if position element is not found
@@ -285,13 +299,6 @@ def compose_and_send_email(recipient_email, recipient_name, positions, base_path
     email_content = compose_email(recipient_name, "LinkedIn", positions, base_path)
     send_email(recipient_email, "PhD Positions from LinkedIn", email_content, "html")
 
-# 
-# def set_registration_state(customer, expiration_date):
-#     registration_period = expiration_date - customer.registration_date
-
-#     if expiration_date == None:
-#         customer.registration_state = RegistrationState.TRIAL
-
 
 def main():
 
@@ -313,8 +320,7 @@ def main():
     driver.quit()
     print(f"[info]: Total number of positions: {len(all_positions)}")
     log.info(f"Found {len(all_positions)} posts related to Ph.D. Positions")
-    
-    
+
     # get yesterday's date
     yesterday = datetime.today() - timedelta(days=1)
 
@@ -324,8 +330,9 @@ def main():
     customers = Customer.objects.all()
 
     for customer in customers:
-        if customer.expiration_date != None and customer.expiration_date >= yesterday:
-            # customer.registration_state = RegistrationState.REGISTERED
+        # default_expiration_date = customer.registration_date + timedelta(days=3)
+        # if customer.expiration_date != None and customer.expiration_date >= yesterday:
+        if customer.registration_state != "Expired":
             log.info(
                 f"Searching for {customer.username} keywords in the founded positions"
             )
@@ -336,14 +343,25 @@ def main():
             )
             # filter positions based on customer keywords
             relevant_positions = filter_positions(all_positions, keywords)
-            # Write the list to a file
+
+            # Ensure the directory exists
+            output_dir = "relevant_positions"
+            os.makedirs(output_dir, exist_ok=True)
+
+            # Define the file path
+            file_path = os.path.join(
+                output_dir, f"relevant_positions_for_{customer}.html"
+            )
+
+            # Write the list to the file
             if relevant_positions:
                 with open(
-                    "relevant_positions.html", "w", encoding="utf-8"
+                    file_path, "w", encoding="utf-8"
                 ) as relevant_positions_export:
                     for position in relevant_positions:
-                        relevant_positions_export.write(position + "\n")
-            if relevant_positions:
+                        relevant_positions_export.write(
+                            position + "\n" + """""" """""" + "\n"
+                        )
                 log.info(
                     f"Sending email containing {len(relevant_positions)} positions to: {customer.username}"
                 )
@@ -356,6 +374,7 @@ def main():
                 )
                 time.sleep(10)
         else:
+            print(f"{customer.username}'s registration expired!")
 
 
 if __name__ == "__main__":
