@@ -58,9 +58,10 @@ def send_email(to, subject, message, message_type):
         print("Email created:\n", msg)
 
         # for part in msg.iter_parts():
-        with open("msg.html", "w", encoding="utf-8") as msg_export:
-            msg_export.write(str(msg))
-        print("Export msg done")
+        # with open("msg.html", "w", encoding="utf-8") as msg_export:
+        #     msg_export.write(str(msg))
+        # print("Export msg done")
+
         # send email
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
             smtp.set_debuglevel(1)  # Enable debug output

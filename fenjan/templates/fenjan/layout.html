@@ -67,7 +67,9 @@
         <!-- page 3 -->
         <section class="p3">
             <img class="side" src="{% static 'fenjan/src/images/Side-P3-D.png' %}" alt="Right Cloud">
-            <img class="dina" src="{% static 'fenjan/src/images/mascots/Secretary dina-P3-D.png' %}" alt="Secretary Dina" usemap="#regbutton">
+            <a href="{% url 'linkedin_runner' %}">
+                <img class="dina" src="{% static 'fenjan/src/images/mascots/Secretary dina-P3-D.png' %}" alt="Secretary Dina" usemap="#regbutton">
+            </a>
             <map class="regbutton" name="regbutton">
                 <area href="" onclick="submitForm(event); return false;" target=""
                     alt="Hot Chocolate" title="Hot Chocolate" coords="604,341,633,325,673,325,709,333,

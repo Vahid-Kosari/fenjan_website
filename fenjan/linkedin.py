@@ -210,7 +210,8 @@ def find_positions(driver, phd_keywords):
         # Extract positions from page source
         positions = extract_positions_text(driver.page_source)
         # Iterate through pages
-        while True:
+        # while True:
+        while page < 5:
             # Increment page number
             page += 1
             # Set postfix for progress bar
@@ -330,51 +331,57 @@ def main():
     customers = Customer.objects.all()
 
     for customer in customers:
-        # default_expiration_date = customer.registration_date + timedelta(days=3)
-        # if customer.expiration_date != None and customer.expiration_date >= yesterday:
-        if customer.registration_state != "Expired":
-            log.info(
-                f"Searching for {customer.username} keywords in the founded positions"
-            )
-            # get customer keywords and make them lowercase and remove spaces
-            keywords = set(
-                [keyword.replace(" ", "").lower() for keyword in customer.keywords]
-                + customer.keywords
-            )
-            # filter positions based on customer keywords
-            relevant_positions = filter_positions(all_positions, keywords)
-
-            # Ensure the directory exists
-            output_dir = "relevant_positions"
-            os.makedirs(output_dir, exist_ok=True)
-
-            # Define the file path
-            file_path = os.path.join(
-                output_dir, f"relevant_positions_for_{customer}.html"
-            )
-
-            # Write the list to the file
-            if relevant_positions:
-                with open(
-                    file_path, "w", encoding="utf-8"
-                ) as relevant_positions_export:
-                    for position in relevant_positions:
-                        relevant_positions_export.write(
-                            position + "\n" + """""" """""" + "\n"
-                        )
+        if customer.first_name == "Vahid":
+            log.info("Customer Vahid found.")
+            # default_expiration_date = customer.registration_date + timedelta(days=3)
+            # if customer.expiration_date != None and customer.expiration_date >= yesterday:
+            if customer.registration_state != "Expired":
                 log.info(
-                    f"Sending email containing {len(relevant_positions)} positions to: {customer.username}"
+                    f"Searching for {customer.username} keywords in the founded positions"
                 )
-                print(f"[info]: Sending email to: {customer.username}")
-                compose_and_send_email(
-                    customer.email,
-                    customer.username,
-                    relevant_positions,
-                    utils_dir_path,
+                # get customer keywords and make them lowercase and remove spaces
+                keywords = set(
+                    [keyword.replace(" ", "").lower() for keyword in customer.keywords]
+                    + customer.keywords
                 )
-                time.sleep(10)
-        else:
-            print(f"{customer.username}'s registration expired!")
+                # filter positions based on customer keywords
+                relevant_positions = filter_positions(all_positions, keywords)
+
+                output_dir = os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    "utils/relevant_positions",
+                )
+                # Ensure the directory exists
+                # output_dir = "relevant_positions"
+                os.makedirs(output_dir, exist_ok=True)
+
+                # Define the file path
+                file_path = os.path.join(
+                    output_dir, f"relevant_positions_for_{customer}.html"
+                )
+
+                # Write the list to the file
+                if relevant_positions:
+                    with open(
+                        file_path, "w", encoding="utf-8"
+                    ) as relevant_positions_export:
+                        for position in relevant_positions:
+                            relevant_positions_export.write(
+                                position + "\n" + """""" """""" + "\n"
+                            )
+                    log.info(
+                        f"Sending email containing {len(relevant_positions)} positions to: {customer.username}"
+                    )
+                    print(f"[info]: Sending email to: {customer.username}")
+                    compose_and_send_email(
+                        customer.email,
+                        customer.username,
+                        relevant_positions,
+                        utils_dir_path,
+                    )
+                    time.sleep(10)
+            else:
+                print(f"{customer.username}'s registration expired!")
 
 
 if __name__ == "__main__":

@@ -52,18 +52,20 @@ def compose_email(customers_name, positions_source, positions, base_path):
     with open(email_template_path, "r") as f:
         email_template = f.read()
 
-    images_base_url = "https://ai-hue.ir/fenjan_phd_finder"
+    # images_base_url = "https://ai-hue.ir/fenjan_phd_finder"
 
     logo_names = dir_list = os.listdir(os.path.join(base_path, "images/logo"))
 
-    logo_path = f"{images_base_url}/logo/{random.choice(logo_names)}"
+    # logo_path = f"{images_base_url}/logo/{random.choice(logo_names)}"
+    logo_path = f"{base_path}/logo/{random.choice(logo_names)}"
     email_template = email_template.replace("&heder_logo_place_holder", logo_path)
 
     greeting_image_names = dir_list = os.listdir(
         os.path.join(base_path, "images/greeting")
     )
     greeting_image_path = (
-        f"{images_base_url}/greeting/{random.choice(greeting_image_names)}"
+        # f"{images_base_url}/greeting/{random.choice(greeting_image_names)}"
+        f"{base_path}/greeting/{random.choice(greeting_image_names)}"
     )
     email_template = email_template.replace(
         "&greeting_image_place_holder", greeting_image_path

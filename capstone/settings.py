@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "django_celery_beat",
     "fenjan",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -126,3 +127,21 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Update settings.py with Celery configuration
+CELERY_BROKER_URL = "redis://localhost:6379/0"  # Using Redis as the broker
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
+
+# Configuration for Celery Beat Schedule
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "update_registration_states": {
+        "task": "fenjan.tasks.update_registration_states",
+        "schedule": crontab(minute="*"),  # every minute
+    },
+}
