@@ -16,6 +16,18 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
+# Determine the capstone directory
+capstone_dir = os.path.dirname(os.path.abspath(__file__))
+celerybeat_schedule_dir_path = os.path.join(capstone_dir, "celerybeat-schedule")
+
+# Ensure the directory exists
+if not os.path.exists(celerybeat_schedule_dir_path):
+    os.makedirs(celerybeat_schedule_dir_path)
+
+app.conf.beat_schedule_filename = os.path.join(
+    celerybeat_schedule_dir_path, "celerybeat-schedule"
+)
+
 
 @app.task(bind=True)
 def debug_task(self):

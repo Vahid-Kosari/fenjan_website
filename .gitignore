@@ -11,3 +11,4 @@ fenjan/search.html
 fenjan/search_results.html
 fenjan/search_results.py
 fenjan/soup.html
+capstone/celerybeat-schedule
