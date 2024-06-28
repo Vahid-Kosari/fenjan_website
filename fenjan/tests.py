@@ -1,4 +1,4 @@
-# """
+"""
 # Model Tests
 from django.test import TestCase
 from .models import Customer, RegistrationState
@@ -24,7 +24,7 @@ class CustomerModelTests(TestCase):
 
 # """
 
-# """
+"""
 # View Tests
 from django.test import TestCase, Client
 from django.urls import reverse

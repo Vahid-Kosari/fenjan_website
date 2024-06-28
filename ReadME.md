@@ -1,18 +1,82 @@
-Main Idea of this applicaiton comes from similar flask driven application in conjunction with MySQL BY [mh-salari](https://github.com/mh-salari)
+# Fenjan Project
 
-It has been renovated by Django and JavaScript to this Webapp interface.
+The main idea of this application comes from a similar Flask-driven application in conjunction with MySQL by [mh-salari](https://github.com/mh-salari).
 
-To run the Fenjan porject do these:
+This project has been renovated using Django and JavaScript to create this web application interface.
 
-1. (Optional) Create a fresh environment.
-2. Install list of requirements.txt
-3. Donwnload the repository into the local
-4. (Optional) To start with a fresh database delete the Sqlite.db and follow the below:
-   `python manage.py makemigrations`
-   `python manage.py migrate`
-5. On the root directory run the project by this line code:
-   `python manage.py runserver`
-6. Open the dedicated ulr in your browser
+## How to Run the Fenjan Project
+
+Follow these steps to set up and run the Fenjan project:
+
+1. **(Optional) Create a Fresh Environment**
+
+   - It's recommended to create a virtual environment to isolate dependencies.
+
+2. **Install the Required Packages**
+
+   - Install the dependencies listed in `requirements.txt`:
+     ```sh
+     pip install -r requirements.txt
+     ```
+
+3. **Download the Repository**
+
+   - Clone the repository to your local machine:
+     ```sh
+     git clone <repository-url>
+     cd <repository-directory>
+     ```
+
+4. **(Optional) Initialize a Fresh Database**
+
+   - To start with a fresh database, delete `db.sqlite3` and run the following commands:
+     ```sh
+     python manage.py makemigrations
+     python manage.py migrate
+     ```
+
+5. **Create a Superuser for Administration**
+
+   - To create an admin user, run:
+     ```sh
+     python manage.py createsuperuser
+     ```
+
+6. **Set Up Supervisor for Automated User Registration State's Supervision**
+
+   - Configure Supervisor to manage Celery worker and beat processes:
+
+     6.a. Adopt and customize the configuration files for Celery worker and beat from `capston/celery_conf` for your environment. Place them in the following directory:
+
+     ```sh
+     /etc/supervisor/conf.d/
+     ```
+
+     6.b. Update Supervisor to apply the new configurations:
+
+     ```sh
+     sudo supervisorctl reread
+     sudo supervisorctl update
+     ```
+
+     6.c. Start the Celery services:
+
+     ```sh
+     sudo supervisorctl start celery_worker
+     sudo supervisorctl start celery_beat
+     ```
+
+7. **Run the Project**
+
+   - In the root directory of the project, start the development server:
+     ```sh
+     python manage.py runserver
+     ```
+
+8. **Open the Application in Your Browser**
+   - Navigate to the dedicated URL (typically `http://127.0.0.1:8000/`) to access the application.
+
+---
 
 include a writeup describing your project, and
 specifically your file MUST include all of the following:
