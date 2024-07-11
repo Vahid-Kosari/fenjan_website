@@ -142,6 +142,6 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     "update_registration_states": {
         "task": "fenjan.tasks.update_registration_states",
-        "schedule": crontab(minute="*"),  # every minute
+        "schedule": crontab(minute="0", hour="*/12"),  # every 12 hours
     },
 }

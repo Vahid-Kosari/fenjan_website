@@ -127,3 +127,20 @@ def linkedin_runner(request):
         return HttpResponse(f"An error occurred: {e}")
 
     # return render(request, "fenjan/index.html")
+
+
+def linkedin_sgai_runner(request):
+    try:
+        # Define the path to the linkedin.py script
+        script_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "fenjan",
+            "linkedin_sgai.py",
+        )
+
+        # Run the linkedin.py script
+        subprocess.run(["python", script_path], check=True)
+
+        return HttpResponse("LinkedIn script ran successfully.")
+    except Exception as e:
+        return HttpResponse(f"An error occurred: {e}")

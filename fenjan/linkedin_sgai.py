@@ -61,32 +61,27 @@ log.basicConfig(
 )
 
 
-def make_driver():
-    """
-    Create and return a headless Chrome webdriver instance
-    """
+# Sources: https://medium.com/@amanatulla1606/llm-web-scraping-with-scrapegraphai-a-breakthrough-in-data-extraction-d6596b282b4d
+#  Data Extraction by ScrapeGraphAI
+from scrapegraphai.graphs import SmartScraperGraph
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+)
+from openai import RateLimitError
+from playwright.sync_api import sync_playwright
+import time, json
 
-    # Set options for Chrome
-    options = webdriver.ChromeOptions()
-    # options = Options()
-    # options.add_argument("--headless=new")
-    options.add_argument("user-data-dir=.chrome_driver_session")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-
-    # Create and return Chrome webdriver instance
-    # driver = webdriver.Chrome(
-    #     service=Service(ChromeDriverManager().install()), options=options
-    # )
-
-    # Utilize Chrome webdriver manually
-    driver_path = "./chromedriver-linux64/chromedriver"
-    driver = webdriver.Chrome(executable_path=driver_path, options=options)
-
-    return driver
+# Load environment variables from .env file
+env_path = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"
+)
+load_dotenv(dotenv_path=env_path)
 
 
-def login_to_linkedin(driver):
+def login_to_linkedin(page):
     """
     Log in to LinkedIn using the provided email address and password
     """
@@ -96,32 +91,41 @@ def login_to_linkedin(driver):
     password = os.environ["LINKEDIN_PASSWORD"]
 
     # Load LinkedIn login page
-    driver.get("https://linkedin.com/uas/login")
+    page.goto("https://linkedin.com/uas/login")
     # Wait for page to load
     time.sleep(2)
     # Check if already logged in
-    if driver.current_url == "https://www.linkedin.com/feed/":
+    if page.url == "https://www.linkedin.com/feed/":
         return
     # Find email input field and enter email address
-    email_field = driver.find_element("id", "username")
-    email_field.send_keys(email)
+    page.fill("id=username", email)
     time.sleep(1)
     # Find password input field and enter password
-    password_field = driver.find_element("id", "password")
-    password_field.send_keys(password)
+    page.fill("id=password", password)
     # Find login button and click it
-    driver.find_element("xpath", "//button[@type='submit']").click()
-    # Temporarily added to bypass first two-setep verification code request for the first time in new session
-    # time.sleep(15)
+    page.click("xpath=//button[@type='submit']")
 
 
-# Sources: https://medium.com/@amanatulla1606/llm-web-scraping-with-scrapegraphai-a-breakthrough-in-data-extraction-d6596b282b4d
-#  Data Extraction by ScrapeGraphAI
-from scrapegraphai.graphs import SmartScraperGraph
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-import time, json
+def fetch_html_with_playwright(url):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context()
+        page = context.new_page()
+
+        login_to_linkedin(page)  # Log in to LinkedIn
+        time.sleep(5)  # Wait for login to complete
+
+        try:
+            page.goto(url, timeout=60000)  # Increase timeout to 60 seconds
+            time.sleep(10)
+            content = page.content()
+        except Exception as e:
+            print(f"Error navigating to {url}: {e}")
+            return None
+        finally:
+            browser.close()
+
+        return content
 
 
 def extract_by_scrapegraphai(source):
@@ -132,54 +136,28 @@ def extract_by_scrapegraphai(source):
             "api_key": OPENAI_API_KEY,
             "model": "gpt-3.5-turbo",
         },
+        "headless": True,
     }
 
     smart_scraper_graph = SmartScraperGraph(
         prompt="List me all the positions with their description and link for apply.",
-        # also accepts a string with the already downloaded HTML code
-        # source="https://perinim.github.io/projects/",
         source=source,
         config=graph_config,
     )
 
     result = smart_scraper_graph.run()
     output = json.dumps(result, indent=2)
-    line_list = output.split("\n")  # Sort of line replacing "\n" with a new line
+    line_list = output.split("\n")
     for line in line_list:
         print(line)
     return result
 
 
-# Setup Selenium WebDriver
-# driver_path = "./chromedriver"  # Path to your ChromeDriver
-# driver_path = "./chromedriver-linux64/chromedriver"
-# options = webdriver.ChromeOptions()
-# options.add_argument("--headless")  # Run in headless mode
-# driver = webdriver.Chrome(executable_path=driver_path, options=options)
+# URL for LinkedIn job search
+url = "https://www.linkedin.com/search/results/content/?keywords=PhD%20position"
 
-
-# Define a function to log in to LinkedIn
-# def linkedin_login(driver, username, password):
-# driver.get("https://www.linkedin.com/login")
-# time.sleep(2)
-# driver.find_element(By.ID, "username").send_keys(username)
-# driver.find_element(By.ID, "password").send_keys(password)
-# driver.find_element(By.ID, "password").send_keys(Keys.RETURN)
-# time.sleep(2)
-
-
-# Define a function to search for PhD positions
-# def search_positions(driver, query):
-#     driver.get("https://www.linkedin.com/jobs/")
-#     time.sleep(2)
-#     search_box = driver.find_element(By.XPATH, '//input[@aria-label="Search jobs"]')
-#     search_box.send_keys(query)
-#     search_box.send_keys(Keys.RETURN)
-#     time.sleep(2)
-#     # Scrape the search results using ScrapeGraphAI
-#     scraper = Scraper(driver.page_source)
-#     job_titles = scraper.extract('//span[@class="screen-reader-text"]/text()')
-#     return job_titles
+# Fetch HTML content
+html_content = fetch_html_with_playwright(url)
 
 
 # Extract position text and links from the given LinkedIn search results page source and Return positions as list
@@ -383,22 +361,47 @@ def main():
 
     load_dotenv()
     print("[info]: Opening Chrome")
-    driver = make_driver()
+    # driver = make_driver()
     print("[info]: Logging in to LinkedIn 🐢...")
-    login_to_linkedin(driver)
-    print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
-    all_positions = find_positions(driver, phd_keywords[:])
+    # login_to_linkedin(driver)
+
+    # URL for LinkedIn job search
+    url = "https://www.linkedin.com/search/results/content/?keywords=PhD%20position"
+
+    # Fetch HTML content
+    fetch_html_with_playwright(url)
+
+    if html_content:
+        # Extract data using SmartScraperGraph
+        extract_by_scrapegraphai(html_content)
+
+    @retry(
+        stop=stop_after_attempt(2),
+        wait=wait_exponential(multiplier=1, min=4, max=60),
+        retry=retry_if_exception_type(RateLimitError),
+    )
+    def run_smart_scraper():
+        return run_smart_scraper.run()
+
+    try:
+        result = run_smart_scraper()
+        print("result: ", result)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    # print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
+    # all_positions = find_positions(driver, phd_keywords[:])
 
     # Search for PhD positions
+    print("[info]: Searching for Ph.D. positions on LinkedIn 🔑...")
     phd_positions = extract_by_scrapegraphai("https://linkedin.com")
     print("phd_positions based on ScrapeGraphAI:", phd_positions)
 
-    driver.quit()
-    print(f"[info]: Total number of positions: {len(all_positions)}")
+    # driver.quit()
+    # print(f"[info]: Total number of positions: {len(all_positions)}")
 
     # get yesterday's date
     yesterday = datetime.today() - timedelta(days=1)
-
     # getting customers info from db
     log.info("Getting customers info.")
     # customers = get_customers_info(dotenv_path)
@@ -419,7 +422,7 @@ def main():
                     + customer.keywords
                 )
                 # filter positions based on customer keywords
-                relevant_positions = filter_positions(all_positions, keywords)
+                # relevant_positions = filter_positions(all_positions, keywords)
                 relevant_SGAI_positions = filter_positions(phd_positions, keywords)
 
                 output_dir = os.path.join(
@@ -436,6 +439,7 @@ def main():
                 )
 
                 # Write the list to the file
+                relevant_positions = relevant_SGAI_positions
                 if relevant_positions:
                     with open(
                         file_path, "w", encoding="utf-8"

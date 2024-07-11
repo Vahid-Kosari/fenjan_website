@@ -1,14 +1,8 @@
 *.mkv
 *.env
 fenjan/temp
-fenjan/chromedriver-linux64
 .chrome_driver_session
 chromedriver-linux64
+fenjan/chromedriver-linux64
 fenjan/.chrome_driver_session
-fenjan/output.txt
-fenjan/relevant_positions.html
-fenjan/search.html
-fenjan/search_results.html
-fenjan/search_results.py
-fenjan/soup.html
 capstone/celerybeat-schedule
