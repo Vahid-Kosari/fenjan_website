@@ -22,7 +22,7 @@ class Customer(AbstractUser):
         default=RegistrationState.TRIAL,
     )
     keywords = models.JSONField(null=False)
-    registration_date = models.DateField(default=timezone.now)
+    registration_date = models.DateField(default=timezone.now().date)
     expiration_date = models.DateField(default=default_expiration_date)
 
     groups = models.ManyToManyField(

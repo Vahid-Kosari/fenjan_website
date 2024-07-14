@@ -11,20 +11,31 @@ Follow these steps to set up and run the Fenjan project:
 1. **(Optional) Create a Fresh Environment**
 
    - It's recommended to create a virtual environment to isolate dependencies.
-
-2. **Install the Required Packages**
-
-   - Install the dependencies listed in `requirements.txt`:
-     ```sh
-     pip install -r requirements.txt
+     ```sudo apt update
+     sudo apt install python3-venv
+     python3 -m venv myenv
+     source myenv/bin/activate
+     ```
+     OR
+     ```sudo apt update
+     sudo apt install miniconda
+     conda create -n myenv python=3.x
+     conda activate myenv
      ```
 
-3. **Download the Repository**
+2. **Download the Repository**
 
    - Clone the repository to your local machine:
      ```sh
      git clone <repository-url>
      cd <repository-directory>
+     ```
+
+3. **Install the Required Packages**
+
+   - Install the dependencies listed in `requirements.txt`:
+     ```sh
+     pip install -r requirements.txt
      ```
 
 4. **(Optional) Initialize a Fresh Database**
