@@ -34,10 +34,10 @@ from selenium.webdriver.chrome.service import Service
 import sys
 import django
 
-print("Before append: ", sys.path)  # Add this line to debug the Python path
+# print("Before append: ", sys.path)  # Add this line to debug the Python path
 # Ensure the script can find the settings module
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-print("After append: ", sys.path)  # Add this line to debug the Python path
+# print("After append: ", sys.path)  # Add this line to debug the Python path
 # Set up Django environment
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "capstone.settings")
 django.setup()
@@ -64,6 +64,7 @@ log.basicConfig(
 # Sources: https://medium.com/@amanatulla1606/llm-web-scraping-with-scrapegraphai-a-breakthrough-in-data-extraction-d6596b282b4d
 #  Data Extraction by ScrapeGraphAI
 from scrapegraphai.graphs import SmartScraperGraph
+from fp.fp import FreeProxy
 from tenacity import (
     retry,
     stop_after_attempt,
@@ -73,6 +74,8 @@ from tenacity import (
 from openai import RateLimitError
 from playwright.sync_api import sync_playwright
 import time, json
+from colorama import Fore
+
 
 # Load environment variables from .env file
 env_path = os.path.join(
@@ -85,6 +88,8 @@ def login_to_linkedin(page):
     """
     Log in to LinkedIn using the provided email address and password
     """
+    print(f"{Fore.RED}login_to_linkedin(page){Fore.WHITE}")
+    input("Enter to keep on! LINE 92")
 
     # Get email and password from environment variables
     email = os.environ["LINKEDIN_EMAIL_ADDRESS"]
@@ -96,8 +101,12 @@ def login_to_linkedin(page):
     time.sleep(2)
     # Check if already logged in
     if page.url == "https://www.linkedin.com/feed/":
+        print(f"No need for log in")
+        input("Enter to keep on! LINE 105")
         return
     # Find email input field and enter email address
+    print(f"Logging in")
+    input("Enter to keep on! LINE 109")
     page.fill("id=username", email)
     time.sleep(1)
     # Find password input field and enter password
@@ -107,11 +116,15 @@ def login_to_linkedin(page):
 
 
 def fetch_html_with_playwright(url):
+    print(f"{Fore.RED}fetch_html_with_playwright(url){Fore.WHITE}")
+    input("Enter to keep on! LINE 120")
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         context = browser.new_context()
         page = context.new_page()
 
+        print(f"{Fore.RED}It's going to login!{Fore.WHITE}")
+        input("Enter to keep on! LINE 127")
         login_to_linkedin(page)  # Log in to LinkedIn
         time.sleep(5)  # Wait for login to complete
 
@@ -129,14 +142,32 @@ def fetch_html_with_playwright(url):
 
 
 def extract_by_scrapegraphai(source):
+    print(f"{Fore.RED}extract_by_scrapegraphai(source){Fore.WHITE}")
+    input("Enter to keep on! LINE 146")
+
     OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+    print("Your OPENAI_API_KEY is: ", OPENAI_API_KEY)
+    input("Enter to keep on! LINE: 150")
 
     graph_config = {
         "llm": {
             "api_key": OPENAI_API_KEY,
             "model": "gpt-3.5-turbo",
         },
-        "headless": True,
+        # "loader_kwargs": {
+        #     "proxy": {
+        #         "server": "broker",
+        #         "criteria": {
+        #             "anonymous": True,
+        #             "secure": True,
+        #             "countryset": {"IT", "US", "GB", "BR"},
+        #             "timeout": 10.0,
+        #             "max_shape": 3,
+        #         },
+        #     },
+        # },
+        "headless": False,
+        "verbose": True,
     }
 
     smart_scraper_graph = SmartScraperGraph(
@@ -145,19 +176,21 @@ def extract_by_scrapegraphai(source):
         config=graph_config,
     )
 
+    print(f"{Fore.GREEN}result = smart_scraper_graph.run(){Fore.WHITE}")
     result = smart_scraper_graph.run()
     output = json.dumps(result, indent=2)
     line_list = output.split("\n")
     for line in line_list:
-        print(line)
+        print(f"{Fore.BLUE}line: {Fore.WHITE}", line)
+        input("Enter to keep on! LINE 182")
     return result
 
 
-# URL for LinkedIn job search
-url = "https://www.linkedin.com/search/results/content/?keywords=PhD%20position"
+# # URL for LinkedIn job search
+# url = "https://www.linkedin.com/search/results/content/?keywords=PhD%20position"
 
-# Fetch HTML content
-html_content = fetch_html_with_playwright(url)
+# # Fetch HTML content
+# html_content = fetch_html_with_playwright(url)
 
 
 # Extract position text and links from the given LinkedIn search results page source and Return positions as list
@@ -369,33 +402,41 @@ def main():
     url = "https://www.linkedin.com/search/results/content/?keywords=PhD%20position"
 
     # Fetch HTML content
-    fetch_html_with_playwright(url)
+    html_content = fetch_html_with_playwright(url)
 
-    if html_content:
-        # Extract data using SmartScraperGraph
-        extract_by_scrapegraphai(html_content)
+    # if html_content:
+    #     # Extract data using SmartScraperGraph
+    #     extract_by_scrapegraphai(html_content)
 
-    @retry(
-        stop=stop_after_attempt(2),
-        wait=wait_exponential(multiplier=1, min=4, max=60),
-        retry=retry_if_exception_type(RateLimitError),
-    )
-    def run_smart_scraper():
-        return run_smart_scraper.run()
+    # @retry(
+    #     stop=stop_after_attempt(2),
+    #     wait=wait_exponential(multiplier=1, min=4, max=60),
+    #     retry=retry_if_exception_type(RateLimitError),
+    # )
+    # def run_smart_scraper():
+    #     print(f"{Fore.MAGENTA}What the hell does this do?{Fore.WHITE}")
+    #     return run_smart_scraper.run()
 
-    try:
-        result = run_smart_scraper()
-        print("result: ", result)
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    # try:
+    #     result = run_smart_scraper()
+    #     print(f"{Fore.GREEN}result: {Fore.WHITE}", result)
+    # except Exception as e:
+    #     print(f"An error occurred: {e}")
 
     # print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
     # all_positions = find_positions(driver, phd_keywords[:])
 
     # Search for PhD positions
     print("[info]: Searching for Ph.D. positions on LinkedIn 🔑...")
-    phd_positions = extract_by_scrapegraphai("https://linkedin.com")
-    print("phd_positions based on ScrapeGraphAI:", phd_positions)
+    if html_content:
+        phd_positions = extract_by_scrapegraphai(html_content)
+        print("phd_positions based on ScrapeGraphAI:", phd_positions)
+    else:
+        print("No html_content")
+        return
+
+    print("Let's continue to customers ...")
+    input("Enter to keep on! LINE: 436")
 
     # driver.quit()
     # print(f"[info]: Total number of positions: {len(all_positions)}")
