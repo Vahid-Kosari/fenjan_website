@@ -33,6 +33,21 @@ Follow these steps to set up and run the Fenjan project:
 
 3. **Install the Required Packages**
 
+   - Install dependencies all together (preferred):
+     Make `setup.sh` executable, and then run it:
+
+   ```sh
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+
+   - If you want to install manually or the above did not work, install system dependencies for playwright manually:
+
+     ```sh
+     sudo apt-get update
+     sudo apt-get install -y libatk1.0-0 libatk-bridge2.0-0 libcups2 libatspi2.0-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2
+     ```
+
    - Install the dependencies listed in `requirements.txt`:
      ```sh
      pip install -r requirements.txt

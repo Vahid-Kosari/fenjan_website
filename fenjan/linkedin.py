@@ -15,6 +15,7 @@ Sources:
 """
 
 
+import requests
 import os
 import re
 import time
@@ -34,10 +35,10 @@ from selenium.webdriver.chrome.service import Service
 import sys
 import django
 
-print("Before append: ", sys.path)  # Add this line to debug the Python path
+# print("Before append: ", sys.path)  # Add this line to debug the Python path
 # Ensure the script can find the settings module
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-print("After append: ", sys.path)  # Add this line to debug the Python path
+# print("After append: ", sys.path)  # Add this line to debug the Python path
 # Set up Django environment
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "capstone.settings")
 django.setup()
@@ -135,7 +136,7 @@ def extract_by_scrapegraphai(source):
     }
 
     smart_scraper_graph = SmartScraperGraph(
-        prompt="List me all the positions with their description and link for apply.",
+        prompt="List me all the positions with their description and link for apply from.",
         # also accepts a string with the already downloaded HTML code
         # source="https://perinim.github.io/projects/",
         source=source,
@@ -221,7 +222,8 @@ def extract_positions_text(page_source):
     and then construct a search query string for LinkedIn
     """
     for result in search_results:
-        position_element = result.find("a", {"class": "app-aware-link"})
+        # position_element = result.find("a", {"class": "app-aware-link"})
+        position_element = result.find("a", {"data-attribute-index": "0"})
         # position_element = result.find("span", {"class": "text-view-model"})
         if position_element is None:
             print("postion_element in None")
@@ -382,22 +384,124 @@ def main():
     utils_dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils")
 
     load_dotenv()
+    """
     print("[info]: Opening Chrome")
     driver = make_driver()
     print("[info]: Logging in to LinkedIn 🐢...")
     login_to_linkedin(driver)
     print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
     all_positions = find_positions(driver, phd_keywords[:])
+    """
 
+    # Define the local file path
+    search_results_path = os.path.join(temp_folder, "search_results.html")
+    results_path = os.path.join(temp_folder, "results.html")
+
+    # Check if the file exists
+    if not os.path.exists(search_results_path):
+        print(f"File {search_results_path} does not exist.")
+    else:
+        # Read the file contents
+        with open(search_results_path, "r") as f:
+            search_results = f.read()
+
+        # Split the HTML content into sections (Each section is inside a <div> tag)
+        sections = re.split(r"</div>,\s*<div", search_results)
+
+        # Check the number of chunks and their lengths
+        for i, section in enumerate(sections):
+            print(f"Chunk {i+1} Length: {len(section)} characters")
+
+        # Set the LLaMA API URL and headers
+        ollama_url = "http://localhost:11434/api/generate"
+        headers = {"Content-Type": "application/json"}
+
+        payload_extract_template = {
+            "model": "llama3",
+            "temperature": 0.3,
+            "stream": False,
+            "max_tokens": 512,
+        }
+
+        results = []
+        # The only criterion to distingush position description sections from each other is that every position description section is embeded inside a HTML division element in the following HTML content, with the class="update-components-text relative update-components-update-v2__commentary".
+        # Consider the division elements texts as one position description section.
+
+        for i, section in enumerate(sections):
+            payload_extract = payload_extract_template.copy()
+            payload_extract[
+                "prompt"
+            ] = f"""
+                Extract the title, snippet, and link(s) from this PHD position description section in the following [HTML content].
+                Even if there is no clear title, please use the first sentence as the title,
+                and if there's no clear snippet, summarize the position description section.
+                Make sure to include all links associated with the section except links that include hashtag(s).
+
+                Structure the extracted data as a list of dictionaries with the following format:
+
+                [
+                {{
+                    "title": "First sentence or inferred title of the position description section",
+                    "snippet Summary": "position description section",
+                    "link": "Complete, accurate link(s) associated with this section."
+                }},
+                ...
+                ]
+
+                HTML Content: {section}
+                """
+
+            # Make the POST request with the AI API
+            response_extract = requests.post(
+                ollama_url, headers=headers, data=json.dumps(payload_extract)
+            )
+
+            response_text = response_extract.text
+
+            # Parse the response as JSON
+            response_json = json.loads(response_text)
+
+            # Extract the 'response' part
+            extracted_response = response_json.get("response", "No response found.")
+
+            # Print the extracted response
+            print(f"Response for the section {i}: \n{extracted_response}")
+
+            if response_extract.status_code == 200:
+                results.append(extracted_response)
+
+            # Combine results from ?
+            # combined_results = [item for sublist in results for item in sublist]
+
+            # Assuming combined_results is a list of dictionaries from each chunk
+            # for i, result in enumerate(combined_results):
+            # print(f"result {i}: {result}")
+
+            # structured_data = response_extract.json().get("choices")[0].get("text")
+            # structured_data = json.loads(structured_data)
+
+            # Ensure structured_data contains the extracted information from step 1
+            # Payload for formatting the structured data
+
+        # print(f"results:\n {results}")
+        # Check if the file exists
+        # if not os.path.exists(results_path):
+        #     print(f"File {results_path} does not exist.")
+        # else:
+        # write the file contents
+        with open(results_path, "w", encoding="utf-8") as f:
+            f.write(str(results))
+
+    """
     # Search for PhD positions
     phd_positions = extract_by_scrapegraphai("https://linkedin.com")
     print("phd_positions based on ScrapeGraphAI:", phd_positions)
+    """
 
+    """
     driver.quit()
     print(f"[info]: Total number of positions: {len(all_positions)}")
-
-    # get yesterday's date
-    yesterday = datetime.today() - timedelta(days=1)
+    """
 
     # getting customers info from db
     log.info("Getting customers info.")
@@ -419,8 +523,9 @@ def main():
                     + customer.keywords
                 )
                 # filter positions based on customer keywords
+                all_positions = []
                 relevant_positions = filter_positions(all_positions, keywords)
-                relevant_SGAI_positions = filter_positions(phd_positions, keywords)
+                """relevant_SGAI_positions = filter_positions(phd_positions, keywords)"""
 
                 output_dir = os.path.join(
                     os.path.dirname(os.path.abspath(__file__)),
@@ -455,13 +560,14 @@ def main():
                         utils_dir_path,
                     )
                     time.sleep(10)
+                """
                 if relevant_SGAI_positions:
                     with open(
                         file_path, "w", encoding="utf-8"
                     ) as relevant_SGAI_positions_export:
                         for position in relevant_SGAI_positions:
                             relevant_SGAI_positions_export.write(
-                                position + "\n" + """""" """""" + "\n"
+                                position + "\n" + """ """ """ """ + "\n"
                             )
                     log.info(
                         f"Sending email containing {len(relevant_SGAI_positions)} positions to: {customer.username}"
@@ -474,6 +580,7 @@ def main():
                         utils_dir_path,
                     )
                     time.sleep(10)
+                    """
             else:
                 print(f"{customer.username}'s registration expired!")
 

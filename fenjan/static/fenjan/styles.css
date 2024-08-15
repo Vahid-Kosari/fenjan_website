@@ -115,10 +115,11 @@ html, body{
     text-align: justify;
     font-size: 2.7rem;
 }
-.p2 .a .dina{
+.p2 .dina{
     display: inline;
     grid-area: dina;
     margin-top: 10rem;
+    margin-left: -11.5rem;
     justify-self: end;
 }
 .p2 .side{

@@ -149,6 +149,8 @@ def extract_by_scrapegraphai(source):
     print("Your OPENAI_API_KEY is: ", OPENAI_API_KEY)
     input("Enter to keep on! LINE: 150")
 
+    """
+    # OpenAI config
     graph_config = {
         "llm": {
             "api_key": OPENAI_API_KEY,
@@ -166,6 +168,21 @@ def extract_by_scrapegraphai(source):
         #         },
         #     },
         # },
+        "headless": False,
+        "verbose": True,
+    }
+    """
+
+    # OLLAMA config
+    graph_config = {
+        "llm": {
+            "model": "llama3",
+            "temperature": 0.0,
+            "format": "json",
+        },
+        "embeddings": {
+            "model": "nomic-embed-text",
+        },
         "headless": False,
         "verbose": True,
     }
