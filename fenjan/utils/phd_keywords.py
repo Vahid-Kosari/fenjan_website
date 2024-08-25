@@ -5,7 +5,7 @@ Created on Des 6 2022
 @author: Hue (MohammadHossein) Salari
 @email:hue.salari@gmail.com
 """
-phd_keywords = ["phd"]
+phd_keywords = ["phd", "LLM"]
 
 #     "funded phd",
 #     "phd position",

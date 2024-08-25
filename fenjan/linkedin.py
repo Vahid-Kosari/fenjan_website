@@ -379,19 +379,17 @@ def main():
     base_path = os.path.dirname(os.path.abspath(__file__))
     dotenv_path = os.path.join(base_path, ".env")
 
-    log.info("Searching LinkedIn for Ph.D. Positions")
+    # log.info("Searching LinkedIn for Ph.D. Positions")
     # get base path for utils directory
     utils_dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils")
 
     load_dotenv()
-    """
     print("[info]: Opening Chrome")
     driver = make_driver()
     print("[info]: Logging in to LinkedIn 🐢...")
     login_to_linkedin(driver)
     print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
     all_positions = find_positions(driver, phd_keywords[:])
-    """
 
     # Define the local file path
     search_results_path = os.path.join(temp_folder, "search_results.html")
@@ -498,8 +496,9 @@ def main():
     print("phd_positions based on ScrapeGraphAI:", phd_positions)
     """
 
-    """
     driver.quit()
+
+    """
     print(f"[info]: Total number of positions: {len(all_positions)}")
     """
 

@@ -2,6 +2,8 @@ from celery import shared_task
 from django.utils import timezone
 from fenjan.models import Customer, RegistrationState
 from datetime import timedelta
+from celery import Celery
+from celery.schedules import crontab
 
 
 @shared_task
@@ -20,3 +22,15 @@ def update_registration_states():
             else:
                 customer.registration_state = RegistrationState.TRIAL
         customer.save()
+
+
+app = Celery()
+
+
+@app.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    # Executes every day at midnight
+    sender.add_periodic_task(
+        crontab(hour=0, minute=0),
+        update_registration_states.s(),
+    )
