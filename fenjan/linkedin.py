@@ -333,24 +333,39 @@ def extract_positions_text(page_source, keyword):
     main_containers = soup.find_all("div", id="fie-impression-container")
 
     # Filter out containers that do not contain the keyword in the post text itself
-    only_containing_keyword_main_container = list(
+    only_containing_keyword_main_containers = list(
         filter(
             lambda main_container: (
                 # Step 1: Check if the keyword exists in the original main_container
-                keyword.lower() in main_container.get_text(strip=True).lower()
-                and
-                # Step 2: Save a copy of main_container as temp_main_container
-                (temp_main_container := main_container.__copy__())
-                and
-                # Step 3: Decompose profile links from temp_main_container
-                [
-                    a_tag.decompose()
-                    for a_tag in temp_main_container.find_all("a", class_="ember-view")
-                ]
-                and
+                keyword_in_post := keyword.lower()
+                in main_container.get_text(strip=True).lower(),
+                # Step 2: If keyword is found, create a copy of main_container as temp_main_container
+                temp_main_container := (
+                    main_container.__copy__() if keyword_in_post else None
+                ),
+                # Step 3: Decompose profile links from temp_main_container if it exists
+                (
+                    [
+                        a_tag.decompose()
+                        for a_tag in temp_main_container.find_all(
+                            "a", class_="ember-view"
+                        )
+                    ]
+                    if temp_main_container
+                    else []
+                ),
                 # Step 4: Check if the keyword still exists in the remaining text of temp_main_container
-                keyword.lower() in temp_main_container.get_text(strip=True).lower()
-            ),
+                (
+                    keyword_in_post
+                    and (
+                        keyword.lower()
+                        in temp_main_container.get_text(strip=True).lower()
+                    )
+                    if temp_main_container
+                    else False
+                ),
+            )[-1],
+            # Only return the last boolean result of the lambda
             main_containers,
         )
     )
@@ -361,7 +376,7 @@ def extract_positions_text(page_source, keyword):
             lambda main_container: not main_container.find(
                 "div", {"class": "feed-shared-see-translation-button"}
             ),
-            only_containing_keyword_main_container,
+            only_containing_keyword_main_containers,
         )
     )
 
@@ -369,7 +384,7 @@ def extract_positions_text(page_source, keyword):
     """
     only_english_main_containers = [
         main_container
-        for main_container in only_containing_keyword_main_container
+        for main_container in only_containing_keyword_main_containers
         if not main_container.find(
             "div", {"class": "feed-shared-see-translation-button"}
         )
@@ -412,53 +427,9 @@ def extract_positions_text(page_source, keyword):
             print(Fore.MAGENTA + "cleaned_container:\n", cleaned_container)
             processed_main_containers.append(cleaned_container)
 
-    # Extract post text and preserve structure, keeping non-hashtag hyperlinks clickable
-    def extract_post_text(the_container):
-        # Find the commentary div that contains the post text
-        post_commentary_div = the_container.find(
-            "div",
-            class_="update-components-text relative update-components-update-v2__commentary",
-        )
-        post_article = the_container.find(
-            "div",
-            class_="update-components-article--with-small-image update-components-article--with-small-image-fs",
-        )
-
-        def clean_text(text):
-            # Replace multiple newlines with a single space
-            return re.sub(r"\n+", " ", text).strip()
-
-        if post_commentary_div:
-            # Return the post text as a string with preserved 'a' tags for hyperlinks
-            # This keeps the HTML structure intact (including links)
-            if post_article:
-                combined_text = (
-                    str(post_commentary_div)
-                    + "<h3>The article below the main post:</h3>\n"
-                    + str(post_article)
-                )
-                return clean_text(combined_text)
-            else:
-                combined_text = str(post_commentary_div)
-                return clean_text(combined_text)
-
-        return "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEmpty"
-
-    # Iterate over the processed containers and print or save the post text
-    for main_container in processed_main_containers:
-        # Extract post text (including non-hashtag hyperlinks) from each container
-        post_text_with_links = extract_post_text(main_container)
-        positions.add(post_text_with_links)
-
-        # Print or save the result
-        print(
-            Fore.BLUE + "post_text_with_links of main_container:\n",
-            post_text_with_links,
-        )
-
-    positions_path = os.path.join(temp_folder, f"{keyword}_positions.html")
-    with open(positions_path, "w", encoding="utf8") as p:
-        p.write(str(positions))
+    def clean_text(text):
+        # Replace multiple newlines with a single space and '\ with '
+        return re.sub(r"\n+", " ", text).strip()
 
     # results will contain all extracted JSON results for each post
     results = []
@@ -549,12 +520,42 @@ def extract_positions_text(page_source, keyword):
 
         # print(f"result{i+1}:\n", result)
 
+        # Extract post text and preserve structure, keeping non-hashtag hyperlinks clickable
+        cleaned_text = (
+            clean_text(
+                str(post_commentary_div)
+                + (
+                    "<h3>The article below the main post:</h3>\n"
+                    + str(article_link_div)
+                    if article_link_div
+                    # To add links in the below of main post
+                    # + str(other_profile_link)
+                    # if other_profile_link
+                    else ""
+                )
+            )
+            if post_commentary_div
+            else "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEmpty"
+        )
+        positions.add(cleaned_text)
+
+        # Print or save the result
+        print(
+            Fore.BLUE + "post_text_with_links of main_container:\n",
+            cleaned_text,
+        )
+
     # Print or return the structured results
     for i, result in enumerate(results):
         print(Fore.GREEN + f"result{i+1}:\n", result)
         # for result in results:
         # print(Fore.GREEN + "result of results:\n", result)
 
+    positions_path = os.path.join(temp_folder, f"positions_{keyword}.html")
+    with open(positions_path, "w", encoding="utf8") as p:
+        p.write(str(positions))
+
+    # Temporary code to intrupt if satisfied
     dicision = input(Fore.LIGHTBLUE_EX + "Enter any key to exit OR c to continue!")
     if dicision != "c":
         sys.exit()
