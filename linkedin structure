@@ -1,0 +1,41 @@
+<div id="fie-impression-container">
+	<div class="relative">
+		<div class="update-components-actor__meta relative">
+			<!--an a element including text and link, for profile name and link-->
+		</div>
+	</div>
+	<div class="feed-shared-update-v2__description-wrapper  mr2">
+		<div class="update-components-text relative update-components-update-v2__commentary ">
+			<!--Including span and a elements for text and links-->
+		</div>
+		<div class="update-components-article--with-small-image   update-components-article--with-small-image-fs">
+			<!--an a element including text and link, for article(profile, external site, etc)-->
+		</div>
+		<div class="update-components-image update-components-image--single-image feed-shared-update-v2__content feed-shared-update-v2__content--simplification">
+			<div class="relative">
+				<div class="ivm-view-attr__img-wrapper">
+					<div class="ivm-view-attr__img--centered ivm-view-attr__img--aspect-fit update-components-image__image update-components-image__image--constrained evi-image lazy-image ember-view">
+						<!--an a element including text and link, for article(profile, external site, etc)-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="update-components-mini-update-v2 feed-shared-update-v2__update-content-wrapper artdeco-card"
+		<div class="update-components-actor__meta relative">
+			<!--an a element including text and link, for profile name and link; under other profile-->
+		</div>
+		<div class="update-components-text relative update-components-update-v2__commentary ">
+			<!--an a element including text and link, for article(profile, external site, etc; under other profile)-->
+		</div>
+		<div class="update-components-entity__content-wrapper">
+			<!--an a element including text(under article element) and link, for article(profile, external site, etc)-->
+			<a class="app-aware-link  update-components-entity__content display-flex" 
+		    		aria-label="Preview content of Forscher (Postdoktorand) Job by Ruhr University Bochum Bochum, North Rhine-Westphalia, Germany (Hybrid)" 
+		    		href="https://www.linkedin.com/jobs/view/4029261098/?refId=deznfCB1Q2u0KBkPc9I%2Fhg%3D%3D&amp;trackingId=deznfCB1Q2u0KBkPc9I%2Fhg%3D%3D" data-test-app-aware-link="">
+			        <article class="update-components-entity__description-container">
+			     	</article>
+			 </a>
+		</div>
+	</div>
+</div>

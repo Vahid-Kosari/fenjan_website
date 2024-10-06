@@ -23,6 +23,10 @@ import logging as log
 from tqdm import tqdm
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
+from colorama import Fore, Back, Style
+from colorama import init
+
+init(autoreset=True)
 
 from bs4 import BeautifulSoup
 
@@ -45,7 +49,7 @@ django.setup()
 
 # import helper functions from other modules
 from utils.send_email import send_email
-from fenjan.utils.phd_keywords import phd_keywords
+from fenjan.utils.keywords import keywords
 from utils.compose_email import compose_email
 from utils.database_helpers import *
 from fenjan.models import Customer
@@ -80,6 +84,7 @@ def make_driver():
     #     service=Service(ChromeDriverManager().install()), options=options
     # )
 
+    # To download campatible chromedrive for your system reach out here: https://googlechromelabs.github.io/chrome-for-testing
     # Utilize Chrome webdriver manually
     driver_path = "./chromedriver-linux64/chromedriver"
     driver = webdriver.Chrome(executable_path=driver_path, options=options)
@@ -183,8 +188,132 @@ def extract_by_scrapegraphai(source):
 #     return job_titles
 
 
-# Extract position text and links from the given LinkedIn search results page source and Return positions as list
-def extract_positions_text(page_source):
+def extract_positions_text_temp():
+    """
+    Extract position text and links from the given LinkedIn search results page source
+    """
+
+    # Write the parsed HTML to a file
+    # soup_file_path = os.path.join(temp_folder, "soup.html")
+    souped_file_path = os.path.join(temp_folder, "souped.html")
+    # with open(soup_file_path, "r") as s:
+    #     soup_file = s.read()
+    with open(souped_file_path, "r") as s:
+        souped_file = s.read()
+
+    # main_containers = souped_file
+
+    # soup = BeautifulSoup(soup_file.replace("<br>", "\n"), "lxml")
+    # main_containers_of_soup = soup.find_all("div", id="fie-impression-container")
+    # main_containers = soup.find_all("div", id="fie-impression-container")
+    # with open(souped_file_path, "w", encoding="utf8") as ss:
+    #     ss.write(str(main_containers))
+
+    # Step 1: Find all main containers
+    souped = BeautifulSoup(souped_file.replace("<br>", "\n"), "lxml")
+    # main_containers_of_souped = soup.find_all("div", id="fie-impression-container")
+    main_containers = souped.find_all("div", id="fie-impression-container")
+
+    # results will contain all extracted JSON results for each post
+    results = []
+
+    # Loop through main containers
+    for main_container in main_containers:
+        # Step 2: Find the nested div elements inside the main container
+        # Extract profile name and link
+        profile_name_div = main_container.find(
+            "div", class_="update-components-actor__meta relative"
+        )
+        profile_link = profile_name_div.find("a") if profile_name_div else None
+
+        # Extract post text and links from the commentary div
+        post_commentary_div = main_container.find(
+            "div",
+            class_="update-components-text relative update-components-update-v2__commentary",
+        )
+        post_text = (
+            post_commentary_div.get_text(strip=True) if post_commentary_div else []
+        )
+        post_text_links = (
+            post_commentary_div.find_all("a") if post_commentary_div else []
+        )
+
+        # Extract article links (for profiles, external sites, etc.)
+        article_link_div = main_container.find(
+            "div",
+            class_="update-components-article--with-small-image update-components-article--with-small-image-fs",
+        )
+        article_link = article_link_div.find("a") if article_link_div else None
+
+        # Extract image-related links (within the image content div)
+        image_link_div = main_container.find(
+            "div", class_="update-components-image--single-image"
+        )
+        image_link = image_link_div.find("a") if image_link_div else None
+
+        # Step 3: Find the nested update content (for other profiles, articles, etc.)
+        mini_update_div = main_container.find(
+            "div", class_="update-components-mini-update-v2"
+        )
+        other_profile_link = mini_update_div.find("a") if mini_update_div else None
+        other_profile_text = (
+            mini_update_div.find(
+                "div",
+                class_="update-components-text relative update-components-update-v2__commentary",
+            ).find("a")
+            if mini_update_div
+            else None
+        )
+        article_under_profile = (
+            mini_update_div.find(
+                "div", class_="update-components-entity__content-wrapper"
+            ).find("a")
+            if mini_update_div
+            else None
+        )
+
+        # Create a structure to store the results
+        result = {
+            "profile_name_link": profile_link["href"] if profile_link else None,
+            "profile_name_text": (
+                profile_link.get_text(strip=True) if profile_link else None
+            ),
+            "post_commentary_text": post_text,
+            # "post_commentary_text": (post_commentary_div.get_text(strip=True) if post_commentary_div else None),   # [span["text"] for span in post_commentary_div] if post_commentary_div else None),
+            "post_commentary_links": (
+                [a["href"] for a in post_text_links] if post_text_links else None
+            ),
+            "article_link": article_link["href"] if article_link else None,
+            "image_link": image_link["href"] if image_link else None,
+            "other_profile_link": (
+                other_profile_link["href"] if other_profile_link else None
+            ),
+            "other_profile_text": (
+                other_profile_text["href"] if other_profile_text else None
+            ),
+            "article_under_profile": (
+                article_under_profile["href"] if article_under_profile else None
+            ),
+        }
+        # if result != {}:
+        results.append(result)
+
+    results_file_path = os.path.join(temp_folder, "results.html")
+    with open(results_file_path, "w", encoding="utf8") as r:
+        r.write(str(results))
+
+    # Print or return the structured results
+    for i, result in enumerate(results):
+        print(Fore.RED + f"result{i+1}:\n", result)
+        # for result in results:
+        # print(Fore.GREEN + "result of results:\n", result)
+
+    input("Enter any key to exit!")
+    sys.exit()
+
+
+# Extract position text and links from the given LinkedIn search results page source and Return positions as list of JSONs
+def extract_positions_text(page_source, keyword):
     """
     Extract position text and links from the given LinkedIn search results page source
     """
@@ -192,18 +321,251 @@ def extract_positions_text(page_source):
     positions = set()
 
     # Create BeautifulSoup object to parse HTML
-    soup = BeautifulSoup(page_source.replace("<br>", "\n"), "lxml")
+    soup = BeautifulSoup(page_source, "lxml")
+    # soup = BeautifulSoup(page_source.replace("<br>", "\n"), "lxml")
 
     # Write the parsed HTML to a file
     soup_file_path = os.path.join(temp_folder, "soup.html")
     with open(soup_file_path, "w", encoding="utf-8") as soup_export:
         soup_export.write(str(soup))
 
-    # Find main search results element
+    # Find all main containers
+    main_containers = soup.find_all("div", id="fie-impression-container")
+
+    # Filter out containers that do not contain the keyword in the post text itself
+    only_containing_keyword_main_container = list(
+        filter(
+            lambda main_container: (
+                # Step 1: Check if the keyword exists in the original main_container
+                keyword.lower() in main_container.get_text(strip=True).lower()
+                and
+                # Step 2: Save a copy of main_container as temp_main_container
+                (temp_main_container := main_container.__copy__())
+                and
+                # Step 3: Decompose profile links from temp_main_container
+                [
+                    a_tag.decompose()
+                    for a_tag in temp_main_container.find_all("a", class_="ember-view")
+                ]
+                and
+                # Step 4: Check if the keyword still exists in the remaining text of temp_main_container
+                keyword.lower() in temp_main_container.get_text(strip=True).lower()
+            ),
+            main_containers,
+        )
+    )
+
+    # Filter out non-English posts (based on the presence of the "see translation" button)
+    only_english_main_containers = list(
+        filter(
+            lambda main_container: not main_container.find(
+                "div", {"class": "feed-shared-see-translation-button"}
+            ),
+            only_containing_keyword_main_container,
+        )
+    )
+
+    # Alternative way to filter out the results with non-English posts, based on existance of see translation button
+    """
+    only_english_main_containers = [
+        main_container
+        for main_container in only_containing_keyword_main_container
+        if not main_container.find(
+            "div", {"class": "feed-shared-see-translation-button"}
+        )
+    ]
+    """
+
+    # Remove 'a' tags that contain "hashtag" in their href, but not the entire container
+    def remove_hashtag_links(main_container):
+        # Find all 'a' tags within the main container
+        a_tags = main_container.find_all("a")
+
+        # Track whether the container still contains valid 'a' tags after removing hashtag links
+        valid_link_found = False
+
+        for a_tag in a_tags:
+            # Check if the 'a' tag's parent div has the desired class
+            parent_div = a_tag.find_parent(
+                "div",
+                class_="update-components-text relative update-components-update-v2__commentary",
+            )
+
+            # If 'hashtag' exists in the href and it's inside the correct div, replace the 'a' tag with its text
+            if parent_div:
+                if "hashtag" in a_tag.get("href", ""):
+                    # Replace the 'a' tag with its text
+                    a_tag.replace_with(
+                        a_tag.get_text().replace("hashtag#", "#").strip()
+                    )
+                else:
+                    valid_link_found = True  # A valid link was found
+
+        # If no valid links are left, return None to remove the entire container
+        return main_container if valid_link_found else None
+
+    # Apply the hashtag removal logic and filter out empty containers
+    processed_main_containers = []
+    for main_container in only_english_main_containers:
+        cleaned_container = remove_hashtag_links(main_container)
+        if cleaned_container:
+            print(Fore.MAGENTA + "cleaned_container:\n", cleaned_container)
+            processed_main_containers.append(cleaned_container)
+
+    # Extract post text and preserve structure, keeping non-hashtag hyperlinks clickable
+    def extract_post_text(the_container):
+        # Find the commentary div that contains the post text
+        post_commentary_div = the_container.find(
+            "div",
+            class_="update-components-text relative update-components-update-v2__commentary",
+        )
+        post_article = the_container.find(
+            "div",
+            class_="update-components-article--with-small-image update-components-article--with-small-image-fs",
+        )
+
+        def clean_text(text):
+            # Replace multiple newlines with a single space
+            return re.sub(r"\n+", " ", text).strip()
+
+        if post_commentary_div:
+            # Return the post text as a string with preserved 'a' tags for hyperlinks
+            # This keeps the HTML structure intact (including links)
+            if post_article:
+                combined_text = (
+                    str(post_commentary_div)
+                    + "<h3>The article below the main post:</h3>\n"
+                    + str(post_article)
+                )
+                return clean_text(combined_text)
+            else:
+                combined_text = str(post_commentary_div)
+                return clean_text(combined_text)
+
+        return "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEmpty"
+
+    # Iterate over the processed containers and print or save the post text
+    for main_container in processed_main_containers:
+        # Extract post text (including non-hashtag hyperlinks) from each container
+        post_text_with_links = extract_post_text(main_container)
+        positions.add(post_text_with_links)
+
+        # Print or save the result
+        print(
+            Fore.BLUE + "post_text_with_links of main_container:\n",
+            post_text_with_links,
+        )
+
+    positions_path = os.path.join(temp_folder, f"{keyword}_positions.html")
+    with open(positions_path, "w", encoding="utf8") as p:
+        p.write(str(positions))
+
+    # results will contain all extracted JSON results for each post
+    results = []
+
+    # Loop through processed main containers
+    for main_container in processed_main_containers:
+        # Extract profile name and link
+        profile_name_div = main_container.find(
+            "div", class_="update-components-actor__meta relative"
+        )
+        profile_link = profile_name_div.find("a") if profile_name_div else None
+
+        # Extract post text and links from the commentary div
+        post_commentary_div = main_container.find(
+            "div",
+            class_="update-components-text relative update-components-update-v2__commentary",
+        )
+        post_text = (
+            post_commentary_div.get_text(strip=True) if post_commentary_div else []
+        )
+        post_text_links = (
+            post_commentary_div.find_all("a") if post_commentary_div else []
+        )
+
+        # Extract article links (for profiles, external sites, etc.)
+        article_link_div = main_container.find(
+            "div",
+            class_="update-components-article--with-small-image update-components-article--with-small-image-fs",
+        )
+        article_link = article_link_div.find("a") if article_link_div else None
+
+        # Extract image-related links (within the image content div)
+        image_link_div = main_container.find(
+            "div", class_="update-components-image--single-image"
+        )
+        image_link = image_link_div.find("a") if image_link_div else None
+
+        # Find the nested update content (for other profiles, articles, etc.)
+        mini_update_div = main_container.find(
+            "div", class_="update-components-mini-update-v2"
+        )
+        other_profile_link = mini_update_div.find("a") if mini_update_div else None
+        other_profile_text = (
+            mini_update_div.find(
+                "div",
+                class_="update-components-text relative update-components-update-v2__commentary",
+            ).find("a")
+            if mini_update_div
+            else None
+        )
+        article_under_profile = (
+            mini_update_div.find(
+                "div", class_="update-components-entity__content-wrapper"
+            ).find("a")
+            if mini_update_div
+            and mini_update_div.find(
+                "div", class_="update-components-entity__content-wrapper"
+            )
+            else None
+        )
+
+        # Create a structure to store the results
+        result = {
+            "profile_name_link": profile_link["href"] if profile_link else None,
+            "profile_name_text": (
+                profile_link.get_text(strip=True) if profile_link else None
+            ),
+            "post_commentary_text": post_text,
+            # "post_commentary_text": (post_commentary_div.get_text(strip=True) if post_commentary_div else None),   # [span["text"] for span in post_commentary_div] if post_commentary_div else None),
+            "post_commentary_links": (
+                [a["href"] for a in post_text_links] if post_text_links else None
+            ),
+            "article_link": article_link["href"] if article_link else None,
+            "image_link": image_link["href"] if image_link else None,
+            "other_profile_link": (
+                other_profile_link["href"] if other_profile_link else None
+            ),
+            "other_profile_text": (
+                other_profile_text["href"] if other_profile_text else None
+            ),
+            "article_under_profile": (
+                article_under_profile["href"] if article_under_profile else None
+            ),
+        }
+
+        # if result != {}:
+        results.append(result)
+
+        # print(f"result{i+1}:\n", result)
+
+    # Print or return the structured results
+    for i, result in enumerate(results):
+        print(Fore.GREEN + f"result{i+1}:\n", result)
+        # for result in results:
+        # print(Fore.GREEN + "result of results:\n", result)
+
+    dicision = input(Fore.LIGHTBLUE_EX + "Enter any key to exit OR c to continue!")
+    if dicision != "c":
+        sys.exit()
+
+    """
+    # Find main search results element as list
     search_results = soup.find_all(
         "div",
         {
-            "class": "update-components-text relative update-components-update-v2__commentary"
+            "class": "update-components-text relative update-components-update-v2__commentary",
+            # "class": "update-components-entity__content-wrapper",
         },
     )
 
@@ -217,23 +579,69 @@ def extract_positions_text(page_source):
         return []
 
     """
+    """
     Extract text content related to job positions,
     format it to be URL-friendly,
     and then construct a search query string for LinkedIn
     """
-    for result in search_results:
-        # position_element = result.find("a", {"class": "app-aware-link"})
-        position_element = result.find("a", {"data-attribute-index": "0"})
-        # position_element = result.find("span", {"class": "text-view-model"})
-        if position_element is None:
-            print("postion_element in None")
+
+    """"
+    for result in results:
+        position_link_element = result.find("a", {"class": "app-aware-link"})
+        # position_link_element = result.find("a", {"data-attribute-index": "0"})
+        # position_link_element = result.find("span", {"class": "text-view-model"})
+        if position_link_element is None:
+            print("position_element has NO link!")
             continue  # Skip if position element is not found
 
-        position_text = position_element.text.strip()
+        # Text should be extracted from the appropriate element NOT the Link one
+        result_div = position_link_element.find_parent("div")
+        print(
+            Fore.BLUE
+            + 'result_div = position_link_element.find_parent("div")'
+            + Fore.MAGENTA
+            + "for result in search_results OF extract_positions_text(page_source):"
+            + Fore.YELLOW,
+            result_div,
+        )
+
+        # Find all <a> tags with class 'app-aware-link' in the result
+        position_link_elements = result.find_all("a", {"class": "app-aware-link"})
+        for position_link_element in position_link_elements:
+            # Get the href attribute of the <a> tag
+            href = position_link_element.get("href", "")
+            # Check if the href contains 'hashtag'
+            if "hashtag" in href:
+                # Remove the <a> tag from its parent div
+                position_link_element.decompose()  # This removes the <a> element entirely from the HTML
+        # Print the updated div to verify the <a> has been removed
+        print(
+            Fore.GREEN + 'result.prettify() after removing "hashtag" from the "div":\n',
+            result.prettify(),
+        )  # Or process the modified 'div' as needed
+
+        decission = input(
+            Fore.GREEN
+            + 'Enter a key to exit! -- extract_positions_text(page_source). Enter "n" to continue.'
+        )
+        if decission != "n":
+            sys.exit()
+        position_text = ""
+        position_spans = result.find_all("span")
+        for position_span in position_spans:
+            span_text = position_span.text.strip()
+            position_text += span_text + "/\n============="
+            print(Fore.GREEN + "position_span.text.strip(): ", span_text)
+            input(
+                Fore.RED
+                + "press any key after print position_span! \n in for position_span in position_spans OF extract_positions_text(page_source):"
+            )
+        print("position_text: ", position_text)
+        input("press any key!")
         # Make the search query text
         search_text = "%20".join(position_text.split()[:10]).replace("#", "%23")
         # Extract links from the text
-        links = position_element.find_all("a")
+        links = position_link_element.find_all("a")
         for link in links:
             if "hashtag" not in link["href"]:
                 position_text = position_text.replace(
@@ -245,27 +653,31 @@ def extract_positions_text(page_source):
         # Add position text to positions set
         if position_text:
             positions.add(position_text)
+        """
 
     # Return positions as list
     return list(positions)
 
 
 # Extract and returns all_positions as list
-def find_positions(driver, phd_keywords):
+def find_positions(driver, keywords):
     # Set to store all positions found
+    # print(Fore.GREEN + "all_positions before set():", all_positions)
     all_positions = set()
+    print(Fore.BLUE + "all_positions after set():", all_positions)
 
-    # Go to a black page to avoid a bog that scrap the timeline
+    # Go to a black page to avoid a bug that scrap the timeline
     url = "https://www.linkedin.com/search/results/"
+    url = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keywords[0]}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
     driver.get(url)
     time.sleep(2)
 
     # Initialize progress bar
-    pbar = tqdm(phd_keywords)
+    pbar = tqdm(keywords)
     # Iterate through keywords
     for keyword in pbar:
         # Initialize page number
-        page = 0
+        page = 1
         # Set postfix for progress bar
         pbar.set_postfix(
             {
@@ -275,15 +687,29 @@ def find_positions(driver, phd_keywords):
             }
         )
         # Construct URL with keyword
-        url = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keyword}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
-        # Load page
-        driver.get(url)
-        time.sleep(2)
+        if keyword != keywords[0]:
+            url = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keyword}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
+            # Load page
+            driver.get(url)
+            time.sleep(2)
+            ## Scroll to bottom of page #### It must be in a loop to cover all search results despite of internet speed
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            print(
+                Fore.YELLOW
+                + f"window.scrollTo(0, document.body.scrollHeight) DONE for page {page}\n",
+            )
+            time.sleep(2)
+
         # Extract positions from page source
-        positions = extract_positions_text(driver.page_source)
+        positions = extract_positions_text(driver.page_source, keyword)
+        print(
+            Fore.RED
+            + f"positions from extract_positions_text(driver.page_source) for {keyword}:",
+            positions,
+        )
         # Iterate through pages
         # while True:
-        while page < 5:
+        while page < 5:  # Limit pages to 5 until code finishes
             # Increment page number
             page += 1
             # Set postfix for progress bar
@@ -296,15 +722,19 @@ def find_positions(driver, phd_keywords):
             )
             # Scroll to bottom of page
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            print(
+                Fore.GREEN
+                + f"window.scrollTo(0, document.body.scrollHeight) DONE for page {page}\n",
+            )
             # Wait for page to load
             time.sleep(2)
             # Extract positions from page source
-            new_positions = extract_positions_text(driver.page_source)
+            new_positions = extract_positions_text(driver.page_source, keyword)
             # Convert to set to eliminate duplicates
             new_positions = set(new_positions)
             # Check if positions on current page are the same as previous page
             if new_positions == positions:
-                print("End of the search page for ", keyword)
+                print("End of the search page for", keyword)
                 # If so, break out of loop
                 break
             # Update positions
@@ -317,19 +747,37 @@ def find_positions(driver, phd_keywords):
     for position in all_positions:
         # Strip out URL from position
         result = re.sub(
-            r"https:\/\/www\.linkedin\.com\/feed\/update\/urn:li:activity:\d+",
+            r"https:\/\/www\.linkedin\.com\/feed\/update\/urn:li:activity:\d+",  # ????? why this pattern?????
             "",
             position,
         ).strip()
-        # If position with URL and the same position without URLis in the list, remove the one without URL
+        # If position with URL and the same position without URL is in the list, remove the one without URL
         if result != position:
             try:
                 all_positions.remove(result)
             except:
                 pass
 
-    print("all_positions from find_positions() is: ", all_positions)
+    # Check if all_positions is populated
+    if not all_positions:
+        print(Fore.RED + "all_positions is empty!")
+
+    # Convert the set to an HTML string
+    html_content = ""
+    for position in all_positions:
+        html_content += f"{position}"
+
+        print(Fore.GREEN + "html_content is: ", html_content)
+
+    print(Fore.CYAN + "all_positions from find_positions() is: ", all_positions)
     # Return list of positions
+
+    # Write all_positions to ensure it contains all keywords found position
+    all_positions_path = os.path.join(temp_folder, "all_positions.html")
+    with open(all_positions_path, "w", encoding="utf-8") as all:
+        all.write(html_content)
+    input(Fore.CYAN + "Enter a key to exit! -- find_positions(deiver, keywords)")
+    sys.exit()
     return all_positions
 
 
@@ -344,6 +792,7 @@ def filter_positions(all_positions, search_keywords):
     Returns:
         list: list of positions that contain at least one of the search keywords
     """
+    # Exclude populated nations like India and/or China
     forbidden_keywords = ["india", "+9"]
     # initialize empty list to store matching positions
     matching_positions = []
@@ -383,13 +832,18 @@ def main():
     # get base path for utils directory
     utils_dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils")
 
+    # Temporary use or extrac
+    # extract_positions_text_temp()
+    # sys.exit()
+
     load_dotenv()
     print("[info]: Opening Chrome")
     driver = make_driver()
     print("[info]: Logging in to LinkedIn 🐢...")
     login_to_linkedin(driver)
     print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
-    all_positions = find_positions(driver, phd_keywords[:])
+    all_positions = find_positions(driver, keywords[:])
+    driver.quit()
 
     # Define the local file path
     search_results_path = os.path.join(temp_folder, "search_results.html")
@@ -449,6 +903,7 @@ def main():
                 HTML Content: {section}
                 """
 
+            """
             # Make the POST request with the AI API
             response_extract = requests.post(
                 ollama_url, headers=headers, data=json.dumps(payload_extract)
@@ -489,6 +944,7 @@ def main():
         # write the file contents
         with open(results_path, "w", encoding="utf-8") as f:
             f.write(str(results))
+            """
 
     """
     # Search for PhD positions
@@ -496,7 +952,7 @@ def main():
     print("phd_positions based on ScrapeGraphAI:", phd_positions)
     """
 
-    driver.quit()
+    # driver.quit()
 
     """
     print(f"[info]: Total number of positions: {len(all_positions)}")
@@ -517,13 +973,13 @@ def main():
                     f"Searching for {customer.username} keywords in the founded positions"
                 )
                 # get customer keywords and make them lowercase and remove spaces
-                keywords = set(
+                customerkeywords = set(
                     [keyword.replace(" ", "").lower() for keyword in customer.keywords]
                     + customer.keywords
                 )
                 # filter positions based on customer keywords
                 all_positions = []
-                relevant_positions = filter_positions(all_positions, keywords)
+                relevant_positions = filter_positions(all_positions, customerkeywords)
                 """relevant_SGAI_positions = filter_positions(phd_positions, keywords)"""
 
                 output_dir = os.path.join(
