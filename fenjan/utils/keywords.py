@@ -4,22 +4,13 @@
 Created on Des 6 2022
 @author: Hue (MohammadHossein) Salari
 @email:hue.salari@gmail.com
+
+
+Refactored on Oct 2024 By Vahid Kosari
+@email: kosari.ma@gmail.com
 """
 keywords = ["phd", "LLM"]
 keywords_alternatives = {
-    "phd": ["phd", "Ph.D.", "funded phd"],
+    "phd": ["phd", "Ph.D.", "phdposition"],
     "LLM": ["LLM", "Large Language Model"],
 }
-
-#     "funded phd",
-#     "phd position",
-#     "recruiting phd",
-#     "phd fellowship",
-#     "recruiting for phd",
-#     "phd opportunity",
-#     "hiring phd student",
-#     "potential phd",
-#     "phdposition",
-#     "looking for phd",
-#     "looking for PhD student"
-# ]

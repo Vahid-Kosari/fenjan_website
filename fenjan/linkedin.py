@@ -188,130 +188,6 @@ def extract_by_scrapegraphai(source):
 #     return job_titles
 
 
-def extract_positions_text_temp():
-    """
-    Extract position text and links from the given LinkedIn search results page source
-    """
-
-    # Write the parsed HTML to a file
-    # soup_file_path = os.path.join(temp_folder, "soup.html")
-    souped_file_path = os.path.join(temp_folder, "souped.html")
-    # with open(soup_file_path, "r") as s:
-    #     soup_file = s.read()
-    with open(souped_file_path, "r") as s:
-        souped_file = s.read()
-
-    # main_containers = souped_file
-
-    # soup = BeautifulSoup(soup_file.replace("<br>", "\n"), "lxml")
-    # main_containers_of_soup = soup.find_all("div", id="fie-impression-container")
-    # main_containers = soup.find_all("div", id="fie-impression-container")
-    # with open(souped_file_path, "w", encoding="utf8") as ss:
-    #     ss.write(str(main_containers))
-
-    # Step 1: Find all main containers
-    souped = BeautifulSoup(souped_file.replace("<br>", "\n"), "lxml")
-    # main_containers_of_souped = soup.find_all("div", id="fie-impression-container")
-    main_containers = souped.find_all("div", id="fie-impression-container")
-
-    # results will contain all extracted JSON results for each post
-    results = []
-
-    # Loop through main containers
-    for main_container in main_containers:
-        # Step 2: Find the nested div elements inside the main container
-        # Extract profile name and link
-        profile_name_div = main_container.find(
-            "div", class_="update-components-actor__meta relative"
-        )
-        profile_link = profile_name_div.find("a") if profile_name_div else None
-
-        # Extract post text and links from the commentary div
-        post_commentary_div = main_container.find(
-            "div",
-            class_="update-components-text relative update-components-update-v2__commentary",
-        )
-        post_text = (
-            post_commentary_div.get_text(strip=True) if post_commentary_div else []
-        )
-        post_text_links = (
-            post_commentary_div.find_all("a") if post_commentary_div else []
-        )
-
-        # Extract article links (for profiles, external sites, etc.)
-        article_link_div = main_container.find(
-            "div",
-            class_="update-components-article--with-small-image update-components-article--with-small-image-fs",
-        )
-        article_link = article_link_div.find("a") if article_link_div else None
-
-        # Extract image-related links (within the image content div)
-        image_link_div = main_container.find(
-            "div", class_="update-components-image--single-image"
-        )
-        image_link = image_link_div.find("a") if image_link_div else None
-
-        # Step 3: Find the nested update content (for other profiles, articles, etc.)
-        mini_update_div = main_container.find(
-            "div", class_="update-components-mini-update-v2"
-        )
-        other_profile_link = mini_update_div.find("a") if mini_update_div else None
-        other_profile_text = (
-            mini_update_div.find(
-                "div",
-                class_="update-components-text relative update-components-update-v2__commentary",
-            ).find("a")
-            if mini_update_div
-            else None
-        )
-        article_under_profile = (
-            mini_update_div.find(
-                "div", class_="update-components-entity__content-wrapper"
-            ).find("a")
-            if mini_update_div
-            else None
-        )
-
-        # Create a structure to store the results
-        result = {
-            "profile_name_link": profile_link["href"] if profile_link else None,
-            "profile_name_text": (
-                profile_link.get_text(strip=True) if profile_link else None
-            ),
-            "post_commentary_text": post_text,
-            # "post_commentary_text": (post_commentary_div.get_text(strip=True) if post_commentary_div else None),   # [span["text"] for span in post_commentary_div] if post_commentary_div else None),
-            "post_commentary_links": (
-                [a["href"] for a in post_text_links] if post_text_links else None
-            ),
-            "article_link": article_link["href"] if article_link else None,
-            "image_link": image_link["href"] if image_link else None,
-            "other_profile_link": (
-                other_profile_link["href"] if other_profile_link else None
-            ),
-            "other_profile_text": (
-                other_profile_text["href"] if other_profile_text else None
-            ),
-            "article_under_profile": (
-                article_under_profile["href"] if article_under_profile else None
-            ),
-        }
-        # if result != {}:
-        results.append(result)
-
-    results_file_path = os.path.join(temp_folder, "results.html")
-    with open(results_file_path, "w", encoding="utf8") as r:
-        r.write(str(results))
-
-    # Print or return the structured results
-    for i, result in enumerate(results):
-        print(Fore.RED + f"result{i+1}:\n", result)
-        # for result in results:
-        # print(Fore.GREEN + "result of results:\n", result)
-
-    input("Enter any key to exit!")
-    sys.exit()
-
-
 # Extract position text and links from the given LinkedIn search results page source and Return positions as list of JSONs
 def extract_positions_text(page_source, keyword):
     """
@@ -373,11 +249,6 @@ def extract_positions_text(page_source, keyword):
         )
     )
 
-    # print("start printing containers after filtering only_containing keyword")
-    # for main_container in only_containing_keyword_main_containers:
-    #     print(main_container)
-    # print("end printing containers after filtering only_containing keyword")
-
     # Filter out non-English posts (based on the presence of the "see translation" button)
     only_english_main_containers = list(
         filter(
@@ -432,7 +303,7 @@ def extract_positions_text(page_source, keyword):
     for main_container in only_english_main_containers:
         cleaned_container = remove_hashtag_links(main_container)
         if cleaned_container:
-            print(Fore.MAGENTA + "cleaned_container:\n", cleaned_container)
+            # print(Fore.MAGENTA + "cleaned_container:\n", cleaned_container)
             processed_main_containers.append(cleaned_container)
 
     def clean_text(text):
@@ -548,13 +419,15 @@ def extract_positions_text(page_source, keyword):
             if post_commentary_div
             else "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEmpty"
         )
+
         positions.add(cleaned_text)
 
-        # Print or save the result
-        print(
-            Fore.BLUE + "post_text_with_links of main_container:\n",
-            cleaned_text,
-        )
+    # Add the Search link at the end of positions
+    position_search_link = ""
+    search_url = f"https://www.linkedin.com/search/results/content/?keywords=%22{keyword}%22&origin=GLOBAL_SEARCH_HEADER&sid=L.U&sortBy=%22date_posted%22"
+    position_search_link += f"<br><br>🔎🔗: <a href={search_url}>search url</a>\n"
+    # Add position text to positions set
+    positions.add(position_search_link)
 
     # Print or return the structured results
     for i, result in enumerate(results):
@@ -570,102 +443,6 @@ def extract_positions_text(page_source, keyword):
     dicision = input(Fore.LIGHTBLUE_EX + "Enter any key to exit OR c to continue!")
     if dicision != "c":
         sys.exit()
-
-    """
-    # Find main search results element as list
-    search_results = soup.find_all(
-        "div",
-        {
-            "class": "update-components-text relative update-components-update-v2__commentary",
-            # "class": "update-components-entity__content-wrapper",
-        },
-    )
-
-    # Write the parsed HTML to a file
-    search_results_file_path = os.path.join(temp_folder, "search_results.html")
-    with open(search_results_file_path, "w", encoding="utf-8") as soup_export:
-        soup_export.write(str(search_results))
-
-    if search_results is None:
-        print("Search results element not found.")
-        return []
-
-    """
-    """
-    Extract text content related to job positions,
-    format it to be URL-friendly,
-    and then construct a search query string for LinkedIn
-    """
-
-    """"
-    for result in results:
-        position_link_element = result.find("a", {"class": "app-aware-link"})
-        # position_link_element = result.find("a", {"data-attribute-index": "0"})
-        # position_link_element = result.find("span", {"class": "text-view-model"})
-        if position_link_element is None:
-            print("position_element has NO link!")
-            continue  # Skip if position element is not found
-
-        # Text should be extracted from the appropriate element NOT the Link one
-        result_div = position_link_element.find_parent("div")
-        print(
-            Fore.BLUE
-            + 'result_div = position_link_element.find_parent("div")'
-            + Fore.MAGENTA
-            + "for result in search_results OF extract_positions_text(page_source):"
-            + Fore.YELLOW,
-            result_div,
-        )
-
-        # Find all <a> tags with class 'app-aware-link' in the result
-        position_link_elements = result.find_all("a", {"class": "app-aware-link"})
-        for position_link_element in position_link_elements:
-            # Get the href attribute of the <a> tag
-            href = position_link_element.get("href", "")
-            # Check if the href contains 'hashtag'
-            if "hashtag" in href:
-                # Remove the <a> tag from its parent div
-                position_link_element.decompose()  # This removes the <a> element entirely from the HTML
-        # Print the updated div to verify the <a> has been removed
-        print(
-            Fore.GREEN + 'result.prettify() after removing "hashtag" from the "div":\n',
-            result.prettify(),
-        )  # Or process the modified 'div' as needed
-
-        decission = input(
-            Fore.GREEN
-            + 'Enter a key to exit! -- extract_positions_text(page_source). Enter "n" to continue.'
-        )
-        if decission != "n":
-            sys.exit()
-        position_text = ""
-        position_spans = result.find_all("span")
-        for position_span in position_spans:
-            span_text = position_span.text.strip()
-            position_text += span_text + "/\n============="
-            print(Fore.GREEN + "position_span.text.strip(): ", span_text)
-            input(
-                Fore.RED
-                + "press any key after print position_span! \n in for position_span in position_spans OF extract_positions_text(page_source):"
-            )
-        print("position_text: ", position_text)
-        input("press any key!")
-        # Make the search query text
-        search_text = "%20".join(position_text.split()[:10]).replace("#", "%23")
-        # Extract links from the text
-        links = position_link_element.find_all("a")
-        for link in links:
-            if "hashtag" not in link["href"]:
-                position_text = position_text.replace(
-                    link.text, f" &link{link['href']}*{link.text.replace(' ', '%20')} "
-                )
-        # Add the Search link at the end of the position text
-        search_url = f"https://www.linkedin.com/search/results/content/?keywords=%22{search_text}%22&origin=GLOBAL_SEARCH_HEADER&sid=L.U&sortBy=%22date_posted%22"
-        position_text += f"<br><br>🔎🔗: {search_url}"
-        # Add position text to positions set
-        if position_text:
-            positions.add(position_text)
-        """
 
     # Return positions as list
     return list(positions)
@@ -684,8 +461,10 @@ def find_positions(driver, keywords):
     driver.get(url_first)
     time.sleep(2)
 
-    # Initialize progress bar
-    pbar = tqdm(keywords)
+    # Total number of keywords
+    total_keywords = len(keywords)
+    # Initialize progress bar with total count and starting from 1
+    pbar = tqdm(keywords, total=total_keywords, initial=1)
     # Iterate through keywords
     for keyword in pbar:
         # Initialize page number
@@ -843,10 +622,6 @@ def main():
     # log.info("Searching LinkedIn for Ph.D. Positions")
     # get base path for utils directory
     utils_dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils")
-
-    # Temporary use or extrac
-    # extract_positions_text_temp()
-    # sys.exit()
 
     load_dotenv()
     print("[info]: Opening Chrome")
