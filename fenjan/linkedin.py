@@ -436,8 +436,11 @@ def extract_positions_text(page_source, keyword):
             processed_main_containers.append(cleaned_container)
 
     def clean_text(text):
-        # Replace multiple newlines with a single space and '\ with '
-        return re.sub(r"\n+", " ", text).strip()
+        # Step 1: Replace multiple newlines with a single space
+        cleaned_text = re.sub(r"\n+", " ", text).strip()
+        # Step 2: Replace backslash followed by either a straight or curly single quote
+        cleaned_text = re.sub(r"\\(['\u2019])", r"\1", cleaned_text)
+        return cleaned_text
 
     # results will contain all extracted JSON results for each post
     results = []
