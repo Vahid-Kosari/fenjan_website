@@ -49,7 +49,7 @@ django.setup()
 
 # import helper functions from other modules
 from utils.send_email import send_email
-from fenjan.utils.keywords import keywords
+from fenjan.utils.keywords import keywords, keywords_alternatives
 from utils.compose_email import compose_email
 from utils.database_helpers import *
 from fenjan.models import Customer
@@ -330,27 +330,30 @@ def extract_positions_text(page_source, keyword):
         soup_export.write(str(soup))
 
     # Find all main containers
-    main_containers = soup.find_all("div", id="fie-impression-container")
+    main_containers = soup.find_all("div", class_="fie-impression-container")
 
+    print(f"number of main_containers: ", len(main_containers))
+
+    keyword_alternatives = keywords_alternatives.get(keyword, [])
     # Filter out containers that do not contain the keyword in the post text itself
     only_containing_keyword_main_containers = list(
         filter(
             lambda main_container: (
                 # Step 1: Check if the keyword exists in the original main_container
-                keyword_in_post := keyword.lower()
-                in main_container.get_text(strip=True).lower(),
+                keyword_in_post := any(
+                    (
+                        print(Fore.RED + f"alt: ", {alt})
+                        or alt.lower() in main_container.get_text(strip=True).lower()
+                    )
+                    for alt in keyword_alternatives
+                ),
                 # Step 2: If keyword is found, create a copy of main_container as temp_main_container
                 temp_main_container := (
                     main_container.__copy__() if keyword_in_post else None
                 ),
                 # Step 3: Decompose profile links from temp_main_container if it exists
                 (
-                    [
-                        a_tag.decompose()
-                        for a_tag in temp_main_container.find_all(
-                            "a", class_="ember-view"
-                        )
-                    ]
+                    [a_tag.decompose() for a_tag in temp_main_container.find_all("a")]
                     if temp_main_container
                     else []
                 ),
@@ -369,6 +372,11 @@ def extract_positions_text(page_source, keyword):
             main_containers,
         )
     )
+
+    # print("start printing containers after filtering only_containing keyword")
+    # for main_container in only_containing_keyword_main_containers:
+    #     print(main_container)
+    # print("end printing containers after filtering only_containing keyword")
 
     # Filter out non-English posts (based on the presence of the "see translation" button)
     only_english_main_containers = list(
@@ -669,8 +677,8 @@ def find_positions(driver, keywords):
 
     # Go to a black page to avoid a bug that scrap the timeline
     url = "https://www.linkedin.com/search/results/"
-    url = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keywords[0]}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
-    driver.get(url)
+    url_first = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keywords[0]}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
+    driver.get(url_first)
     time.sleep(2)
 
     # Initialize progress bar
@@ -709,8 +717,8 @@ def find_positions(driver, keywords):
             positions,
         )
         # Iterate through pages
-        # while True:
-        while page < 5:  # Limit pages to 5 until code finishes
+        while True:
+            # while page < 5:  # Limit pages to 5 until code finishes
             # Increment page number
             page += 1
             # Set postfix for progress bar

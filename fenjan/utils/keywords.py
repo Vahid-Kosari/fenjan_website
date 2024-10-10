@@ -6,6 +6,10 @@ Created on Des 6 2022
 @email:hue.salari@gmail.com
 """
 keywords = ["phd", "LLM"]
+keywords_alternatives = {
+    "phd": ["phd", "Ph.D.", "funded phd"],
+    "LLM": ["LLM", "Large Language Model"],
+}
 
 #     "funded phd",
 #     "phd position",
