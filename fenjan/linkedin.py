@@ -416,8 +416,13 @@ def extract_positions_text(page_source, keyword):
                     else ""
                 )
             )
-            if post_commentary_div
-            else "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEmpty"
+            if post_commentary_div and post_commentary_div.get_text(strip=True)
+            else "Really, Not any ralated post? EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEmpty"
+        )
+
+        print(
+            Fore.LIGHTMAGENTA_EX + f"cleaned_text for main_container of {keyword}",
+            cleaned_text,
         )
 
         positions.add(cleaned_text)
@@ -425,9 +430,12 @@ def extract_positions_text(page_source, keyword):
     # Add the Search link at the end of positions
     position_search_link = ""
     search_url = f"https://www.linkedin.com/search/results/content/?keywords=%22{keyword}%22&origin=GLOBAL_SEARCH_HEADER&sid=L.U&sortBy=%22date_posted%22"
-    position_search_link += f"<br><br>🔎🔗: <a href={search_url}>search url</a>\n"
-    # Add position text to positions set
-    positions.add(position_search_link)
+    if positions:
+        position_search_link += (
+            f"<br><br>🔎🔗: <a href={search_url}>search url for {keyword}</a>"
+        )
+        # Add position text to positions set
+        positions.add(position_search_link)
 
     # Print or return the structured results
     for i, result in enumerate(results):
@@ -435,31 +443,36 @@ def extract_positions_text(page_source, keyword):
         # for result in results:
         # print(Fore.GREEN + "result of results:\n", result)
 
-    positions_path = os.path.join(temp_folder, f"positions_{keyword}.html")
+    positions_path = os.path.join(temp_folder, f"positions_for_{keyword}.html")
     with open(positions_path, "w", encoding="utf8") as p:
         p.write(str(positions))
 
     # Temporary code to intrupt if satisfied
-    dicision = input(Fore.LIGHTBLUE_EX + "Enter any key to exit OR c to continue!")
-    if dicision != "c":
-        sys.exit()
+    # dicision = input(Fore.LIGHTBLUE_EX + "Enter any key to exit OR c to continue!")
+    # if dicision != "c":
+    # sys.exit()
 
     # Return positions as list
     return list(positions)
 
 
-# Extract and returns all_positions as list
+# Extract and returns all_positions_for_keywords as list
 def find_positions(driver, keywords):
     # Set to store all positions found
-    # print(Fore.GREEN + "all_positions before set():", all_positions)
-    all_positions = set()
-    print(Fore.BLUE + "all_positions after set():", all_positions)
+    # print(Fore.GREEN + "all_positions_for_keywords before set():", all_positions_for_keywords)
+    all_positions_for_keywords = set()
+    positions_for_keyword = set()
+    print(
+        Fore.BLUE + "all_positions_for_keywords after set():",
+        all_positions_for_keywords,
+    )
 
     # Go to a black page to avoid a bug that scrap the timeline
     url = "https://www.linkedin.com/search/results/"
-    url_first = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keywords[0]}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
-    driver.get(url_first)
-    time.sleep(2)
+    # url_first = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keywords[0]}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
+    # driver.get(url_first)
+    driver.get(url)
+    # time.sleep(3)
 
     # Total number of keywords
     total_keywords = len(keywords)
@@ -472,112 +485,120 @@ def find_positions(driver, keywords):
         # Set postfix for progress bar
         pbar.set_postfix(
             {
-                "Keyword": keyword,
+                Fore.RED + "Keyword": keyword,
                 "page": page,
-                "TN of found positions": len(all_positions),
+                "TN of found positions": (
+                    (len(positions_for_keyword) - 1)
+                    if ((len(positions_for_keyword) > 1))
+                    else (len(positions_for_keyword))
+                ),
             }
         )
         # Construct URL with keyword
-        if keyword != keywords[0]:
-            url = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keyword}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
-            # Load page
-            driver.get(url)
-            time.sleep(2)
-            ## Scroll to bottom of page #### It must be in a loop to cover all search results despite of internet speed
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            print(
-                Fore.YELLOW
-                + f"window.scrollTo(0, document.body.scrollHeight) DONE for page {page}\n",
-            )
-            time.sleep(2)
+        # if keyword != keywords[0]:
+        url = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keyword}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
+        # Load page
+        driver.get(url)
+        time.sleep(3)
 
-        # Extract positions from page source
-        positions = extract_positions_text(driver.page_source, keyword)
+        # Extract positions from first page source
+        positions_for_keyword = extract_positions_text(driver.page_source, keyword)
         print(
             Fore.RED
-            + f"positions from extract_positions_text(driver.page_source) for {keyword}:",
-            positions,
+            + f"positions from extract_positions_text(driver.page_source) (first driver.get() before while loop) for {keyword}:",
+            positions_for_keyword,
         )
         # Iterate through pages
         while True:
-            # while page < 5:  # Limit pages to 5 until code finishes
             # Increment page number
             page += 1
             # Set postfix for progress bar
             pbar.set_postfix(
                 {
-                    "Keyword": keyword,
+                    Fore.LIGHTBLUE_EX + "Keyword": keyword,
                     "page": page,
-                    "TN of founded positions": len(all_positions),
+                    "TN of found positions": (
+                        (len(positions_for_keyword) - 1)
+                        if ((len(positions_for_keyword) > 1))
+                        else (len(positions_for_keyword))
+                    ),
                 }
             )
             # Scroll to bottom of page
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             print(
                 Fore.GREEN
-                + f"window.scrollTo(0, document.body.scrollHeight) DONE for page {page}\n",
+                + f"window.scrollTo(0, document.body.scrollHeight) (in while loop) DONE for page {page}\n",
             )
             # Wait for page to load
-            time.sleep(2)
+            time.sleep(5)
             # Extract positions from page source
-            new_positions = extract_positions_text(driver.page_source, keyword)
+            new_positions_for_keyword = extract_positions_text(
+                driver.page_source, keyword
+            )
             # Convert to set to eliminate duplicates
-            new_positions = set(new_positions)
+            new_positions_for_keyword = set(new_positions_for_keyword)
             # Check if positions on current page are the same as previous page
-            if new_positions == positions:
+            if new_positions_for_keyword == positions_for_keyword:
                 print("End of the search page for", keyword)
                 # If so, break out of loop
                 break
             # Update positions
-            positions = new_positions
-        # Add positions to all_positions set
-        all_positions |= positions
+            positions_for_keyword = new_positions_for_keyword
+
+        # keyword's result title line if any
+        if positions_for_keyword:
+            keyword_result_title = (
+                f"<h2> These are realted positions for {keyword}: </h2>\n"
+            )
+            # Add a title content for each keyword's positions
+            positions_for_keyword.add(keyword_result_title)
+            # Add positions to all_positions_for_keywords set
+            all_positions_for_keywords |= positions_for_keyword
+        else:
+            print(Fore.RED + f"positions_for_keyword {keyword} is empty!")
     # Convert set to list
-    all_positions = list(all_positions)
-    # Iterate through positions
-    for position in all_positions:
-        # Strip out URL from position
-        result = re.sub(
-            r"https:\/\/www\.linkedin\.com\/feed\/update\/urn:li:activity:\d+",  # ????? why this pattern?????
-            "",
-            position,
-        ).strip()
-        # If position with URL and the same position without URL is in the list, remove the one without URL
-        if result != position:
-            try:
-                all_positions.remove(result)
-            except:
-                pass
+    # all_positions_for_keywords = list(all_positions_for_keywords)
+    # Check if all_positions_for_keywords is populated
+    if not all_positions_for_keywords:
+        print(Fore.RED + "all_positions_for_keywords is empty!")
 
-    # Check if all_positions is populated
-    if not all_positions:
-        print(Fore.RED + "all_positions is empty!")
-
-    # Convert the set to an HTML string
+    # Convert the list to an HTML string
     html_content = ""
-    for position in all_positions:
+    for position in all_positions_for_keywords:
         html_content += f"{position}"
 
-        print(Fore.GREEN + "html_content is: ", html_content)
+        # print(Fore.GREEN + "html_content is: ", html_content)
 
-    print(Fore.CYAN + "all_positions from find_positions() is: ", all_positions)
-    # Return list of positions
+    print(
+        Fore.CYAN + "all_positions_for_keywords from find_positions() is: ",
+        all_positions_for_keywords,
+    )
 
-    # Write all_positions to ensure it contains all keywords found position
-    all_positions_path = os.path.join(temp_folder, "all_positions.html")
-    with open(all_positions_path, "w", encoding="utf-8") as all:
-        all.write(html_content)
-    input(Fore.CYAN + "Enter a key to exit! -- find_positions(deiver, keywords)")
-    sys.exit()
-    return all_positions
+    # Write all_positions_for_keywords to ensure it contains all keywords found position
+    all_positions_for_keywords_path = os.path.join(
+        temp_folder, "all_positions_for_keywords.html"
+    )
+    with open(all_positions_for_keywords_path, "w", encoding="utf-8") as all:
+        all.write(str(all_positions_for_keywords))
+
+    # Temporary code to intrupt if satisfied
+    dicision = input(
+        Fore.LIGHTBLUE_EX
+        + "Enter any key to exit find_positions(deiver, keywords) OR c to continue!"
+    )
+    if dicision != "c":
+        sys.exit()
+
+    return all_positions_for_keywords
 
 
-# Filter all_positions from find_positions() based on search_keywords list and returns matching_positions as list
-def filter_positions(all_positions, search_keywords):
+# Filter all_positions_for_keywords from find_positions() based on search_keywords list and returns matching_positions as list
+def filter_positions(all_positions_for_keywords, search_keywords):
     """Filter the list of positions based on search keywords.
 
     Args:
-        all_positions (list): list of positions
+        all_positions_for_keywords (list): list of positions
         search_keywords (list): list of keywords to filter positions by
 
     Returns:
@@ -589,7 +610,7 @@ def filter_positions(all_positions, search_keywords):
     matching_positions = []
 
     # loop through each position and check if it contains any of the search keywords
-    for position in all_positions:
+    for position in all_positions_for_keywords:
         if any(keyword.lower() in position.lower() for keyword in search_keywords):
             if not any(
                 keyword.lower() in position.lower() for keyword in forbidden_keywords
@@ -629,7 +650,7 @@ def main():
     print("[info]: Logging in to LinkedIn 🐢...")
     login_to_linkedin(driver)
     print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
-    all_positions = find_positions(driver, keywords[:])
+    all_positions_for_keywords = find_positions(driver, keywords[:])
     driver.quit()
 
     # Define the local file path
@@ -742,7 +763,7 @@ def main():
     # driver.quit()
 
     """
-    print(f"[info]: Total number of positions: {len(all_positions)}")
+    print(f"[info]: Total number of positions: {len(all_positions_for_keywords)}")
     """
 
     # getting customers info from db
@@ -765,8 +786,10 @@ def main():
                     + customer.keywords
                 )
                 # filter positions based on customer keywords
-                all_positions = []
-                relevant_positions = filter_positions(all_positions, customerkeywords)
+                all_positions_for_keywords = []
+                relevant_positions = filter_positions(
+                    all_positions_for_keywords, customerkeywords
+                )
                 """relevant_SGAI_positions = filter_positions(phd_positions, keywords)"""
 
                 output_dir = os.path.join(
