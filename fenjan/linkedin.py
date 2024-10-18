@@ -431,7 +431,7 @@ def extract_positions_text(page_source, keyword):
     return positions
 
 
-# Extract and returns all_positions_for_keywords as set
+# Extract and returns all_positions_for_keywords as list
 def find_positions(driver, keywords):
     # Set to store all positions found
     all_positions_for_keywords = set()
@@ -543,12 +543,12 @@ def find_positions(driver, keywords):
         all.write(str(all_positions_for_keywords))
 
     # Temporary code to intrupt if satisfied
-    dicision = input(
-        Fore.LIGHTBLUE_EX
-        + "Enter any key to exit find_positions(deiver, keywords) OR c to continue!"
-    )
-    if dicision != "c":
-        sys.exit()
+    # dicision = input(
+    #     Fore.LIGHTBLUE_EX
+    #     + "Enter any key to exit find_positions(deiver, keywords) OR c to continue!"
+    # )
+    # if dicision != "c":
+    #     sys.exit()
 
     return all_positions_for_keywords
 
@@ -616,6 +616,15 @@ def main():
     # Define the local file path
     search_results_path = os.path.join(temp_folder, "search_results.html")
     results_path = os.path.join(temp_folder, "results.html")
+
+    # Writing out all_positions_for_keywords to search_results.html
+    if all_positions_for_keywords:
+        with open(search_results_path, "w", encoding="utf-8") as sr:
+            sr.write(str(all_positions_for_keywords))
+    else:
+        fresh_file_name = "search_results.html"
+        absolete_file_name = "search_results_absolete.html"
+        os.rename(fresh_file_name, absolete_file_name)
 
     # Check if the file exists
     if not os.path.exists(search_results_path):
@@ -738,17 +747,29 @@ def main():
             # if customer.expiration_date != None and customer.expiration_date >= yesterday:
             if customer.registration_state != "Expired":
                 log.info(
-                    f"Searching for {customer.username} keywords in the founded positions"
+                    f"Searching for {customer.username} keywords in the found positions"
                 )
                 # get customer keywords and make them lowercase and remove spaces
-                customerkeywords = set(
-                    [keyword.replace(" ", "").lower() for keyword in customer.keywords]
-                    + customer.keywords
+                customerkeywords = list(
+                    set(
+                        [
+                            keyword.replace(" ", "").lower()
+                            for keyword in customer.keywords
+                        ]
+                        + customer.keywords
+                    )
                 )
                 # filter positions based on customer keywords
-                all_positions_for_keywords = []
+                log.info(
+                    f"Filtering positions for {customer.username} based on {customerkeywords[0]} in the found positions"
+                )
                 relevant_positions = filter_positions(
                     all_positions_for_keywords, customerkeywords
+                )
+                print(
+                    Fore.CYAN
+                    + f"Number of relevant_positions ({-2*len(keywords)}) for {customer.username}: \n",
+                    len(relevant_positions),
                 )
                 """relevant_SGAI_positions = filter_positions(phd_positions, keywords)"""
 
