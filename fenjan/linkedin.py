@@ -189,7 +189,7 @@ def extract_by_scrapegraphai(source):
 
 
 # Extract position text and links from the given LinkedIn search results page source and Return positions as set of JSONs
-def extract_positions_text(page_source, keyword):
+def extract_positions_parts(page_source, keyword):
     """
     Extract position text and links from the given LinkedIn search results page source
     """
@@ -315,6 +315,8 @@ def extract_positions_text(page_source, keyword):
 
     # results will contain all extracted JSON results for each post
     results = []
+    # extractions will contain all extracted position html block (as string) and its text for each post
+    extractions = []
 
     # Loop through processed main containers
     for main_container in processed_main_containers:
@@ -419,23 +421,43 @@ def extract_positions_text(page_source, keyword):
 
         positions.add(cleaned_text)
 
+        extraction = {
+            "position_html_block": cleaned_text,
+            "position_text": result["post_commentary_text"],
+        }
+
+        # extractions.add(frozenset(extraction.items()))
+        extractions.append(extraction)
+
     # Print results to check the code
     for i, result in enumerate(results):
         print(Fore.GREEN + f"result{i+1}:\n", result)
+
+    extractions_path_html_block = os.path.join(
+        os.path.join(temp_folder, "1"), f"extractions_for_{keyword}.html"
+    )
+    positions_html_block = []
+    for extraction in list(extractions):
+        positions_html_block.append(extraction["position_html_block"])
+    with open(extractions_path_html_block, "w", encoding="utf8") as ex:
+        ex.write(str(positions_html_block))
 
     positions_path = os.path.join(temp_folder, f"positions_for_{keyword}.html")
     with open(positions_path, "w", encoding="utf8") as p:
         p.write(str(positions))
 
+    print("extractions from extract_positions_parts", extractions)
     # Return positions as set
-    return positions
+    return extractions
 
 
-# Extract and returns all_positions_for_keywords as list
+# Extract and returns main_extractions as list
 def find_positions(driver, keywords):
     # Set to store all positions found
-    all_positions_for_keywords = set()
-    print(Fore.BLUE + "Starting find_position")
+    all_positions_html_block_for_keywords_html_block = set()
+    # Initialize the main extractions dictionary to collect results for all keywords
+    main_extractions = {}
+    print(Fore.BLUE + "Starting find_positions()")
 
     # Go to a black page to avoid a bug that scrap the timeline
     url = "https://www.linkedin.com/search/results/"
@@ -448,7 +470,8 @@ def find_positions(driver, keywords):
     pbar = tqdm(keywords, total=total_keywords, initial=1)
     # Iterate through keywords
     for keyword in pbar:
-        positions_for_keyword = set()
+        extractions_for_keyword = set()
+        positions_html_block_for_keyword = set()
         # Initialize page number
         page = 1
         # Set postfix for progress bar
@@ -456,18 +479,22 @@ def find_positions(driver, keywords):
             {
                 Fore.RED + "Keyword": keyword,
                 "page": page,
-                "TN of found positions": len(list(positions_for_keyword)),
+                "TN of found positions": len(list(positions_html_block_for_keyword)),
             }
         )
         # Construct URL with keyword
         url = f'https://www.linkedin.com/search/results/content/?datePosted=%22past-24h%22&keywords="{keyword}"&origin=FACETED_SEARCH&sid=c%3Bi&sortBy=%22date_posted%22'
         # Load page
         driver.get(url)
-        time.sleep(3)
+        time.sleep(5)
 
-        # Extract positions from first page source
-        positions_for_keyword = extract_positions_text(driver.page_source, keyword)
-        # Iterate through pages
+        # Extract positions from first page source for each keyword
+        extractions_for_keyword = extract_positions_parts(driver.page_source, keyword)
+        # Extract only the "position_html_block" content for each extraction
+        positions_html_block_for_keyword = {
+            entry["position_html_block"] for entry in extractions_for_keyword
+        }
+
         while True:
             # Increment page number
             page += 1
@@ -476,7 +503,9 @@ def find_positions(driver, keywords):
                 {
                     Fore.LIGHTBLUE_EX + "Keyword": keyword,
                     "page": page,
-                    "TN of found positions": len(list(positions_for_keyword)),
+                    "TN of found positions": len(
+                        list(positions_html_block_for_keyword)
+                    ),
                 }
             )
             # Scroll to bottom of page
@@ -487,21 +516,49 @@ def find_positions(driver, keywords):
             )
             # Wait for page to load
             time.sleep(5)
-            # Extract positions from page source
-            new_positions_for_keyword = extract_positions_text(
+
+            # Call extract_positions_parts and store the returned dictionary
+            new_extractions_for_keyword = extract_positions_parts(
                 driver.page_source, keyword
             )
+            new_positions_html_block_for_keyword = {
+                entry["position_html_block"] for entry in new_extractions_for_keyword
+            }
+
             # Check if positions on current page are the same as previous page
-            if new_positions_for_keyword == positions_for_keyword:
+            if new_positions_html_block_for_keyword == positions_html_block_for_keyword:
                 print("End of the search page for", keyword)
                 # If so, break out of loop
                 break
-            # Update positions
-            positions_for_keyword = new_positions_for_keyword
+            # Update extractions and positions_html_block_for_keyword in each while loop
+
+            # Structure each extraction
+            """extraction = {
+                "keyword": keyword,
+                "position_html_block": new_extractions_for_keyword.get(
+                    "position_html_block"
+                ),
+                "position_text": new_extractions_for_keyword.get("position_text"),
+            }"""
+
+            for extraction in new_extractions_for_keyword:
+                # Build each entry to append to main_extractions
+                extraction_entry = {
+                    "keyword": keyword,
+                    "position_html_block": extraction.get("position_html_block"),
+                    "position_text": extraction.get("position_text"),
+                }
+
+            # Update extractions with the structured extraction positions_html_block_for_keyword in each while loop
+            extractions_for_keyword.append(extraction_entry)
+            positions_html_block_for_keyword = new_positions_html_block_for_keyword
+
+        # After completing all pages for the current keyword, add results to main extractions
+        main_extractions[keyword] = extractions_for_keyword
 
         # keyword's result title line if any
-        positions_for_keyword = list(positions_for_keyword)
-        if positions_for_keyword:
+        positions_html_block_for_keyword = list(positions_html_block_for_keyword)
+        if positions_html_block_for_keyword:
             keyword_result_title = (
                 f"<h2> These are realted positions for {keyword}: </h2>"
             )
@@ -511,38 +568,49 @@ def find_positions(driver, keywords):
                 f"🔎🔗: <a href={search_url}>search url for {keyword}</a><br>"
             )
             # Insert the title and search link at the start of each keyword's positions
-            positions_for_keyword.insert(0, keyword_result_title + position_search_link)
+            positions_html_block_for_keyword.insert(
+                0, keyword_result_title + position_search_link
+            )
 
-            # Add positions to all_positions_for_keywords set
-            all_positions_for_keywords = list(all_positions_for_keywords)
-            all_positions_for_keywords += positions_for_keyword
+            # Add positions to all_positions_html_block_for_keywords_html_block set
+            all_positions_html_block_for_keywords_html_block = list(
+                all_positions_html_block_for_keywords_html_block
+            )
+            all_positions_html_block_for_keywords_html_block += (
+                positions_html_block_for_keyword
+            )
         else:
-            print(Fore.RED + f"positions_for_keyword {keyword} is empty!")
+            print(
+                Fore.LIGHTRED_EX
+                + f"positions_html_block_for_keyword {keyword} is empty!"
+            )
 
-    # Check if all_positions_for_keywords is populated
-    if not all_positions_for_keywords:
-        print(Fore.RED + "all_positions_for_keywords is empty!")
+    # Check if all_positions_html_block_for_keywords_html_block is populated
+    if not all_positions_html_block_for_keywords_html_block:
+        print(Fore.RED + "all_positions_html_block_for_keywords_html_block is empty!")
+    else:
+        # Convert the list to an HTML string
+        html_content = ""
+        for position in all_positions_html_block_for_keywords_html_block:
+            html_content += f"{position}"
 
-    # Convert the list to an HTML string
-    html_content = ""
-    for position in all_positions_for_keywords:
-        html_content += f"{position}"
+            # print(Fore.GREEN + "html_content is: ", html_content)
 
-        # print(Fore.GREEN + "html_content is: ", html_content)
+        # print(
+        #     Fore.CYAN + "all_positions_html_block_for_keywords_html_block from find_positions() is: ",
+        #     all_positions_html_block_for_keywords_html_block,
+        # )
 
-    # print(
-    #     Fore.CYAN + "all_positions_for_keywords from find_positions() is: ",
-    #     all_positions_for_keywords,
-    # )
+        # Write all_positions_html_block_for_keywords_html_block to ensure it contains all keywords found position
+        all_positions_html_block_for_keywords_path = os.path.join(
+            temp_folder, "all_positions_html_block_for_keywords_html_block.html"
+        )
+        with open(
+            all_positions_html_block_for_keywords_path, "w", encoding="utf-8"
+        ) as all:
+            all.write(str(all_positions_html_block_for_keywords_html_block))
 
-    # Write all_positions_for_keywords to ensure it contains all keywords found position
-    all_positions_for_keywords_path = os.path.join(
-        temp_folder, "all_positions_for_keywords.html"
-    )
-    with open(all_positions_for_keywords_path, "w", encoding="utf-8") as all:
-        all.write(str(all_positions_for_keywords))
-
-    # Temporary code to intrupt if satisfied
+    # Temporary code to continue if satisfied
     # dicision = input(
     #     Fore.LIGHTBLUE_EX
     #     + "Enter any key to exit find_positions(deiver, keywords) OR c to continue!"
@@ -550,15 +618,17 @@ def find_positions(driver, keywords):
     # if dicision != "c":
     #     sys.exit()
 
-    return all_positions_for_keywords
+    # return all_positions_html_block_for_keywords_html_block
+    print("returning extractions form find_positions()", main_extractions)
+    return main_extractions
 
 
-# Filter all_positions_for_keywords from find_positions() based on search_keywords list and returns matching_positions as list
-def filter_positions(all_positions_for_keywords, search_keywords):
+# Filter all_positions_html_block_for_keywords_html_block from find_positions() based on search_keywords list and returns matching_positions as list
+def filter_positions(all_positions_html_block_for_keywords_html_block, search_keywords):
     """Filter the list of positions based on search keywords.
 
     Args:
-        all_positions_for_keywords (list): list of positions
+        all_positions_html_block_for_keywords_html_block (list): list of positions
         search_keywords (list): list of keywords to filter positions by
 
     Returns:
@@ -570,7 +640,7 @@ def filter_positions(all_positions_for_keywords, search_keywords):
     matching_positions = []
 
     # loop through each position and check if it contains any of the search keywords
-    for position in all_positions_for_keywords:
+    for position in all_positions_html_block_for_keywords_html_block:
         if any(keyword.lower() in position.lower() for keyword in search_keywords):
             if not any(
                 keyword.lower() in position.lower() for keyword in forbidden_keywords
@@ -610,36 +680,139 @@ def main():
     print("[info]: Logging in to LinkedIn 🐢...")
     login_to_linkedin(driver)
     print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
-    all_positions_for_keywords = find_positions(driver, keywords[:])
+
+    extractions = find_positions(driver, keywords[:])
+    print(Fore.GREEN + "extractions before list():\n", extractions)
+    extractions = list(extractions)
+    print(Fore.GREEN + "extractions:\n", extractions)
+
+    # Initialize lists to store all blocks and text entries
+    all_positions_html_block_for_keywords_html_block = []
+    all_positions_html_block_for_keywords_text = []
+
+    # Extend the lists with extracted data for each entry
+    all_positions_html_block_for_keywords_html_block.extend(
+        entry["position_html_block"]
+        for entry in extractions
+        if "position_html_block" in entry
+    )
+
+    all_positions_html_block_for_keywords_text.extend(
+        entry["position_text"] for entry in extractions if "position_text" in entry
+    )
+
+    # Print the results
+    print(
+        "all_positions_html_block_for_keywords_html_block =",
+        all_positions_html_block_for_keywords_html_block,
+    )
+    print(
+        "all_positions_html_block_for_keywords_text =",
+        all_positions_html_block_for_keywords_text,
+    )
+
+    """extractions = list(find_positions(driver, keywords[:]))
+
+    all_positions_html_block_for_keywords_html_block = [
+        entry["position_html_block"]
+        for entry in extractions
+        if "position_html_block" in entry
+    ]
+    print(
+        "all_positions_html_block_for_keywords_html_block = ",
+        all_positions_html_block_for_keywords_html_block,
+    )
+
+    all_positions_html_block_for_keywords_text = [
+        entry["position_text"] for entry in extractions if "position_text" in entry
+    ]
+    print("all_positions_html_block_for_keywords_text = ", all_positions_html_block_for_keywords_text)
+    """
+
+    time.sleep(3)
+
     driver.quit()
 
     # Define the local file path
     search_results_path = os.path.join(temp_folder, "search_results.html")
+    search_results_obsolete_path = os.path.join(
+        temp_folder, "search_results_obsolete.html"
+    )
+    search_results_json_path = os.path.join(temp_folder, "search_results.json")
     results_path = os.path.join(temp_folder, "results.html")
 
-    # Writing out all_positions_for_keywords to search_results.html
-    if all_positions_for_keywords:
-        with open(search_results_path, "w", encoding="utf-8") as sr:
-            sr.write(str(all_positions_for_keywords))
-    else:
-        fresh_file_name = "search_results.html"
-        absolete_file_name = "search_results_absolete.html"
-        os.rename(fresh_file_name, absolete_file_name)
+    # Writing out all_positions_html_block_for_keywords_html_block to search_results.html
+    if all_positions_html_block_for_keywords_html_block:
+        # Store previous search_results.html as obsolete
+        fresh_file_name = search_results_path
+        obsolete_file_name = search_results_obsolete_path
+        os.rename(fresh_file_name, obsolete_file_name)
 
+        # Store new value of find_position() returnd as search_results.html
+        with open(search_results_path, "w", encoding="utf-8") as sr:
+            sr.write(str(all_positions_html_block_for_keywords_html_block))
+    else:
+        print(Fore.RED + "No html block!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        return
+
+    # Assuming all_positions_html_block_for_keywords_html_block is a set or any other object you want to store
+    with open(search_results_json_path, "w", encoding="utf-8") as sr:
+        # Use json.dump to write to a file
+        json.dump(
+            list(all_positions_html_block_for_keywords_html_block),
+            sr,
+            ensure_ascii=False,
+            indent=4,
+        )
+
+    with open(search_results_json_path, "r", encoding="utf-8") as sr:
+        all_positions_html_block_for_keywords_html_block = json.load(sr)
+
+    search_results_path = search_results_json_path
     # Check if the file exists
     if not os.path.exists(search_results_path):
         print(f"File {search_results_path} does not exist.")
     else:
         # Read the file contents
-        with open(search_results_path, "r") as f:
-            search_results = f.read()
+        """with open(search_results_path, "r") as f:
+        search_results = f.read()
+        """
 
         # Split the HTML content into sections (Each section is inside a <div> tag)
-        sections = re.split(r"</div>,\s*<div", search_results)
+        # sections = re.split(r"</div>,\s*<div", search_results)
+        """sections = re.split(r"</div>\"", search_results)"""
+        # sections = re.split(r"</div>',\s*'<", search_results)
+        """print(Fore.BLUE + "len(sections): ", len(sections), sections)"""
+        """for i, section in enumerate(all_positions_html_block_for_keywords_html_block):
+            print(
+                Fore.BLUE
+                + f"{i}-len(section)={len(section["position_html_block"])} and section is:\n",
+                section,
+            )"""
+
+        for i, section in enumerate(all_positions_html_block_for_keywords_html_block):
+            # Check if section is a dictionary and contains the expected key
+            if isinstance(section, list) and "position_html_block" in section:
+                print(
+                    f"{i}-len(section)={len(section['position_html_block'])} and section is:\n",
+                    section,
+                )
+            else:
+                print(f"{i}-Invalid section format or missing key: {section}")
+
+        # Temporary code to continue if satisfied
+        dicision = input(
+            Fore.LIGHTBLUE_EX
+            + "Enter any key to exit find_positions(deiver, keywords) OR c to continue!"
+        )
+        if dicision != "c":
+            sys.exit()
 
         # Check the number of chunks and their lengths
-        for i, section in enumerate(sections):
-            print(f"Chunk {i+1} Length: {len(section)} characters")
+        # for i, section in enumerate(search_results):
+        # print(f"Chunk {i+1} Length: {len(section)} characters")
+        # for section in sections:
+        #     print(f"Chunk Length: {len(section)} characters")
 
         # Set the LLaMA API URL and headers
         ollama_url = "http://localhost:11434/api/generate"
@@ -656,31 +829,29 @@ def main():
         # The only criterion to distingush position description sections from each other is that every position description section is embeded inside a HTML division element in the following HTML content, with the class="update-components-text relative update-components-update-v2__commentary".
         # Consider the division elements texts as one position description section.
 
-        for i, section in enumerate(sections):
+        # for i, section in enumerate(sections):
+        for i, section in enumerate(extractions):
             payload_extract = payload_extract_template.copy()
             payload_extract[
                 "prompt"
             ] = f"""
-                Extract the title, snippet, and link(s) from this PHD position description section in the following [HTML content].
-                Even if there is no clear title, please use the first sentence as the title,
-                and if there's no clear snippet, summarize the position description section.
-                Make sure to include all links associated with the section except links that include hashtag(s).
+                This section is part of several linkedin position search results, in HTML format, for some keywords, like phd, llm, etc (Hereafter is called their_keywords). Each set of search results' sections for their_keyword is separated from others by a section as a divider and information, with the below pattern:
+                <h2> These are realted positions for their_keyword: </h2>🔎🔗: <a href=https://www.linkedin.com/search/results/content/?keywords=%22phd%22&origin=GLOBAL_SEARCH_HEADER&sid=L.U&sortBy=%22date_posted%22>search url for their_keyword</a><br>
+                Keep the divider intact in place to maintain the overall structue and return it as it is.
+                Organize the section (other than divider) in this way:
+                Produce a title and a summary from {section["position_text"]}. Even if there is no clear title, please use the first sentence as the title.
+                
 
-                Structure the extracted data as a list of dictionaries with the following format:
+                Structure the extracted data as a string like the following format (for non-divider sections):
 
-                [
-                {{
-                    "title": "First sentence or inferred title of the position description section",
-                    "snippet Summary": "position description section",
-                    "link": "Complete, accurate link(s) associated with this section."
-                }},
-                ...
-                ]
+                    "Title": "First sentence or inferred title of the position description section"
+                    "Summary": "position description section"
+                    "HTML Content": {section["position_html_block"]}
 
-                HTML Content: {section}
+                For divider section ({section["position_html_block"]}) return it as it is.
+
                 """
 
-            """
             # Make the POST request with the AI API
             response_extract = requests.post(
                 ollama_url, headers=headers, data=json.dumps(payload_extract)
@@ -689,16 +860,23 @@ def main():
             response_text = response_extract.text
 
             # Parse the response as JSON
-            response_json = json.loads(response_text)
+            # response_json = json.loads(response_text)
 
             # Extract the 'response' part
-            extracted_response = response_json.get("response", "No response found.")
+            # extracted_response = response_json.get("response", "No response found.")
+            """
+            extracted_response = response_text.get("response", "No response found.")
 
             # Print the extracted response
             print(f"Response for the section {i}: \n{extracted_response}")
 
             if response_extract.status_code == 200:
                 results.append(extracted_response)
+            """
+            print(f"Response for the section {i}: \n{response_text}")
+
+            if response_extract.status_code == 200:
+                results.append(response_text)
 
             # Combine results from ?
             # combined_results = [item for sublist in results for item in sublist]
@@ -721,7 +899,6 @@ def main():
         # write the file contents
         with open(results_path, "w", encoding="utf-8") as f:
             f.write(str(results))
-            """
 
     """
     # Search for PhD positions
@@ -732,7 +909,7 @@ def main():
     # driver.quit()
 
     """
-    print(f"[info]: Total number of positions: {len(all_positions_for_keywords)}")
+    print(f"[info]: Total number of positions: {len(all_positions_html_block_for_keywords_html_block)}")
     """
 
     # getting customers info from db
@@ -740,6 +917,7 @@ def main():
     # customers = get_customers_info(dotenv_path)
     customers = Customer.objects.all()
 
+    """
     for customer in customers:
         if customer.first_name == "Vahid":
             log.info("Customer Vahid found.")
@@ -764,14 +942,14 @@ def main():
                     f"Filtering positions for {customer.username} based on {customerkeywords[0]} in the found positions"
                 )
                 relevant_positions = filter_positions(
-                    all_positions_for_keywords, customerkeywords
+                    all_positions_html_block_for_keywords_html_block, customerkeywords
                 )
                 print(
                     Fore.CYAN
                     + f"Number of relevant_positions ({-2*len(keywords)}) for {customer.username}: \n",
                     len(relevant_positions),
                 )
-                """relevant_SGAI_positions = filter_positions(phd_positions, keywords)"""
+                # relevant_SGAI_positions = filter_positions(phd_positions, keywords)
 
                 output_dir = os.path.join(
                     os.path.dirname(os.path.abspath(__file__)),
@@ -793,7 +971,7 @@ def main():
                     ) as relevant_positions_export:
                         for position in relevant_positions:
                             relevant_positions_export.write(
-                                position + "\n" + """""" """""" + "\n"
+                                position + "\n" + """ """ """ """ + "\n"
                             )
                     log.info(
                         f"Sending email containing {len(relevant_positions)} positions to: {customer.username}"
@@ -806,7 +984,7 @@ def main():
                         utils_dir_path,
                     )
                     time.sleep(10)
-                """
+                """ """
                 if relevant_SGAI_positions:
                     with open(
                         file_path, "w", encoding="utf-8"
@@ -827,8 +1005,8 @@ def main():
                     )
                     time.sleep(10)
                     """
-            else:
-                print(f"{customer.username}'s registration expired!")
+    # else:
+    # print(f"{customer.username}'s registration expired!")
 
 
 if __name__ == "__main__":
