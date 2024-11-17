@@ -422,6 +422,7 @@ def extract_positions_parts(page_source, keyword):
         positions.add(cleaned_text)
 
         extraction = {
+            "keyword": keyword,
             "position_html_block": cleaned_text,
             "position_text": result["post_commentary_text"],
         }
@@ -446,7 +447,7 @@ def extract_positions_parts(page_source, keyword):
     with open(positions_path, "w", encoding="utf8") as p:
         p.write(str(positions))
 
-    print("extractions from extract_positions_parts", extractions)
+    print(Fore.RED + "extractions from extract_positions_parts", extractions)
     # Return positions as set
     return extractions
 
@@ -456,6 +457,7 @@ def find_positions(driver, keywords):
     # Set to store all positions found
     all_positions_html_block_for_keywords_html_block = set()
     # Initialize the main extractions dictionary to collect results for all keywords
+    main_extractions_temp = {}
     main_extractions = {}
     print(Fore.BLUE + "Starting find_positions()")
 
@@ -548,13 +550,18 @@ def find_positions(driver, keywords):
                     "position_html_block": extraction.get("position_html_block"),
                     "position_text": extraction.get("position_text"),
                 }
+                extractions_for_keyword.append(extraction_entry)
 
             # Update extractions with the structured extraction positions_html_block_for_keyword in each while loop
-            extractions_for_keyword.append(extraction_entry)
             positions_html_block_for_keyword = new_positions_html_block_for_keyword
 
         # After completing all pages for the current keyword, add results to main extractions
-        main_extractions[keyword] = extractions_for_keyword
+        main_extractions_temp[keyword] = extractions_for_keyword
+
+        # Serialize to JSON
+        main_extractions = json.dumps(
+            main_extractions_temp, ensure_ascii=False, indent=4
+        )
 
         # keyword's result title line if any
         positions_html_block_for_keyword = list(positions_html_block_for_keyword)
@@ -683,8 +690,8 @@ def main():
 
     extractions = find_positions(driver, keywords[:])
     print(Fore.GREEN + "extractions before list():\n", extractions)
-    extractions = list(extractions)
-    print(Fore.GREEN + "extractions:\n", extractions)
+    # extractions = list(extractions)
+    # print(Fore.GREEN + "extractions:\n", extractions)
 
     # Initialize lists to store all blocks and text entries
     all_positions_html_block_for_keywords_html_block = []
