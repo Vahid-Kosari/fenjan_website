@@ -691,34 +691,91 @@ def main():
     login_to_linkedin(driver)
     print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
 
-    extractions = find_positions(driver, keywords[:])
-    print(Fore.GREEN + "extractions before list():\n", extractions)
+    extractions_str = find_positions(driver, keywords[:])
+    print(Fore.GREEN + "RAW extractions from find_positions():\n", extractions_str)
     # extractions = list(extractions)
     # print(Fore.GREEN + "extractions:\n", extractions)
 
-    if isinstance(extractions, str):
-        extractions = json.loads(extractions)
+    if isinstance(extractions_str, str):
+        extractions_json = json.loads(extractions_str)
+
+    print(Fore.CYAN + "extractions after json.loads():\n", extractions_json)
 
     # Initialize lists to store all blocks and text entries
+    all_positions_html_block_for_keyword_html_block = []
     all_positions_html_block_for_keywords_html_block = []
+    all_positions_html_block_for_keyword_text = []
     all_positions_html_block_for_keywords_text = []
 
-    # Extend the lists with extracted data for each entry
-    all_positions_html_block_for_keywords_html_block.extend(
-        entry["position_html_block"]
-        for entry in extractions
-        if "position_html_block" in entry
-    )
+    for keyword, sections in extractions_json.items():
 
-    all_positions_html_block_for_keywords_text.extend(
-        entry["position_text"] for entry in extractions if "position_text" in entry
-    )
+        # Dynamically create a variable for the current keyword like phd_results
+        keyword_html_block_results = (
+            f"all_positions_html_block_for_{keyword.lower()}_html_block"
+        )
+        globals()[keyword_html_block_results] = []
+        keyword_text_results = f"all_positions_html_block_for_{keyword.lower()}_text"
+        globals()[keyword_text_results] = []
+
+        for i, section in enumerate(sections):
+            if "position_html_block" in section:
+                print(
+                    Fore.BLUE
+                    + f'Keyword: {keyword}, Section {i} ["position_html_block"]: {section["position_html_block"]}'
+                )
+                # all_positions_html_block_for_keyword_html_block.append(
+                globals()[keyword_html_block_results].append(
+                    section["position_html_block"]
+                )
+                # all_positions_html_block_for_keyword_html_block.append(
+                globals()[keyword_text_results].append(section["position_text"])
+            # print(Fore.BLUE + f"Keyword: {keyword}, Section{i}[\"position_html_block\"]: {section["position_html_block"]}")
+        print(
+            Fore.GREEN + f"all_positions_html_block_for_{keyword}_html_block =",
+            # all_positions_html_block_for_keyword_html_block,
+            globals()[keyword_html_block_results],
+        )
+
+    """
+    # Extend the lists with extracted data for each entry of keywords
+    for keyword_result in extractions_json:
+        all_positions_html_block_for_keyword_html_block.append(
+            entry["position_html_block"]
+            for entry in keyword_result
+            if "position_html_block" in entry and ("position_html_block" in entry) > 1
+        )
+        print(
+            f"all_positions_html_block_for_{keyword_result}_html_block =",
+            all_positions_html_block_for_keyword_html_block,
+        )
+
+        all_positions_html_block_for_keyword_text.append(
+            entry["position_text"]
+            for entry in keyword_result
+            if "position_text" in entry
+        )
+    """
 
     # Print the results
-    print(
-        "all_positions_html_block_for_keywords_html_block =",
-        all_positions_html_block_for_keywords_html_block,
-    )
+    for keyword in keywords:
+        keyword = keyword.lower()
+        keyword_html_block_results = globals().get(
+            f"all_positions_html_block_for_{keyword.lower()}_html_block", None
+        )
+        keyword_text_results = globals().get(
+            f"all_positions_html_block_for_{keyword.lower()}_text", None
+        )
+        print(
+            Fore.GREEN + f"all_positions_html_block_for_{keyword}s_html_block =",
+            # all_positions_html_block_for_keywords_html_block,
+            keyword_html_block_results,
+        )
+        print(
+            Fore.GREEN + f"all_positions_html_block_for_{keyword}s_text =",
+            # all_positions_html_block_for_keywords_html_block,
+            keyword_text_results,
+        )
+
     print(
         "all_positions_html_block_for_keywords_text =",
         all_positions_html_block_for_keywords_text,
