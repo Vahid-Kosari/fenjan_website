@@ -210,7 +210,14 @@ def extract_positions_parts(page_source, keyword):
 
     print(f"number of main_containers: ", len(main_containers))
 
-    keyword_alternatives = keywords_alternatives.get(keyword, [])
+    # keyword_alternatives = keywords_alternatives.get(keyword, []) or [keyword]
+
+    # This line ensures if a new keyword does not exist in the keywords.py, then add it and continue
+    keyword_alternatives = keywords_alternatives.get(keyword, []) or (
+        keywords.append(keyword)
+        or keywords_alternatives.setdefault({keyword: [keyword]})
+        or [keyword]
+    )
     # Filter out containers that do not contain the keyword in the post text itself
     only_containing_keyword_main_containers = list(
         filter(
@@ -626,8 +633,8 @@ def find_positions(driver, keywords):
     #     sys.exit()
 
     # return all_positions_html_block_for_keywords_html_block
-    print("returning extractions form find_positions()", main_extractions)
-    return main_extractions
+    print(Fore.YELLOW + "returning extractions form find_positions()", main_extractions)
+    return main_extractions, html_content
 
 
 # Filter all_positions_html_block_for_keywords_html_block from find_positions() based on search_keywords list and returns matching_positions as list
@@ -655,6 +662,10 @@ def filter_positions(all_positions_html_block_for_keywords_html_block, search_ke
                 matching_positions.append(position)
 
     return matching_positions
+
+
+def filter_keywords(customer_keywords, keywords):
+    return
 
 
 # Compose and send an email to the specified recipient with a list of positions
@@ -691,25 +702,31 @@ def main():
     login_to_linkedin(driver)
     print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
 
+    customer_keywords = filter_keywords(cu)
     extractions_str = find_positions(driver, keywords[:])
     print(Fore.GREEN + "RAW extractions from find_positions():\n", extractions_str)
     # extractions = list(extractions)
     # print(Fore.GREEN + "extractions:\n", extractions)
+
+    time.sleep(3)
+    driver.quit()
+
+    # Define the local file path
+    search_results_path = os.path.join(temp_folder, "search_results.html")
+    search_results_obsolete_path = os.path.join(
+        temp_folder, "search_results_obsolete.html"
+    )
+    search_results_json_path = os.path.join(temp_folder, "search_results.json")
+    results_path = os.path.join(temp_folder, "results.html")
 
     if isinstance(extractions_str, str):
         extractions_json = json.loads(extractions_str)
 
     print(Fore.CYAN + "extractions after json.loads():\n", extractions_json)
 
-    # Initialize lists to store all blocks and text entries
-    all_positions_html_block_for_keyword_html_block = []
-    all_positions_html_block_for_keywords_html_block = []
-    all_positions_html_block_for_keyword_text = []
-    all_positions_html_block_for_keywords_text = []
-
     for keyword, sections in extractions_json.items():
 
-        # Dynamically create a variable for the current keyword like phd_results
+        # Dynamically create a variable for the current keyword like all_positions_html_block_for_phd_html_block
         keyword_html_block_results = (
             f"all_positions_html_block_for_{keyword.lower()}_html_block"
         )
@@ -723,38 +740,14 @@ def main():
                     Fore.BLUE
                     + f'Keyword: {keyword}, Section {i} ["position_html_block"]: {section["position_html_block"]}'
                 )
-                # all_positions_html_block_for_keyword_html_block.append(
                 globals()[keyword_html_block_results].append(
                     section["position_html_block"]
                 )
-                # all_positions_html_block_for_keyword_html_block.append(
                 globals()[keyword_text_results].append(section["position_text"])
-            # print(Fore.BLUE + f"Keyword: {keyword}, Section{i}[\"position_html_block\"]: {section["position_html_block"]}")
         print(
             Fore.GREEN + f"all_positions_html_block_for_{keyword}_html_block =",
-            # all_positions_html_block_for_keyword_html_block,
             globals()[keyword_html_block_results],
         )
-
-    """
-    # Extend the lists with extracted data for each entry of keywords
-    for keyword_result in extractions_json:
-        all_positions_html_block_for_keyword_html_block.append(
-            entry["position_html_block"]
-            for entry in keyword_result
-            if "position_html_block" in entry and ("position_html_block" in entry) > 1
-        )
-        print(
-            f"all_positions_html_block_for_{keyword_result}_html_block =",
-            all_positions_html_block_for_keyword_html_block,
-        )
-
-        all_positions_html_block_for_keyword_text.append(
-            entry["position_text"]
-            for entry in keyword_result
-            if "position_text" in entry
-        )
-    """
 
     # Print the results
     for keyword in keywords:
@@ -776,118 +769,19 @@ def main():
             keyword_text_results,
         )
 
-    print(
-        "all_positions_html_block_for_keywords_text =",
-        all_positions_html_block_for_keywords_text,
+    # Temporary code to continue if satisfied
+    dicision = input(
+        Fore.LIGHTBLUE_EX
+        + "Enter any key to exit find_positions(deiver, keywords) OR c to continue!"
     )
-
-    """extractions = list(find_positions(driver, keywords[:]))
-
-    all_positions_html_block_for_keywords_html_block = [
-        entry["position_html_block"]
-        for entry in extractions
-        if "position_html_block" in entry
-    ]
-    print(
-        "all_positions_html_block_for_keywords_html_block = ",
-        all_positions_html_block_for_keywords_html_block,
-    )
-
-    all_positions_html_block_for_keywords_text = [
-        entry["position_text"] for entry in extractions if "position_text" in entry
-    ]
-    print("all_positions_html_block_for_keywords_text = ", all_positions_html_block_for_keywords_text)
-    """
-
-    time.sleep(3)
-
-    driver.quit()
-
-    # Define the local file path
-    search_results_path = os.path.join(temp_folder, "search_results.html")
-    search_results_obsolete_path = os.path.join(
-        temp_folder, "search_results_obsolete.html"
-    )
-    search_results_json_path = os.path.join(temp_folder, "search_results.json")
-    results_path = os.path.join(temp_folder, "results.html")
-
-    # Writing out all_positions_html_block_for_keywords_html_block to search_results.html
-    if all_positions_html_block_for_keywords_html_block:
-        # Store previous search_results.html as obsolete
-        fresh_file_name = search_results_path
-        obsolete_file_name = search_results_obsolete_path
-        os.rename(fresh_file_name, obsolete_file_name)
-
-        # Store new value of find_position() returnd as search_results.html
-        with open(search_results_path, "w", encoding="utf-8") as sr:
-            sr.write(str(all_positions_html_block_for_keywords_html_block))
-    else:
-        print(Fore.RED + "No html block!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        # return
-
-    # Assuming all_positions_html_block_for_keywords_html_block is a set or any other object you want to store
-    with open(search_results_json_path, "w", encoding="utf-8") as sr:
-        # Use json.dump to write to a file
-        json.dump(
-            list(all_positions_html_block_for_keywords_html_block),
-            sr,
-            ensure_ascii=False,
-            indent=4,
-        )
-
-    with open(search_results_json_path, "r", encoding="utf-8") as sr:
-        all_positions_html_block_for_keywords_html_block = json.load(sr)
-
-    search_results_path = search_results_json_path
-    # Check if the file exists
-    if not os.path.exists(search_results_path):
-        print(f"File {search_results_path} does not exist.")
-    else:
-        # Read the file contents
-        """with open(search_results_path, "r") as f:
-        search_results = f.read()
-        """
-
-        # Split the HTML content into sections (Each section is inside a <div> tag)
-        # sections = re.split(r"</div>,\s*<div", search_results)
-        """sections = re.split(r"</div>\"", search_results)"""
-        # sections = re.split(r"</div>',\s*'<", search_results)
-        """print(Fore.BLUE + "len(sections): ", len(sections), sections)"""
-        """for i, section in enumerate(all_positions_html_block_for_keywords_html_block):
-            print(
-                Fore.BLUE
-                + f"{i}-len(section)={len(section["position_html_block"])} and section is:\n",
-                section,
-            )"""
-
-        for i, section in enumerate(all_positions_html_block_for_keywords_html_block):
-            # Check if section is a dictionary and contains the expected key
-            if isinstance(section, list) and "position_html_block" in section:
-                print(
-                    f"{i}-len(section)={len(section['position_html_block'])} and section is:\n",
-                    section,
-                )
-            else:
-                print(f"{i}-Invalid section format or missing key: {section}")
-
-        # Temporary code to continue if satisfied
-        dicision = input(
-            Fore.LIGHTBLUE_EX
-            + "Enter any key to exit find_positions(deiver, keywords) OR c to continue!"
-        )
-        if dicision != "c":
-            sys.exit()
-
-    """
-    print(f"[info]: Total number of positions: {len(all_positions_html_block_for_keywords_html_block)}")
-    """
+    if dicision != "c":
+        sys.exit()
 
     # getting customers info from db
     log.info("Getting customers info.")
     # customers = get_customers_info(dotenv_path)
     customers = Customer.objects.all()
 
-    """
     for customer in customers:
         if customer.first_name == "Vahid":
             log.info("Customer Vahid found.")
@@ -919,7 +813,6 @@ def main():
                     + f"Number of relevant_positions ({-2*len(keywords)}) for {customer.username}: \n",
                     len(relevant_positions),
                 )
-                # relevant_SGAI_positions = filter_positions(phd_positions, keywords)
 
                 output_dir = os.path.join(
                     os.path.dirname(os.path.abspath(__file__)),
@@ -954,29 +847,8 @@ def main():
                         utils_dir_path,
                     )
                     time.sleep(10)
-                """ """
-                if relevant_SGAI_positions:
-                    with open(
-                        file_path, "w", encoding="utf-8"
-                    ) as relevant_SGAI_positions_export:
-                        for position in relevant_SGAI_positions:
-                            relevant_SGAI_positions_export.write(
-                                position + "\n" + """ """ """ """ + "\n"
-                            )
-                    log.info(
-                        f"Sending email containing {len(relevant_SGAI_positions)} positions to: {customer.username}"
-                    )
-                    print(f"[info]: Sending email to: {customer.username}")
-                    compose_and_send_email(
-                        customer.email,
-                        customer.username,
-                        relevant_SGAI_positions,
-                        utils_dir_path,
-                    )
-                    time.sleep(10)
-                    """
-    # else:
-    # print(f"{customer.username}'s registration expired!")
+            else:
+                print(f"{customer.username}'s registration expired!")
 
 
 if __name__ == "__main__":
