@@ -664,10 +664,6 @@ def filter_positions(all_positions_html_block_for_keywords_html_block, search_ke
     return matching_positions
 
 
-def filter_keywords(customer_keywords, keywords):
-    return
-
-
 # Compose and send an email to the specified recipient with a list of positions
 def compose_and_send_email(recipient_email, recipient_name, positions, base_path):
     """Compose and send an email to the specified recipient with a list of positions.
