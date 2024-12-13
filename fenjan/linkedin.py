@@ -698,9 +698,8 @@ def main():
     login_to_linkedin(driver)
     print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
 
-    customer_keywords = filter_keywords(cu)
-    extractions_str = find_positions(driver, keywords[:])
-    print(Fore.GREEN + "RAW extractions from find_positions():\n", extractions_str)
+    # extractions_str = find_positions(driver, keywords[:])
+    # print(Fore.GREEN + "RAW extractions from find_positions():\n", extractions_str)
     # extractions = list(extractions)
     # print(Fore.GREEN + "extractions:\n", extractions)
 
@@ -715,6 +714,7 @@ def main():
     search_results_json_path = os.path.join(temp_folder, "search_results.json")
     results_path = os.path.join(temp_folder, "results.html")
 
+    """
     if isinstance(extractions_str, str):
         extractions_json = json.loads(extractions_str)
 
@@ -773,6 +773,8 @@ def main():
     if dicision != "c":
         sys.exit()
 
+    """
+
     # getting customers info from db
     log.info("Getting customers info.")
     # customers = get_customers_info(dotenv_path)
@@ -797,18 +799,25 @@ def main():
                         + customer.keywords
                     )
                 )
+                extractions_str, html_content = find_positions(driver, customerkeywords)
+                time.sleep(3)
+                driver.quit()
+
+                if isinstance(extractions_str, str):
+                    extractions_json = json.loads(extractions_str)
+
                 # filter positions based on customer keywords
                 log.info(
                     f"Filtering positions for {customer.username} based on {customerkeywords[0]} in the found positions"
                 )
-                relevant_positions = filter_positions(
-                    all_positions_html_block_for_keywords_html_block, customerkeywords
-                )
-                print(
-                    Fore.CYAN
-                    + f"Number of relevant_positions ({-2*len(keywords)}) for {customer.username}: \n",
-                    len(relevant_positions),
-                )
+                # relevant_positions = filter_positions(
+                # all_positions_html_block_for_keywords_html_block, customerkeywords
+                # )
+                # print(
+                #     Fore.CYAN
+                #     + f"Number of relevant_positions ({-2*len(keywords)}) for {customer.username}: \n",
+                #     len(relevant_positions),
+                # )
 
                 output_dir = os.path.join(
                     os.path.dirname(os.path.abspath(__file__)),
@@ -824,22 +833,22 @@ def main():
                 )
 
                 # Write the list to the file
-                if relevant_positions:
+                if html_content:
                     with open(
                         file_path, "w", encoding="utf-8"
                     ) as relevant_positions_export:
-                        for position in relevant_positions:
+                        for position in html_content:
                             relevant_positions_export.write(
                                 position + "\n" + """ """ """ """ + "\n"
                             )
                     log.info(
-                        f"Sending email containing {len(relevant_positions)} positions to: {customer.username}"
+                        f"Sending email containing {len(extractions_json)} positions to: {customer.username}"
                     )
                     print(f"[info]: Sending email to: {customer.username}")
                     compose_and_send_email(
                         customer.email,
                         customer.username,
-                        relevant_positions,
+                        html_content,
                         utils_dir_path,
                     )
                     time.sleep(10)
