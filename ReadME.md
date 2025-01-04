@@ -4,6 +4,33 @@ The main idea of this application comes from a similar Flask-driven application 
 
 This project has been renovated using Django and JavaScript to create this web application interface.
 
+# Distinctiveness and Complexity
+
+Fenjan (meaning "cup" in Persian) symbolizes the essence of this project: offering users a personalized experience while they enjoy a cup of their favorite drink. The Fenjan project allows users to provide their keywords and email address to initiate a web scraping process (currently focused on LinkedIn), organize the results in a structured format, and send the relevant findings directly to their email.
+
+To achieve this, users are offered a free trial period of three days, during which they can receive results via email. After the trial, users can request registration under preferred conditions to gain full access, including emailed reports and a personalized user panel for a specified duration.
+
+### Security Measures
+
+The credentials for accessing LinkedIn's API and the email service used for sending results are securely stored in a local `.env` file to prevent exposure through the source code.
+
+### Backend Infrastructure
+
+To manage user access and ensure timely updates, Redis and Celery are utilized for task scheduling and background job management. These tools help keep the application scalable and responsive.
+
+### Data Extraction and Processing
+
+Initially, I experimented with ASGI modules and the Llama3 model to format the scraped data. However, due to unsatisfactory results, I conducted an in-depth analysis of LinkedIn's site structure. This manual process took significant time and effort to understand the layout and extract relevant, structured data. The focus is on identifying posts with application links, avoiding unrelevant links and posts, and repackaging the extracted content into a readable, user-friendly HTML format.
+
+### Email Delivery
+
+The prepared HTML reports are sent to users via email using Python's `smtplib` and `EmailMessage` libraries, ensuring a seamless delivery process.
+
+### User Interface and Design
+
+The website's appearance is crafted with attention to both desktop and mobile versions. AI-generated images enhance the visual appeal, while Figma was used to design the layout for an optimal user experience across different devices.
+As the interface is designed minimally, employing Javascript was not the case and not used enough.
+
 ## How to Run the Fenjan Project
 
 Follow these steps to set up and run the Fenjan project:

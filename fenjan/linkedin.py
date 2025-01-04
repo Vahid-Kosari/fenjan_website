@@ -212,12 +212,32 @@ def extract_positions_parts(page_source, keyword):
 
     # keyword_alternatives = keywords_alternatives.get(keyword, []) or [keyword]
 
+    # Function to add a keyword and update the file
+    def add_keyword(keyword):
+        keywords_file = os.path.join(os.path.dirname(__file__), "utils", "keywords.py")
+        keyword = keyword.lower()
+
+        # Add to keywords if not already present
+        if keyword not in keywords:
+            keywords.append(keyword)
+            keywords_alternatives[keyword] = [keyword]
+
+        # Write back to the keywords.py file
+        with open(keywords_file, "w", encoding="utf-8") as file:
+            file.write(f"keywords = {keywords}\n")
+            file.write(f"keywords_alternatives = {keywords_alternatives}\n")
+
+        return keywords_alternatives[keyword]
+
     # This line ensures if a new keyword does not exist in the keywords.py, then add it and continue
-    keyword_alternatives = keywords_alternatives.get(keyword, []) or (
-        keywords.append(keyword)
-        or keywords_alternatives.setdefault({keyword: [keyword]})
-        or [keyword]
+    keyword_alternatives = keywords_alternatives.get(keyword, []) or add_keyword(
+        keyword
     )
+    # keyword_alternatives = keywords_alternatives.get(keyword, []) or (
+    #     keywords.append(keyword)
+    #     or keywords_alternatives.setdefault(keyword, [keyword])
+    #     or [keyword]
+    # )
     # Filter out containers that do not contain the keyword in the post text itself
     only_containing_keyword_main_containers = list(
         filter(
@@ -501,10 +521,11 @@ def find_positions(driver, keywords):
         extractions_for_keyword = extract_positions_parts(driver.page_source, keyword)
         # Extract only the "position_html_block" content for each extraction
         positions_html_block_for_keyword = {
-            entry["position_html_block"] for entry in extractions_for_keyword
+            str(entry["position_html_block"]) for entry in extractions_for_keyword
         }
 
-        while True:
+        # while True:
+        while len(list(positions_html_block_for_keyword)) < 4:
             # Increment page number
             page += 1
             # Set postfix for progress bar
@@ -608,7 +629,12 @@ def find_positions(driver, keywords):
         for position in all_positions_html_block_for_keywords_html_block:
             html_content += f"{position}"
 
-            # print(Fore.GREEN + "html_content is: ", html_content)
+            print(Fore.GREEN + "html_content is: ", html_content)
+        print(Fore.YELLOW + "Final html_content is: ", html_content)
+
+        file_path = os.path.join(temp_folder, "the_html_content.html")
+        with open(file_path, "w", encoding="utf-8") as html:
+            html.write(html_content)
 
         # print(
         #     Fore.CYAN + "all_positions_html_block_for_keywords_html_block from find_positions() is: ",
@@ -625,16 +651,17 @@ def find_positions(driver, keywords):
             all.write(str(all_positions_html_block_for_keywords_html_block))
 
     # Temporary code to continue if satisfied
-    # dicision = input(
-    #     Fore.LIGHTBLUE_EX
-    #     + "Enter any key to exit find_positions(deiver, keywords) OR c to continue!"
-    # )
-    # if dicision != "c":
-    #     sys.exit()
+    dicision = input(
+        Fore.LIGHTBLUE_EX
+        + "Enter any key to exit find_positions(deiver, keywords) OR c to continue! (INSIDE FIND_POSITIONS())"
+    )
+    if dicision != "c":
+        sys.exit()
 
     # return all_positions_html_block_for_keywords_html_block
     print(Fore.YELLOW + "returning extractions form find_positions()", main_extractions)
-    return main_extractions, html_content
+    return main_extractions, all_positions_html_block_for_keywords_html_block
+    # return main_extractions, html_content
 
 
 # Filter all_positions_html_block_for_keywords_html_block from find_positions() based on search_keywords list and returns matching_positions as list
@@ -703,8 +730,8 @@ def main():
     # extractions = list(extractions)
     # print(Fore.GREEN + "extractions:\n", extractions)
 
-    time.sleep(3)
-    driver.quit()
+    # time.sleep(3)
+    # driver.quit()
 
     # Define the local file path
     search_results_path = os.path.join(temp_folder, "search_results.html")
@@ -713,6 +740,7 @@ def main():
     )
     search_results_json_path = os.path.join(temp_folder, "search_results.json")
     results_path = os.path.join(temp_folder, "results.html")
+    html_content_path = os.path.join(temp_folder, "html_content.html")
 
     """
     if isinstance(extractions_str, str):
@@ -803,6 +831,9 @@ def main():
                 time.sleep(3)
                 driver.quit()
 
+                with open(html_content_path, "w", encoding="utf-8") as positions:
+                    positions.write(str(html_content))
+
                 if isinstance(extractions_str, str):
                     extractions_json = json.loads(extractions_str)
 
@@ -839,7 +870,11 @@ def main():
                     ) as relevant_positions_export:
                         for position in html_content:
                             relevant_positions_export.write(
-                                position + "\n" + """ """ """ """ + "\n"
+                                # position + "\n" + """ """ """ """ + "\n"
+                                position
+                                + "\n"
+                                + "HTML_CONTENT"
+                                + "\n"
                             )
                     log.info(
                         f"Sending email containing {len(extractions_json)} positions to: {customer.username}"
