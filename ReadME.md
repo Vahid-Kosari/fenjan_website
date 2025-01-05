@@ -16,11 +16,11 @@ The credentials for accessing LinkedIn's API and the email service used for send
 
 ### Backend Infrastructure
 
-To manage user access and ensure timely updates, Redis and Celery are utilized for task scheduling and background job management. These tools help keep the application scalable and responsive.
+To manage user access and ensure timely updates, Redis and Celery are utilized for task scheduling and background job management. These tools help keep the application scalable and responsive. Users' data is stored in the models.py as Customer class. Also, admin interface enhanced a little to inform the admin about users' state. linkedin_sgai.py and llama3.py are obsolete.
 
 ### Data Extraction and Processing
 
-Initially, I experimented with ASGI modules and the Llama3 model to format the scraped data. However, due to unsatisfactory results, I conducted an in-depth analysis of LinkedIn's site structure. This manual process took significant time and effort to understand the layout and extract relevant, structured data. The focus is on identifying posts with application links, avoiding unrelevant links and posts, and repackaging the extracted content into a readable, user-friendly HTML format.
+Initially, I experimented with ASGI modules and the Llama3 model to format the scraped data. However, due to unsatisfactory results, I conducted an in-depth analysis of LinkedIn's site structure. This manual process took significant time and effort to understand the layout and extract relevant, structured data. The focus is on identifying posts with application links and repackaging the extracted content into a readable, user-friendly HTML format.
 
 ### Email Delivery
 
@@ -29,7 +29,7 @@ The prepared HTML reports are sent to users via email using Python's `smtplib` a
 ### User Interface and Design
 
 The website's appearance is crafted with attention to both desktop and mobile versions. AI-generated images enhance the visual appeal, while Figma was used to design the layout for an optimal user experience across different devices.
-As the interface is designed minimally, employing Javascript was not the case and not used enough.
+As the interface is designed minimally, employing JavaScript was not the case and not used more than enough.
 
 ## How to Run the Fenjan Project
 
@@ -135,20 +135,3 @@ Follow these steps to set up and run the Fenjan project:
 
 8.  **Open the Application in Your Browser**
     - Navigate to the dedicated URL (typically `http://127.0.0.1:8000/`) to access the application.
-
----
-
-include a writeup describing your project, and
-specifically your file MUST include all of the following:
-Under its own header within the README called Distinctiveness and Complexity:
-Why you believe your project satisfies the distinctiveness and complexity requirements, mentioned above.
-What’s contained in each file you created.
-How to run your application.
-Any other additional information the staff should know about your project.
-
-=>
-writing a README.md that you are proud of and that documents your project thoroughly, and that distinguishes this project from others in the course and defends its complexity.
-
-Simply saying, effectively, “It’s different from the other projects and it was complex to build.” is not at all sufficient justification of distinctiveness and complexity.
-
-This section alone should consist of several paragraphs, before you even begin to talk about the documentation of your project.
