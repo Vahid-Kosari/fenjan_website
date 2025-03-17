@@ -22,7 +22,7 @@ class Customer(AbstractUser):
         default=RegistrationState.TRIAL,
     )
     keywords = models.JSONField(null=False)
-    registration_date = models.DateField(default=timezone.now().date)
+    registration_date = models.DateField(default=timezone.now)
     expiration_date = models.DateField(default=default_expiration_date)
 
     groups = models.ManyToManyField(
@@ -45,3 +45,17 @@ class Customer(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+
+class LinkedInSearchResult(models.Model):
+    # Assuming customer-related data, you might want to link this to a user or session
+    # If you're not associating with a specific user, you can remove the user field.
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, null=True, blank=True)
+    keywords = models.CharField(max_length=255)  # Store keywords used in the search
+    html_content = models.JSONField()  # Store the HTML content as a list of strings (or structured data)
+    created_at = models.DateField(auto_now_add=True) # Timestamp for when this record was created
+
+    def __str__(self):
+        # return f"Search result for {self.keywords}"
+        return f"Search result for {self.keywords} at {self.created_at}"

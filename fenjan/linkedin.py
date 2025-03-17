@@ -48,7 +48,7 @@ from utils.send_email import send_email
 from fenjan.utils.keywords import keywords, keywords_alternatives
 from utils.compose_email import compose_email
 from utils.database_helpers import *
-from fenjan.models import Customer
+from fenjan.models import Customer, LinkedInSearchResult
 
 # Set path for logging
 temp_folder = os.path.join(os.path.dirname(__file__), "temp")
@@ -671,7 +671,7 @@ def compose_and_send_email(recipient_email, recipient_name, positions, base_path
 
 
 extractions = {}
-
+html_content = list()
 
 def main():
 
@@ -793,6 +793,13 @@ def main():
                     )
                 )
                 extractions_str, html_content = find_positions(driver, customerkeywords)
+
+                # Create a new LinkedInSearchResult entry
+                search_result = LinkedInSearchResult.objects.create(user=customer,  # Optionally, associate with a user
+                keywords=customerkeywords,
+                html_content=html_content,  # This stores the list of HTML content
+                )
+
                 time.sleep(3)
                 driver.quit()
 
