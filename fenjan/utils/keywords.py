@@ -1,12 +1,2 @@
-keywords = [
-    "phd",
-    "LLM",
-    "web development",
-    "KPC",
-]
-keywords_alternatives = {
-    "phd": ["phd", "Ph.D.", "phdposition"],
-    "LLM": ["LLM", "Large Language Model"],
-    "web development": ["web development"],
-    "KPC": ["KPC"],
-}
+keywords = ['phd', 'LLM', 'web development', 'KPC', 'kpc', 'webdevelopment', 'llm', 'sped']
+keywords_alternatives = {'phd': ['phd', 'Ph.D.', 'phdposition'], 'LLM': ['LLM', 'Large Language Model'], 'web development': ['web development'], 'KPC': ['KPC'], 'kpc': ['kpc'], 'webdevelopment': ['webdevelopment'], 'llm': ['llm'], 'sped': ['sped']}

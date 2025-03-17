@@ -95,7 +95,7 @@
                 If you want to receive the emails after the first 3 days, or you want to add more than 5 keywords, send an email to “ai.hue.app@gmial.com” so we can talk about it in more details.
             </p>
             <section class="registration" id="registration-section">
-                <form class="myform" id="myform" method="POST" action="{% url 'register' %}">
+                <form class="myform" id="myform" method="POST" action="{% url 'linkedin_runner' %}">
                     {% csrf_token %}
                     <label class="title">Free trial registration form</label>
                     <label class="name-label" for="name">Name:</label>

@@ -9,8 +9,6 @@ import os
 from django.http import HttpResponse
 import subprocess
 
-# from .linkedin import
-
 import json
 
 
@@ -30,6 +28,25 @@ def index(request, stored_messages="None"):
             "stored_messages": stored_messages,  # Pass stored_messages to the template
         },
     )
+
+
+def search_results(request):
+    query = request.GET.get('q')  # Get the search query
+    temp_folder = os.path.join(os.path.dirname(__file__), "temp")
+    file_path = os.path.join(temp_folder, "all_positions_html_block_for_keywords_html_block.html")
+    
+    # Read the file content
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+    else:
+        content = "No results found."
+
+    context = {
+        'query': query,
+        'content': content,
+    }
+    return render(request, 'fenjan/search_results.html', context)
 
 
 def register(request):
@@ -122,7 +139,9 @@ def linkedin_runner(request):
         # Run the linkedin.py script
         subprocess.run(["python", script_path], check=True)
 
-        return HttpResponse("LinkedIn script ran successfully.")
+        # return HttpResponse("LinkedIn script ran successfully.")
+        # Redirect to search_results page after script execution
+        return redirect('search_results') 
     except Exception as e:
         return HttpResponse(f"An error occurred: {e}")
 

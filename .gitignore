@@ -3,6 +3,6 @@
 fenjan/temp
 .chrome_driver_session
 chromedriver-linux64
-fenjan/chromedriver-linux64
+chromedriver-win64
 fenjan/.chrome_driver_session
 capstone/celerybeat-schedule

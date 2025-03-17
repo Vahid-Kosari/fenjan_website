@@ -2,7 +2,7 @@
 
 The main idea of this application comes from a similar Flask-driven application in conjunction with MySQL by [mh-salari](https://github.com/mh-salari).
 
-This project has been renovated using Django and JavaScript to create this web application interface.
+This project has been renovated using Django and JavaScript to create this web application back-end and interface.
 
 # Distinctiveness and Complexity
 

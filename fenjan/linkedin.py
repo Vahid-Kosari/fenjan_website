@@ -25,16 +25,12 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from colorama import Fore, Back, Style
 from colorama import init
+import json
+
 
 init(autoreset=True)
 
 from bs4 import BeautifulSoup
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-
-# from webdriver_manager.chrome import ChromeDriverManager
 
 import sys
 import django
@@ -66,11 +62,21 @@ log.basicConfig(
 )
 
 
+import os
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+
 def make_driver():
     """
-    Create and return a headless Chrome webdriver instance
+    Create and return a Chrome webdriver instance that retains login session.
     """
+    
 
+    # To download campatible chromedrive for your system reach out here: https://googlechromelabs.github.io/chrome-for-testing
+    """
+    # This snippet is for ubuntu
     # Set options for Chrome
     options = webdriver.ChromeOptions()
     # options = Options()
@@ -84,11 +90,37 @@ def make_driver():
     #     service=Service(ChromeDriverManager().install()), options=options
     # )
 
-    # To download campatible chromedrive for your system reach out here: https://googlechromelabs.github.io/chrome-for-testing
     # Utilize Chrome webdriver manually
     driver_path = "./chromedriver-linux64/chromedriver"
     driver = webdriver.Chrome(executable_path=driver_path, options=options)
+    """
 
+    # Path to store Chrome user data (this will keep cookies, login sessions, etc.)
+    user_data_dir = os.path.join(os.getcwd(), ".chrome_driver_session")
+    
+    # Create the user data directory if it doesn't exist
+    if not os.path.exists(user_data_dir):
+        os.makedirs(user_data_dir)
+    
+    # Set Chrome options
+    options = Options()
+    options.add_argument(f"user-data-dir={user_data_dir}")  # Persistent session
+    options.add_argument("--remote-debugging-port=9222")  # Allow remote debugging
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")  # Only for headless
+    options.add_argument("--disable-software-rasterizer")
+    
+    # Utilize Chrome webdriver manually
+    # driver_path = "./chromedriver-win64/chromedriver.exe"
+    # driver = webdriver.Chrome(executable_path=driver_path, options=options)
+
+    # Set up Chrome driver with webdriver_manager to install the correct version of chromedriver
+    service = Service(ChromeDriverManager().install())
+    
+    # Initialize Chrome driver with the specified options and service
+    driver = webdriver.Chrome(service=service, options=options)
+    
     return driver
 
 
@@ -104,7 +136,7 @@ def login_to_linkedin(driver):
     # Load LinkedIn login page
     driver.get("https://linkedin.com/uas/login")
     # Wait for page to load
-    time.sleep(2)
+    time.sleep(5)
     # Check if already logged in
     if driver.current_url == "https://www.linkedin.com/feed/":
         return
@@ -119,73 +151,6 @@ def login_to_linkedin(driver):
     driver.find_element("xpath", "//button[@type='submit']").click()
     # Temporarily added to bypass first two-setep verification code request for the first time in new session
     # time.sleep(15)
-
-
-# Sources: https://medium.com/@amanatulla1606/llm-web-scraping-with-scrapegraphai-a-breakthrough-in-data-extraction-d6596b282b4d
-#  Data Extraction by ScrapeGraphAI
-from scrapegraphai.graphs import SmartScraperGraph
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-import time, json
-
-
-def extract_by_scrapegraphai(source):
-    OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-
-    graph_config = {
-        "llm": {
-            "api_key": OPENAI_API_KEY,
-            "model": "gpt-3.5-turbo",
-        },
-    }
-
-    smart_scraper_graph = SmartScraperGraph(
-        prompt="List me all the positions with their description and link for apply from.",
-        # also accepts a string with the already downloaded HTML code
-        # source="https://perinim.github.io/projects/",
-        source=source,
-        config=graph_config,
-    )
-
-    result = smart_scraper_graph.run()
-    output = json.dumps(result, indent=2)
-    line_list = output.split("\n")  # Sort of line replacing "\n" with a new line
-    for line in line_list:
-        print(line)
-    return result
-
-
-# Setup Selenium WebDriver
-# driver_path = "./chromedriver"  # Path to your ChromeDriver
-# driver_path = "./chromedriver-linux64/chromedriver"
-# options = webdriver.ChromeOptions()
-# options.add_argument("--headless")  # Run in headless mode
-# driver = webdriver.Chrome(executable_path=driver_path, options=options)
-
-
-# Define a function to log in to LinkedIn
-# def linkedin_login(driver, username, password):
-# driver.get("https://www.linkedin.com/login")
-# time.sleep(2)
-# driver.find_element(By.ID, "username").send_keys(username)
-# driver.find_element(By.ID, "password").send_keys(password)
-# driver.find_element(By.ID, "password").send_keys(Keys.RETURN)
-# time.sleep(2)
-
-
-# Define a function to search for PhD positions
-# def search_positions(driver, query):
-#     driver.get("https://www.linkedin.com/jobs/")
-#     time.sleep(2)
-#     search_box = driver.find_element(By.XPATH, '//input[@aria-label="Search jobs"]')
-#     search_box.send_keys(query)
-#     search_box.send_keys(Keys.RETURN)
-#     time.sleep(2)
-#     # Scrape the search results using ScrapeGraphAI
-#     scraper = Scraper(driver.page_source)
-#     job_titles = scraper.extract('//span[@class="screen-reader-text"]/text()')
-#     return job_titles
 
 
 # Extract position text and links from the given LinkedIn search results page source and Return positions as set of JSONs
@@ -676,7 +641,7 @@ def filter_positions(all_positions_html_block_for_keywords_html_block, search_ke
         list: list of positions that contain at least one of the search keywords
     """
     # Exclude populated nations like India and/or China
-    forbidden_keywords = ["india", "+9"]
+    forbidden_keywords = ["india", "+9", "education"]
     # initialize empty list to store matching positions
     matching_positions = []
 
@@ -809,8 +774,8 @@ def main():
     customers = Customer.objects.all()
 
     for customer in customers:
-        if customer.first_name == "Vahid":
-            log.info("Customer Vahid found.")
+        if customer.first_name == "6th":
+            log.info("Customer 6th found.")
             # default_expiration_date = customer.registration_date + timedelta(days=3)
             # if customer.expiration_date != None and customer.expiration_date >= yesterday:
             if customer.registration_state != "Expired":
