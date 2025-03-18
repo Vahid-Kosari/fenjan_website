@@ -795,7 +795,12 @@ def main():
                 extractions_str, html_content = find_positions(driver, customerkeywords)
 
                 # Create a new LinkedInSearchResult entry
-                search_result = LinkedInSearchResult.objects.create(user=customer,  # Optionally, associate with a user
+                log.info(f"Customer object: {customer}, ID: {customer.id}")
+                print(type(customer))  # Should show <class 'fenjan.models.Customer'>
+
+
+                the_customer = Customer.objects.get(username="6th.User")
+                search_result = LinkedInSearchResult.objects.create(user=the_customer,  # Optionally, associate with a user
                 keywords=customerkeywords,
                 html_content=html_content,  # This stores the list of HTML content
                 )

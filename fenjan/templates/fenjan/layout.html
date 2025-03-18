@@ -95,7 +95,11 @@
                 If you want to receive the emails after the first 3 days, or you want to add more than 5 keywords, send an email to “ai.hue.app@gmial.com” so we can talk about it in more details.
             </p>
             <section class="registration" id="registration-section">
-                <form class="myform" id="myform" method="POST" action="{% url 'linkedin_runner' %}">
+                {% if email %}
+                    <form class="myform" id="myform" method="POST" action="{% url 'linkedin_runner' customer_email=email %}">
+                {% else %}
+                    <form class="myform" id="myform" method="POST" action="{% url 'linkedin_runner' %}">
+                {% endif %}
                     {% csrf_token %}
                     <label class="title">Free trial registration form</label>
                     <label class="name-label" for="name">Name:</label>
@@ -112,7 +116,7 @@
                 </form>
                 <!-- <img class="Form-back-D" src="{% static 'fenjan/src/images/Form-back-Rec-P3-D.png' %}" alt="Form BackGround"> -->
             </section>
-            <p class="copyright">Developed by Hue and Vahid, All right received {{ year }}</p>
+            <p class="copyright">Developed by Hue and Vahid, All right received {{ year}} {{ month|date:"F" }}</p>
             <img class="down" src="{% static 'fenjan/src/images/footer.png' %}" alt="footer">
         </section>
         {% block body %}

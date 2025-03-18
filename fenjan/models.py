@@ -4,6 +4,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 
 
+
 def default_expiration_date():
     return timezone.now().date() + timedelta(days=3)
 
@@ -51,7 +52,7 @@ class Customer(AbstractUser):
 class LinkedInSearchResult(models.Model):
     # Assuming customer-related data, you might want to link this to a user or session
     # If you're not associating with a specific user, you can remove the user field.
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(Customer, on_delete=models.CASCADE)
     keywords = models.CharField(max_length=255)  # Store keywords used in the search
     html_content = models.JSONField()  # Store the HTML content as a list of strings (or structured data)
     created_at = models.DateField(auto_now_add=True) # Timestamp for when this record was created

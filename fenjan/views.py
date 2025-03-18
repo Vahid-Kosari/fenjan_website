@@ -25,51 +25,29 @@ def index(request, stored_messages="None"):
         "fenjan/index.html",
         {
             "year": timezone.now().year,
+            "month": timezone.now(),
             "stored_messages": stored_messages,  # Pass stored_messages to the template
         },
     )
 
 
-def search_results(request):
+def search_results(request, customer_email):
+# def search_results(request):
 
-    search_result = LinkedInSearchResult.objects.filter(user='6th.User').first()
+    # customer_email = request.GET.get('customer_email')
+    customer = Customer.objects.get(email=customer_email)
+    search_result = LinkedInSearchResult.objects.filter(user=customer).first()
 
     if search_result:
     # Pass the list of HTML content to the template
-        context = {'html_content': search_result.html_content}
+        context = {'html_content': search_result.html_content,
+                   'customer': customer.username,
+                   }
     else:
         context = {'message': 'No results found'}
 
     return render(request, 'fenjan/search_results.html', context)
 
-    # Retrieve 'html_content' passed from main function or other methods
-    # html_content = request.session.get('html_content', None)
-    # html_content = all_positions_html_block_for_keywords_html_block
-
-    # if not html_content:
-        # If not found in session, you can call find_positions again or handle the error
-        # html_content = find_positions()  # or another fallback
-        # request.session['html_content'] = html_content  # Store it in session
-
-    # Return the template with the context
-    # return render(request, 'fenjan/search_results.html', {'results': html_content})
-    query = request.GET.get('q')  # Get the search query
-    temp_folder = os.path.join(os.path.dirname(__file__), "temp")
-    file_path = os.path.join(temp_folder, "all_positions_html_block_for_keywords_html_block.html")
-    the_file_path = os.path.join(temp_folder, "the_html_content.html")
-    
-    # Read the file content
-    if os.path.exists(the_file_path):
-        with open(the_file_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-    else:
-        content = "No results found."
-
-    context = {
-        'query': query,
-        'content': content,
-    }
-    return render(request, 'fenjan/search_results.html', context)
 
 
 def register(request):
@@ -147,7 +125,7 @@ def register(request):
     for message in messages.get_messages(request):
         print(message)
 
-    return render(request, "fenjan/register.html")
+    return render(request, "fenjan/index.html")
 
 
 def linkedin_runner(request):

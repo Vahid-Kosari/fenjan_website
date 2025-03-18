@@ -1,3 +1,6 @@
+{% load static %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,23 +49,37 @@
             font-size: 14px;
             color: #555;
         }
+
+        .home-img {
+            width: 40px; /* Adjust the size as needed */
+            height: auto;
+        }
+
+        .home-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>LinkedIn Job Search Results</h1>
+    <a href="{% url 'index' %}" class="home-icon">
+        <img src="{% static 'fenjan/src/home-icon.png' %}" alt="Home" class="home-img">
+    </a>
+        <div class="container">
+        <h1>LinkedIn Job Search Results for {{ customer }}</h1>
 
-        {% if results %}
-            {% for result in results %}
-                <div class="result-frame">
-                    <div class="result-title">
-                        {{ result|safe }}  <!-- Ensure HTML is rendered inside the result -->
-                    </div>
-                </div>
-            {% endfor %}
+        {% if html_content %}
+            <ul>
+                {% for item in html_content %}
+                    <li>{{ item|safe }}</li>  {# Use |safe if HTML content should be rendered as HTML #}
+                {% endfor %}
+            </ul>
         {% else %}
             <p>No results found.</p>
         {% endif %}
+
     </div>
 </body>
 </html>
