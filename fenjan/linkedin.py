@@ -72,29 +72,6 @@ def make_driver():
     """
     Create and return a Chrome webdriver instance that retains login session.
     """
-    
-
-    # To download campatible chromedrive for your system reach out here: https://googlechromelabs.github.io/chrome-for-testing
-    """
-    # This snippet is for ubuntu
-    # Set options for Chrome
-    options = webdriver.ChromeOptions()
-    # options = Options()
-    # options.add_argument("--headless=new")
-    options.add_argument("user-data-dir=.chrome_driver_session")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-
-    # Create and return Chrome webdriver instance
-    # driver = webdriver.Chrome(
-    #     service=Service(ChromeDriverManager().install()), options=options
-    # )
-
-    # Utilize Chrome webdriver manually
-    driver_path = "./chromedriver-linux64/chromedriver"
-    driver = webdriver.Chrome(executable_path=driver_path, options=options)
-    """
-
     # Path to store Chrome user data (this will keep cookies, login sessions, etc.)
     user_data_dir = os.path.join(os.getcwd(), ".chrome_driver_session")
     
@@ -104,16 +81,30 @@ def make_driver():
     
     # Set Chrome options
     options = Options()
+    # options.add_argument("--headless")  # Run Chrome in headless mode
     options.add_argument(f"user-data-dir={user_data_dir}")  # Persistent session
-    options.add_argument("--remote-debugging-port=9222")  # Allow remote debugging
-    options.add_argument("--no-sandbox")
+    # options.add_argument("--remote-debugging-port=9222")  # Allow remote debugging
+    # options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")  # Only for headless
-    options.add_argument("--disable-software-rasterizer")
+    # options.add_argument("--disable-gpu")  # Only for headless
+    # options.add_argument("--disable-software-rasterizer")
+    # options.add_argument("--enable-unsafe-swiftshader")
+    # options.add_argument("--use-gl=swiftshader")
+    options.add_argument("--disable-features=UseSkiaRenderer,UseOzonePlatform")
+
+
     
-    # Utilize Chrome webdriver manually
+    
+    # To download campatible chromedrive for your system reach out here: https://googlechromelabs.github.io/chrome-for-testing
+
+    # Utilize Chrome webdriver manually for windows
     # driver_path = "./chromedriver-win64/chromedriver.exe"
     # driver = webdriver.Chrome(executable_path=driver_path, options=options)
+    
+    # Utilize Chrome webdriver manually for ubuntu
+    # driver_path = "./chromedriver-linux64/chromedriver"
+    # driver = webdriver.Chrome(executable_path=driver_path, options=options)
+
 
     # Set up Chrome driver with webdriver_manager to install the correct version of chromedriver
     service = Service(ChromeDriverManager().install())
@@ -675,13 +666,20 @@ html_content = list()
 
 def main():
 
+    print("linkedin.py main")
+    sys.stdout.reconfigure(line_buffering=True)  # Forces immediate output
+
     # Set base path and .env file path
     base_path = os.path.dirname(os.path.abspath(__file__))
     dotenv_path = os.path.join(base_path, ".env")
 
+    the_customer_id = sys.argv[1]  # Get customer ID from command-line argument
+    the_customer_username = sys.argv[2]  # Get username from command-line argument
+
     # log.info("Searching LinkedIn for Ph.D. Positions")
     # get base path for utils directory
     utils_dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils")
+    
 
     load_dotenv()
     print("[info]: Opening Chrome")
@@ -773,9 +771,14 @@ def main():
     # customers = get_customers_info(dotenv_path)
     customers = Customer.objects.all()
 
+    # Retrieve customer instance from the database
+    the_customer = Customer.objects.get(id=the_customer_id)
+    # the_customer = Customer.objects.get(id=10)
+
+
     for customer in customers:
-        if customer.first_name == "6th":
-            log.info("Customer 6th found.")
+        if customer.first_name == the_customer.first_name:
+            log.info(f"Customer {the_customer_username} found.")
             # default_expiration_date = customer.registration_date + timedelta(days=3)
             # if customer.expiration_date != None and customer.expiration_date >= yesterday:
             if customer.registration_state != "Expired":
@@ -794,17 +797,22 @@ def main():
                 )
                 extractions_str, html_content = find_positions(driver, customerkeywords)
 
+                """
                 # Create a new LinkedInSearchResult entry
                 log.info(f"Customer object: {customer}, ID: {customer.id}")
                 print(type(customer))  # Should show <class 'fenjan.models.Customer'>
+                """
 
-
-                the_customer = Customer.objects.get(username="6th.User")
-                search_result = LinkedInSearchResult.objects.create(user=the_customer,  # Optionally, associate with a user
-                keywords=customerkeywords,
-                html_content=html_content,  # This stores the list of HTML content
+                the_customer = Customer.objects.get(id=the_customer_id)
+                # Update if exists, otherwise create
+                search_result, created = LinkedInSearchResult.objects.update_or_create(
+                    user=the_customer,  # Associate with a user
+                    defaults={  
+                        "keywords": customerkeywords,  # Update keywords if the record exists
+                        "html_content": html_content,  # Update HTML content
+                    }
                 )
-
+                
                 time.sleep(3)
                 driver.quit()
 
@@ -856,6 +864,13 @@ def main():
                     log.info(
                         f"Sending email containing {len(extractions_json)} positions to: {customer.username}"
                     )
+                    # Temporary code to continue if satisfied
+                    dicision = input(
+                        Fore.LIGHTBLUE_EX
+                        + "Enter any key to exit linkedin.py OR c to send email! (INSIDE main())"
+                    )
+                    if dicision != "c":
+                        sys.exit()
                     print(f"[info]: Sending email to: {customer.username}")
                     compose_and_send_email(
                         customer.email,
@@ -866,6 +881,8 @@ def main():
                     time.sleep(10)
             else:
                 print(f"{customer.username}'s registration expired!")
+                sys.exit(1)  # Exit with a non-zero code to indicate failure
+
 
 
 if __name__ == "__main__":
