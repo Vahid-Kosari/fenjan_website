@@ -5,7 +5,7 @@ from .models import Customer, RegistrationState, LinkedInSearchResult
 from django.utils import timezone
 from django.contrib import messages
 
-import os
+import os, sys
 from django.http import HttpResponse
 import subprocess
 
@@ -205,26 +205,6 @@ def register(request):
                 # Define the path to the linkedin.py script
                 print("try = linkedin.py")
 
-                """
-                script_path = os.path.join(
-                    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                    "fenjan",
-                    "linkedin.py",
-                )
-                
-                print(f"Customer ID: {customer.id}, Username: {customer.username}")
-
-
-                # Run linkedin.py with customer details
-                result = subprocess.run(
-                    ["python", "-u", script_path, str(customer.id), customer.username],
-                    # ["python", script_path],
-                    check=True, 
-                    capture_output=True, 
-                    text=True  # Automatically decodes output (Python 3.7+)
-                )
-
-                """
                 script_path = os.path.join(
                     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                     "fenjan",
@@ -235,8 +215,9 @@ def register(request):
                 result = subprocess.run(
                     ["python", script_path, str(customer.id), customer.username],  # Ensure everything is passed as a string
                     check=True, 
-                    capture_output=True, 
-                    text=True
+                    text=True,
+                    stdout=sys.stdout,  # Redirect output to real-time stdout
+                    stderr=sys.stderr  # Redirect errors to real-time stderr
                 )
                 
                 # print(f"LinkedIn script output: {result.stdout.decode()}")

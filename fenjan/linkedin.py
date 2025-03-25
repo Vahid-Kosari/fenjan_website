@@ -688,13 +688,6 @@ def main():
     login_to_linkedin(driver)
     print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
 
-    # extractions_str = find_positions(driver, keywords[:])
-    # print(Fore.GREEN + "RAW extractions from find_positions():\n", extractions_str)
-    # extractions = list(extractions)
-    # print(Fore.GREEN + "extractions:\n", extractions)
-
-    # time.sleep(3)
-    # driver.quit()
 
     # Define the local file path
     search_results_path = os.path.join(temp_folder, "search_results.html")
@@ -705,66 +698,6 @@ def main():
     results_path = os.path.join(temp_folder, "results.html")
     html_content_path = os.path.join(temp_folder, "html_content.html")
 
-    """
-    if isinstance(extractions_str, str):
-        extractions_json = json.loads(extractions_str)
-
-    print(Fore.CYAN + "extractions after json.loads():\n", extractions_json)
-
-    for keyword, sections in extractions_json.items():
-
-        # Dynamically create a variable for the current keyword like all_positions_html_block_for_phd_html_block
-        keyword_html_block_results = (
-            f"all_positions_html_block_for_{keyword.lower()}_html_block"
-        )
-        globals()[keyword_html_block_results] = []
-        keyword_text_results = f"all_positions_html_block_for_{keyword.lower()}_text"
-        globals()[keyword_text_results] = []
-
-        for i, section in enumerate(sections):
-            if "position_html_block" in section:
-                print(
-                    Fore.BLUE
-                    + f'Keyword: {keyword}, Section {i} ["position_html_block"]: {section["position_html_block"]}'
-                )
-                globals()[keyword_html_block_results].append(
-                    section["position_html_block"]
-                )
-                globals()[keyword_text_results].append(section["position_text"])
-        print(
-            Fore.GREEN + f"all_positions_html_block_for_{keyword}_html_block =",
-            globals()[keyword_html_block_results],
-        )
-
-    # Print the results
-    for keyword in keywords:
-        keyword = keyword.lower()
-        keyword_html_block_results = globals().get(
-            f"all_positions_html_block_for_{keyword.lower()}_html_block", None
-        )
-        keyword_text_results = globals().get(
-            f"all_positions_html_block_for_{keyword.lower()}_text", None
-        )
-        print(
-            Fore.GREEN + f"all_positions_html_block_for_{keyword}s_html_block =",
-            # all_positions_html_block_for_keywords_html_block,
-            keyword_html_block_results,
-        )
-        print(
-            Fore.GREEN + f"all_positions_html_block_for_{keyword}s_text =",
-            # all_positions_html_block_for_keywords_html_block,
-            keyword_text_results,
-        )
-
-    # Temporary code to continue if satisfied
-    dicision = input(
-        Fore.LIGHTBLUE_EX
-        + "Enter any key to exit find_positions(deiver, keywords) OR c to continue!"
-    )
-    if dicision != "c":
-        sys.exit()
-
-    """
 
     # getting customers info from db
     log.info("Getting customers info.")
@@ -797,12 +730,7 @@ def main():
                 )
                 extractions_str, html_content = find_positions(driver, customerkeywords)
 
-                """
-                # Create a new LinkedInSearchResult entry
-                log.info(f"Customer object: {customer}, ID: {customer.id}")
-                print(type(customer))  # Should show <class 'fenjan.models.Customer'>
-                """
-
+    
                 the_customer = Customer.objects.get(id=the_customer_id)
                 # Update if exists, otherwise create
                 search_result, created = LinkedInSearchResult.objects.update_or_create(
@@ -826,15 +754,7 @@ def main():
                 log.info(
                     f"Filtering positions for {customer.username} based on {customerkeywords[0]} in the found positions"
                 )
-                # relevant_positions = filter_positions(
-                # all_positions_html_block_for_keywords_html_block, customerkeywords
-                # )
-                # print(
-                #     Fore.CYAN
-                #     + f"Number of relevant_positions ({-2*len(keywords)}) for {customer.username}: \n",
-                #     len(relevant_positions),
-                # )
-
+        
                 output_dir = os.path.join(
                     os.path.dirname(os.path.abspath(__file__)),
                     "utils/relevant_positions",
@@ -882,7 +802,6 @@ def main():
             else:
                 print(f"{customer.username}'s registration expired!")
                 sys.exit(1)  # Exit with a non-zero code to indicate failure
-
 
 
 if __name__ == "__main__":
