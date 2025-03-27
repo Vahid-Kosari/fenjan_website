@@ -25,8 +25,21 @@ SECRET_KEY = "django-insecure-kge#k&#@ij5wu2t(twip_d+4qsrf&=()@#$!7!95yz^kke*e*3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "rahrow.ca",
+    "www.rahrow.ca",
+    "rahrow.info",
+    "www.rahrow.info",
+    "127.0.0.1",
+    "localhost"
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://rahrow.ca",
+    "https://www.rahrow.ca",
+    "https://rahrow.info",
+    "https://www.rahrow.info",
+]
 
 # Application definition
 
