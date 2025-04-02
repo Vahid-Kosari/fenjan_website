@@ -187,13 +187,19 @@ def register(request):
 
             print("not created = Customer")
             if not created:
-                # Update existing customer
-                customer.first_name = first_name
-                customer.last_name = last_name
-                customer.username = username
-                customer.keywords = keywords
-                customer.save()
-                messages.success(request, "Information updated successfully!")
+                if customer.registration_state != "Expired":
+                    # Update existing customer
+                    customer.first_name = first_name
+                    customer.last_name = last_name
+                    customer.username = username
+                    customer.keywords = keywords
+                    customer.save()
+                    messages.success(request, "Information updated successfully!")
+                else:
+                    print(f"{customer.username}'s registration expired!")
+                    messages.error(request, "Your registration has expired. Please renew.")
+                    return redirect("index")
+                    # sys.exit()
             else:
                 messages.success(request, "Registration successful!")
 
@@ -214,7 +220,7 @@ def register(request):
                 # Run linkedin.py with customer details
                 result = subprocess.run(
                     ["python", script_path, str(customer.id), customer.username],  # Ensure everything is passed as a string
-                    check=True, 
+                    check=False, # ✅ Allow handling non-zero exit codes manually
                     text=True,
                     stdout=sys.stdout,  # Redirect output to real-time stdout
                     stderr=sys.stderr  # Redirect errors to real-time stderr
@@ -223,13 +229,13 @@ def register(request):
                 # print(f"LinkedIn script output: {result.stdout.decode()}")
                 print(f"LinkedIn script output: {result.stdout}")
 
-                if result.returncode == 1:  # Registration expired
+                if result.returncode == 1359:  # Registration expired
                     messages.error(request, "Your registration has expired. Please renew.")
-                    # return redirect("index")
+                    return redirect("index")
+                
                     # Collect stored messages properly
-                    stored_messages = "&".join([str(m) for m in messages.get_messages(request)])
-
-                    return HttpResponseRedirect(reverse("index") + f"?stored_messages={stored_messages}")
+                    # stored_messages = "&".join([str(m) for m in messages.get_messages(request)])
+                    # return HttpResponseRedirect(reverse("index") + f"?stored_messages={stored_messages}")
 
 
 
@@ -247,10 +253,12 @@ def register(request):
             search_result = LinkedInSearchResult.objects.filter(user=customer).first()
             if search_result:
                 context = {"html_content": search_result.html_content,
-                           'customer': customer.username,
-                           }
+                           "customer": customer.username,
+                          }
             else:
-                context = {"message": "No results found"}
+                context = {"message": "No results found",
+                           "customer": customer.username,
+                           }
 
             # ✅ Render search_results.html with the search results
             return render(request, "fenjan/search_results.html", context)
@@ -259,6 +267,8 @@ def register(request):
             print(f"Registration failed: {e}")
             messages.error(request, f"Registration failed: {e}")
             return redirect("register")
+        else:
+            print(f"{customer.username}'s registration expired!")
 
     return render(
         request,

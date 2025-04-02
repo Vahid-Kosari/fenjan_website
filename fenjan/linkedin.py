@@ -19,6 +19,7 @@ import requests
 import os
 import re
 import time
+from django.utils.timezone import now
 import logging as log
 from tqdm import tqdm
 from dotenv import load_dotenv
@@ -658,7 +659,7 @@ def compose_and_send_email(recipient_email, recipient_name, positions, base_path
         base_path (str): base path for any included links
     """
     email_content = compose_email(recipient_name, "LinkedIn", positions, base_path)
-    send_email(recipient_email, "PhD Positions from LinkedIn", email_content, "html")
+    send_email(recipient_email, "Your search result, related to your keyword(s) from LinkedIn", email_content, "html")
 
 
 extractions = {}
@@ -680,15 +681,6 @@ def main():
     # get base path for utils directory
     utils_dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils")
     
-
-    load_dotenv()
-    print("[info]: Opening Chrome")
-    driver = make_driver()
-    print("[info]: Logging in to LinkedIn 🐢...")
-    login_to_linkedin(driver)
-    print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
-
-
     # Define the local file path
     search_results_path = os.path.join(temp_folder, "search_results.html")
     search_results_obsolete_path = os.path.join(
@@ -702,106 +694,114 @@ def main():
     # getting customers info from db
     log.info("Getting customers info.")
     # customers = get_customers_info(dotenv_path)
-    customers = Customer.objects.all()
+    # customers = Customer.objects.all()
 
     # Retrieve customer instance from the database
     the_customer = Customer.objects.get(id=the_customer_id)
     # the_customer = Customer.objects.get(id=10)
 
 
-    for customer in customers:
-        if customer.first_name == the_customer.first_name:
-            log.info(f"Customer {the_customer_username} found.")
-            # default_expiration_date = customer.registration_date + timedelta(days=3)
-            # if customer.expiration_date != None and customer.expiration_date >= yesterday:
-            if customer.registration_state != "Expired":
-                log.info(
-                    f"Searching for {customer.username} keywords in the found positions"
-                )
-                # get customer keywords and make them lowercase and remove spaces
-                customerkeywords = list(
-                    set(
-                        [
-                            keyword.replace(" ", "").lower()
-                            for keyword in customer.keywords
-                        ]
-                        + customer.keywords
-                    )
-                )
-                extractions_str, html_content = find_positions(driver, customerkeywords)
+    # for customer in customers:
+    # if customer.first_name == the_customer.first_name:
+    log.info(f"Customer {the_customer_username} found.")
+    # default_expiration_date = customer.registration_date + timedelta(days=3)
+    # if customer.expiration_date != None and customer.expiration_date >= yesterday:
+    if the_customer.registration_state != "Expired":
+        log.info(
+            f"Searching for {the_customer.username} keywords in the found positions"
+        )
+        # get customer keywords and make them lowercase and remove spaces
+        customerkeywords = list(
+            set(
+                [
+                    keyword.replace(" ", "").lower()
+                    for keyword in the_customer.keywords
+                ]
+                + the_customer.keywords
+            )
+        )
 
-    
-                the_customer = Customer.objects.get(id=the_customer_id)
-                # Update if exists, otherwise create
-                search_result, created = LinkedInSearchResult.objects.update_or_create(
-                    user=the_customer,  # Associate with a user
-                    defaults={  
-                        "keywords": customerkeywords,  # Update keywords if the record exists
-                        "html_content": html_content,  # Update HTML content
-                    }
-                )
-                
-                time.sleep(3)
-                driver.quit()
+        load_dotenv()
+        print("[info]: Opening Chrome")
+        driver = make_driver()
+        print("[info]: Logging in to LinkedIn 🐢...")
+        login_to_linkedin(driver)
+        print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
 
-                with open(html_content_path, "w", encoding="utf-8") as positions:
-                    positions.write(str(html_content))
+        extractions_str, html_content = find_positions(driver, customerkeywords)
 
-                if isinstance(extractions_str, str):
-                    extractions_json = json.loads(extractions_str)
-
-                # filter positions based on customer keywords
-                log.info(
-                    f"Filtering positions for {customer.username} based on {customerkeywords[0]} in the found positions"
-                )
+        the_customer = Customer.objects.get(id=the_customer_id)
+        # Update if exists, otherwise create
+        search_result, created = LinkedInSearchResult.objects.update_or_create(
+            user=the_customer,  # Associate with a user
+            defaults={  
+                "keywords": customerkeywords,  # Update keywords if the record exists
+                "html_content": html_content,  # Update HTML content
+                "updated_at": now(),  # Manually updating timestamp
+            }
+        )
         
-                output_dir = os.path.join(
-                    os.path.dirname(os.path.abspath(__file__)),
-                    "utils/relevant_positions",
-                )
-                # Ensure the directory exists
-                # output_dir = "relevant_positions"
-                os.makedirs(output_dir, exist_ok=True)
+        time.sleep(3)
+        driver.quit()
 
-                # Define the file path
-                file_path = os.path.join(
-                    output_dir, f"relevant_positions_for_{customer}.html"
-                )
+        with open(html_content_path, "w", encoding="utf-8") as positions:
+            positions.write(str(html_content))
 
-                # Write the list to the file
-                if html_content:
-                    with open(
-                        file_path, "w", encoding="utf-8"
-                    ) as relevant_positions_export:
-                        for position in html_content:
-                            relevant_positions_export.write(
-                                # position + "\n" + """ """ """ """ + "\n"
-                                position
-                                + "\n"
-                                + "HTML_CONTENT"
-                                + "\n"
-                            )
-                    log.info(
-                        f"Sending email containing {len(extractions_json)} positions to: {customer.username}"
+        if isinstance(extractions_str, str):
+            extractions_json = json.loads(extractions_str)
+
+        # filter positions based on customer keywords
+        log.info(
+            f"Filtering positions for {the_customer.username} based on {customerkeywords[0]} in the found positions"
+        )
+
+        output_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "utils/relevant_positions",
+        )
+        # Ensure the directory exists
+        # output_dir = "relevant_positions"
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Define the file path
+        file_path = os.path.join(
+            output_dir, f"relevant_positions_for_{the_customer}.html"
+        )
+
+        # Write the list to the file
+        if html_content:
+            with open(
+                file_path, "w", encoding="utf-8"
+            ) as relevant_positions_export:
+                for position in html_content:
+                    relevant_positions_export.write(
+                        # position + "\n" + """ """ """ """ + "\n"
+                        position
+                        + "\n"
+                        + "HTML_CONTENT"
+                        + "\n"
                     )
-                    # Temporary code to continue if satisfied
-                    dicision = input(
-                        Fore.LIGHTBLUE_EX
-                        + "Enter any key to exit linkedin.py OR c to send email! (INSIDE main())"
-                    )
-                    if dicision != "c":
-                        sys.exit()
-                    print(f"[info]: Sending email to: {customer.username}")
-                    compose_and_send_email(
-                        customer.email,
-                        customer.username,
-                        html_content,
-                        utils_dir_path,
-                    )
-                    time.sleep(10)
-            else:
-                print(f"{customer.username}'s registration expired!")
-                sys.exit(1)  # Exit with a non-zero code to indicate failure
+            log.info(
+                f"Sending email containing {len(extractions_json)} positions to: {the_customer.username}"
+            )
+            # Temporary code to continue if satisfied
+            dicision = input(
+                Fore.LIGHTBLUE_EX
+                + "Enter any key to exit linkedin.py OR c to send email! (INSIDE main())"
+            )
+            if dicision != "c":
+                sys.exit()
+            print(f"[info]: Sending email to: {the_customer.username}")
+            compose_and_send_email(
+                the_customer.email,
+                the_customer.username,
+                html_content,
+                utils_dir_path,
+            )
+            time.sleep(10)
+    else:
+        print(f"{the_customer.username}'s registration expired!")
+        sys.exit(1359)  # Exit with a non-zero code to indicate failure
 
 
 if __name__ == "__main__":

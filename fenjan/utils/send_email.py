@@ -91,4 +91,4 @@ if __name__ == "__main__":
 </html>
 """
 
-    send_email("vahid59m@yahoo.com", "Phd positions", html, "html")
+    send_email("vahid59m@yahoo.com", "Your search results", html, "html")

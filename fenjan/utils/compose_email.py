@@ -47,7 +47,7 @@ def format_position_summary_text(text):
 
     return formatted_text
 
-
+"""
 def compose_email(customers_name, positions_source, positions, base_path):
     email_template_path = os.path.join(base_path, "email_template.html")
 
@@ -78,9 +78,9 @@ def compose_email(customers_name, positions_source, positions, base_path):
     email_template = email_template.replace("&title_place_holder", title_text)
 
     today = datetime.today().strftime("%B %d, %Y")
-    greeting_text = f"""Dear {customers_name},<br>
+    greeting_text = f""Dear {customers_name},<br>
     I am pleased to present to you a list of Ph.D. positions that have been advertised on {positions_source} in the past 24 hours.<br><br>
-    {today}"""
+    {today}""
     email_template = email_template.replace("&greeting_place_holder", greeting_text)
 
     position_template = ""
@@ -109,6 +109,65 @@ def compose_email(customers_name, positions_source, positions, base_path):
     email_path = os.path.join(temp_folder, "email.html")
     with open(email_path, "w", encoding="utf-8") as email_export:
         email_export.write(str(email_template))
+    return email_template
+"""
+
+# 
+def compose_email(customers_name, positions_source, positions, base_path):
+    email_template_path = os.path.join(base_path, "email_template.html")
+
+    with open(email_template_path, "r", encoding="utf-8") as f:
+        email_template = f.read()
+
+    # Load images
+    logo_names = os.listdir(os.path.join(base_path, "images/logo"))
+    logo_path = f"{base_path}/logo/{random.choice(logo_names)}"
+    email_template = email_template.replace("&heder_logo_place_holder", logo_path)
+
+    greeting_image_names = os.listdir(os.path.join(base_path, "images/greeting"))
+    greeting_image_path = f"{base_path}/greeting/{random.choice(greeting_image_names)}"
+    email_template = email_template.replace("&greeting_image_place_holder", greeting_image_path)
+
+    # Replace title and greeting
+    title_text = f"Job Search Results from {positions_source}"
+    email_template = email_template.replace("&title_place_holder", title_text)
+
+    today = datetime.today().strftime("%B %d, %Y")
+    greeting_text = f"""Dear {customers_name},<br>
+    Here are the latest job opportunities from {positions_source}.<br><br>
+    {today}"""
+    email_template = email_template.replace("&greeting_place_holder", greeting_text)
+
+    # Organize positions by keyword
+    positions_by_keyword = {}
+    for position in positions:
+        keyword = position.get("keyword", "Other")
+        html_content = position.get("html", "")
+        if keyword not in positions_by_keyword:
+            positions_by_keyword[keyword] = []
+        positions_by_keyword[keyword].append(html_content)
+
+    # Convert positions into HTML
+    positions_html = ""
+    for keyword, results in positions_by_keyword.items():
+        section_html = f'<div style="border: 1px solid #ddd; padding: 15px; margin: 20px 0;">'
+        section_html += f'<h3 style="color: #0073b1;">Search Results for: <strong>{keyword}</strong></h3><ul>'
+        for result in results:
+            section_html += f'<li>{result}</li>'
+        section_html += "</ul></div>"
+        positions_html += section_html
+
+    email_template = email_template.replace("&position_template_place_holder", positions_html)
+
+    # Add footer
+    footer_text = 'Developed by <a href="https://hue-salari.ir/" rel="noopener" style="text-decoration: none; color: #52a150;" target="_blank">Hue (MohammadHossein) Salari</a>'
+    email_template = email_template.replace("&footer_place_holder", footer_text)
+
+    # Save the final email content
+    email_path = os.path.join(base_path, "email.html")
+    with open(email_path, "w", encoding="utf-8") as email_export:
+        email_export.write(email_template)
+
     return email_template
 
 

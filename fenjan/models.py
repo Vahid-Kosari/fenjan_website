@@ -56,6 +56,8 @@ class LinkedInSearchResult(models.Model):
     keywords = models.CharField(max_length=255)  # Store keywords used in the search
     html_content = models.JSONField()  # Store the HTML content as a list of strings (or structured data)
     created_at = models.DateField(auto_now_add=True) # Timestamp for when this record was created
+    updated_at = models.DateTimeField(auto_now=True)  # Updates every time the record is modified
+
 
     def __str__(self):
         # return f"Search result for {self.keywords}"
