@@ -576,6 +576,7 @@ def find_positions(driver, keywords):
                 Fore.LIGHTRED_EX
                 + f"positions_html_block_for_keyword {keyword} is empty!"
             )
+            positions_html_block_for_keyword.append(f"<br><h2> These are NO realted positions for {keyword}: </h2><br>")
 
     # Check if all_positions_html_block_for_keywords_html_block is populated
     if not all_positions_html_block_for_keywords_html_block:
@@ -617,7 +618,7 @@ def find_positions(driver, keywords):
 
     # return all_positions_html_block_for_keywords_html_block
     print(Fore.YELLOW + "returning extractions form find_positions()", main_extractions)
-    return main_extractions, all_positions_html_block_for_keywords_html_block
+    return main_extractions, all_positions_html_block_for_keywords_html_block, html_content
     # return main_extractions, html_content
 
 
@@ -663,7 +664,7 @@ def compose_and_send_email(recipient_email, recipient_name, positions, base_path
 
 
 extractions = {}
-html_content = list()
+html_content_block = list()
 
 def main():
 
@@ -728,7 +729,7 @@ def main():
         login_to_linkedin(driver)
         print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
 
-        extractions_str, html_content = find_positions(driver, customerkeywords)
+        extractions_str, html_content_blocks, html_content = find_positions(driver, customerkeywords)
 
         the_customer = Customer.objects.get(id=the_customer_id)
         # Update if exists, otherwise create
@@ -736,7 +737,7 @@ def main():
             user=the_customer,  # Associate with a user
             defaults={  
                 "keywords": customerkeywords,  # Update keywords if the record exists
-                "html_content": html_content,  # Update HTML content
+                "html_content": html_content_blocks,  # Update HTML content
                 "updated_at": now(),  # Manually updating timestamp
             }
         )
@@ -745,7 +746,7 @@ def main():
         driver.quit()
 
         with open(html_content_path, "w", encoding="utf-8") as positions:
-            positions.write(str(html_content))
+            positions.write(str(html_content_blocks))
 
         if isinstance(extractions_str, str):
             extractions_json = json.loads(extractions_str)
@@ -769,11 +770,11 @@ def main():
         )
 
         # Write the list to the file
-        if html_content:
+        if html_content_blocks:
             with open(
                 file_path, "w", encoding="utf-8"
             ) as relevant_positions_export:
-                for position in html_content:
+                for position in html_content_blocks:
                     relevant_positions_export.write(
                         # position + "\n" + """ """ """ """ + "\n"
                         position

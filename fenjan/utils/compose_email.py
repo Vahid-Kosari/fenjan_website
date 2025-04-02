@@ -112,8 +112,8 @@ def compose_email(customers_name, positions_source, positions, base_path):
     return email_template
 """
 
-# 
-def compose_email(customers_name, positions_source, positions, base_path):
+# New compose_email that enteracts with email_template.html
+def compose_email(customers_name, positions_source, positions_html, base_path):
     email_template_path = os.path.join(base_path, "email_template.html")
 
     with open(email_template_path, "r", encoding="utf-8") as f:
@@ -138,6 +138,7 @@ def compose_email(customers_name, positions_source, positions, base_path):
     {today}"""
     email_template = email_template.replace("&greeting_place_holder", greeting_text)
 
+    """
     # Organize positions by keyword
     positions_by_keyword = {}
     for position in positions:
@@ -146,7 +147,8 @@ def compose_email(customers_name, positions_source, positions, base_path):
         if keyword not in positions_by_keyword:
             positions_by_keyword[keyword] = []
         positions_by_keyword[keyword].append(html_content)
-
+    """
+    """
     # Convert positions into HTML
     positions_html = ""
     for keyword, results in positions_by_keyword.items():
@@ -156,7 +158,7 @@ def compose_email(customers_name, positions_source, positions, base_path):
             section_html += f'<li>{result}</li>'
         section_html += "</ul></div>"
         positions_html += section_html
-
+    """
     email_template = email_template.replace("&position_template_place_holder", positions_html)
 
     # Add footer
