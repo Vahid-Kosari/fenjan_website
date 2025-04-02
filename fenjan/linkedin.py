@@ -738,7 +738,8 @@ def main():
             defaults={  
                 "keywords": customerkeywords,  # Update keywords if the record exists
                 "html_content": html_content_blocks,  # Update HTML content
-                "updated_at": now(),  # Manually updating timestamp
+                # "created_at": now().date() if created else search_result.created_at,  # Preserve original if exists
+                "updated_at": now().date(),  # Manually updating timestamp
             }
         )
         

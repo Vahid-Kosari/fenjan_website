@@ -94,11 +94,15 @@ html, body{
 }
 .p1 .developer .icons{
     grid-area: dev;
-    margin-left: 15rem;
+    margin-left: 0rem;
 }
 /* should be revised to work properly to remove underline */
 .icons .a{
     text-decoration: none;
+}
+img.Redo-icon{
+    width: 40px;
+    height: auto;
 }
 /* //////////////////////////////////////////////////////// */
 /* Page 2 */

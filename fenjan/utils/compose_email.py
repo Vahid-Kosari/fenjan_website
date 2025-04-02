@@ -129,12 +129,12 @@ def compose_email(customers_name, positions_source, positions_html, base_path):
     email_template = email_template.replace("&greeting_image_place_holder", greeting_image_path)
 
     # Replace title and greeting
-    title_text = f"Job Search Results from {positions_source}"
+    title_text = f"Your Search Results from {positions_source}"
     email_template = email_template.replace("&title_place_holder", title_text)
 
     today = datetime.today().strftime("%B %d, %Y")
     greeting_text = f"""Dear {customers_name},<br>
-    Here are the latest job opportunities from {positions_source}.<br><br>
+    Here are the latest opportunities from {positions_source}.<br><br>
     {today}"""
     email_template = email_template.replace("&greeting_place_holder", greeting_text)
 
