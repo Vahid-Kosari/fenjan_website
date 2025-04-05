@@ -256,7 +256,7 @@ def register(request):
                            "customer": customer.username,
                           }
             else:
-                context = {"message": "No results found",
+                context = {
                            "customer": customer.username,
                            }
 
