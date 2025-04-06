@@ -1,4 +1,5 @@
-html, body{
+html, body {
+    width: 100%;
     font-size: 62.5%;
     padding: 0rem;
     margin: 0rem;
@@ -34,12 +35,17 @@ html, body{
     color: black;
   }
 
-.main{
+.main {
+    width: 100%;
     display: grid;
     justify-items: center;
 }
 
-.p1{
+
+/* /////////////////////////////////////////////////////// */
+/* Page 1 */
+
+.p1 {
     display: inline-grid;
     grid-template: 
     "dina well" 42.5rem
@@ -49,69 +55,73 @@ html, body{
     / 73.6rem 72rem;
 }
 
-/* /////////////////////////////////////////////////////// */
-/* Page 1 */
-
-.p1 .side{
+.p1 .side {
     grid-area: well;
     justify-self: end;
 }
-.p1 .dina{
+.p1 .dina {
     grid-area: dina;
     margin-top: 9.5rem;
     width: 71.4rem;
 }
-.p1 .wellhead{
+.p1 .wellhead {
     grid-area: well;
     margin-top: 17rem;
     font-size: 5.9rem;
 }
-.p1 .underhead{
+.p1 .underhead {
     grid-area: well;
     width: 47rem;
     margin-top: 25rem;
     font-size: 2.3rem;
     text-align: justify;
 }
-.p1 .intro{
+.p1 .intro {
     grid-area: intro;
     width: 47rem;
     text-align: justify;
     font-size: 2.7rem;
 }
-.p1 .cups{
+.p1 .cups {
     grid-area: cups;
 }
-.p1 .developer p{
+.p1 .developer p {
     display: inline-flexbox;
 }
-.p1 .developer{
+.p1 .developer {
     margin-top: 13rem;
     font-size: 2.3rem;
     grid-area: dev;
     justify-items: center;
     justify-self: center;
 }
-.p1 .developer .icons{
+.p1 .developer .icons {
     grid-area: dev;
     margin-left: 0rem;
 }
 /* should be revised to work properly to remove underline */
-.icons .a{
+.icons .a {
     text-decoration: none;
 }
-img.Redo-icon{
+img.Redo-icon {
     width: 40px;
     height: auto;
 }
+
+
 /* //////////////////////////////////////////////////////// */
 /* Page 2 */
-.p2{
+
+.underhead, .dina-2m, .intro-2 {
+    display: none;
+}
+
+.p2 {
     display: inline-grid;
     grid-template: "intro dina" 1fr / 72rem 73.6rem;
 }
-.p2 .intro{
-    display: inline;
+.p2 .intro {
+    /* display: inline; */
     grid-area: intro;
     width: 61rem;
     margin-left: 13rem;
@@ -119,21 +129,34 @@ img.Redo-icon{
     text-align: justify;
     font-size: 2.7rem;
 }
-.p2 .dina{
-    display: inline;
+.p2 .dina {
+    /* display: inline; */
     grid-area: dina;
     margin-top: 10rem;
     margin-left: -11.5rem;
     justify-self: end;
 }
-.p2 .side{
+.p2 .side {
     grid-area: intro;
 }
+
+
+/* //////////////////////////////////////////////////////// */
+/* Page 3 and 4 for Mobile */
+
+.p3-m, .p4-m {
+    display: none;
+}
+
 
 /* //////////////////////////////////////////////////////// */
 /* Page 3 */
 
-.p3{
+.p3 .dina-5m {
+    display: none;
+}
+
+.p3 {
     position: relative;
     display: inline-grid;
     grid-template: 
@@ -142,11 +165,11 @@ img.Redo-icon{
     "down down" 7.5rem
     / 82.6rem 63rem;
 }
-.p3 .side{
+.p3 .side {
     grid-area: form;
     justify-self: end;
 }
-.p3 .intro{
+.p3 .intro {
     grid-area: intro;
     width: 57rem;
     margin-left: 13rem;
@@ -154,7 +177,7 @@ img.Redo-icon{
     text-align: justify;
     font-size: 2.3rem;   
 }
-.p3 .dina{
+.p3 .dina {
     grid-area: dina;
 }
 /* //////////////////////////////////////////////////////// */
@@ -169,7 +192,7 @@ img.Redo-icon{
     box-sizing: border-box;
 } */
 
-.p3 .registration{
+.p3 .registration {
     position: relative;
     grid-area: form;
     margin-top: 30rem;
@@ -193,13 +216,13 @@ img.Redo-icon{
     / 11.3rem 28rem;
 }
 
-.p3 .registration .title{
+.p3 .registration .title {
     display: inline-block;
     position: absolute;
     grid-area: title;
     margin-top: -3rem;
 }
-.p3 .registration input{
+.p3 .registration input {
     outline: none;
     border: 4px solid #4b4b4b;
     border-radius: 5rem;
@@ -208,18 +231,18 @@ img.Redo-icon{
     width: 20rem;
     font-size: 1.5rem;
 }
-.p3 .registration input:focus{
+.p3 .registration input:focus {
     border: 4px dashed #4b4b4b;
 }
-.p3 .registration .name-label{
-    display: inline-block;
+.p3 .registration .name-label {
+    /* display: inline-block; */
     position: relative;
     grid-area: nlabel;
     margin-top: 3rem;
     margin-left: 2rem;
 }
-.p3 .registration .name-input{
-    display: inline-block;
+.p3 .registration .name-input {
+    /* display: inline-block; */
     position: relative;
     grid-area: name;
     align-self: center;
@@ -227,51 +250,51 @@ img.Redo-icon{
     width: 24rem;
     margin-left: 11.3rem;
 }
-.p3 .registration .email-label{
+.p3 .registration .email-label {
     grid-area: elabel;
     margin-left: 2rem;
     align-self: center;
 }
-.p3 .registration .email-input{ 
+.p3 .registration .email-input { 
     grid-area: email;
     align-self: center;
     justify-self: center;
     width: 24rem;
     margin-left: 11.3rem;
 }
-.p3 .registration .keywords-label{
+.p3 .registration .keywords-label {
     grid-area: klabel;
     margin-left: 2rem;
     align-self: center;
 }
-.p3 .registration .keywords-input{
+.p3 .registration .keywords-input {
     margin-top: 0.5rem;
 }
-.p3 .registration #keyword1{
+.p3 .registration #keyword1 {
     grid-area: key1;
     align-self: center;
     justify-self: center;
     margin-left: 11.3rem;
 }
-.p3 .registration #keyword2{
+.p3 .registration #keyword2 {
     grid-area: key2;
     align-self: center;
     justify-self: center;
     margin-left: 11.3rem;
 }
-.p3 .registration #keyword3{
+.p3 .registration #keyword3 {
     grid-area: key3;
     align-self: center;
     justify-self: center;
     margin-left: 11.3rem;
 }
-.p3 .registration #keyword4{
+.p3 .registration #keyword4 {
     grid-area: key4;
     align-self: center;
     justify-self: center;
     margin-left: 11.3rem;
 }
-.p3 .registration #keyword5{
+.p3 .registration #keyword5 {
     grid-area: key5;
     align-self: center;
     justify-self: center;
@@ -279,14 +302,14 @@ img.Redo-icon{
 }
 /* //////////////////////////////////////////////////////// */
 
-.p3 .down{
+.p3 .down {
     grid-area: down;
     position: absolute;
     margin-left: 8rem;
     bottom: 0rem;
 }
 
-.p3 p.copyright{
+.p3 p.copyright {
     grid-area: down;
     position: absolute;
     margin-left: 50.6rem;
@@ -312,3 +335,421 @@ img.Redo-icon{
     background-color: #f8d7da;
     color: #721c24;
 }
+
+
+
+/* //////////////////////////////////////////////////////// */
+/* //////////////////////////////////////////////////////// */
+
+@media screen and (max-width: 768px) {
+    html, body {
+        width: 100%;
+        font-size: 62.5%;
+        padding: 0rem;
+        margin: 0rem;
+        background-color: #E0D8CD;
+    }
+    .main {
+        width: 100%;
+        display: grid;
+        justify-items: center;
+    }
+    .side, .cups, .dina {
+        display: none;
+    }
+
+    
+    /* The alert message box */
+    .stored_messages {
+        position: absolute;
+        padding: 8px;
+        /*background-color: #f44336; /* Red */
+        color: #4b4b4b;
+        margin-bottom: 5px;
+        font-size: 2rem;
+        border: 2px dashed #4b4b4b;
+        border-radius: 1rem;
+    }
+      
+    /* The close button */
+    .closebtn {
+        margin-left: 0px;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 2rem;
+        line-height: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+      
+    /* When moving the mouse over the close button */
+    .closebtn:hover {
+        color: black;
+    }
+    
+
+/* /////////////////////////////////////////////////////// */
+/* Page 1 for mobile */
+    .p1 .intro {
+        display: none;
+    }
+    .underhead {
+        display: block;
+    }
+
+    .p1 {
+        display: inline-grid;
+        width: 39rem;
+        grid-template: 
+        "dina-1m well" 19.6rem
+        "underh underh" 6rem
+        "dev dev" 1fr
+        / 18rem 21rem;
+    }
+    
+    .p1 .dina-1m {
+        grid-area: dina-1m;
+        margin-top: 3.6rem;
+        width: 18rem;
+    }
+    .p1 .wellhead {
+        grid-area: well;
+        margin-top: 8.5rem;
+        font-size: 3.8rem;
+    }
+    .p1 .underhead {
+        grid-area: underh;
+        width: 34rem;
+        margin-top: 4rem;
+        margin-left: 2rem;
+        /* margin-right: 2rem; */
+        padding-right: 2rem;
+        font-size: 1.9rem;
+    }
+    /* .p1 .developer p {
+        display: inline-flexbox;
+    } */
+    .p1 .developer {
+        grid-area: dev;
+        margin-top: 4rem;
+        margin-left: 2rem;
+        font-size: 1.5rem;
+        justify-items: center;
+        justify-self: center;
+    }
+    /* .p1 .developer .icons {
+        grid-area: dev;
+        margin-left: 0rem;
+    } */
+    /* should be revised to work properly to remove underline */
+    .icons .a {
+        text-decoration: none;
+    }
+    img.Redo-icon {
+        width: 4rem;
+        height: auto;
+    }
+
+
+/* /////////////////////////////////////////////////////// */
+/* Page 2 for mobile */
+    .p2 .intro {
+        display: none;
+    }
+    .p2 .dina-2m, .intro-2 {
+        display: block;
+    }
+
+    .p2 {
+        display: inline-grid;
+        grid-template: "intro-2 dina-2m" 1fr / 19rem 20rem;
+    }
+    .p2 .intro-2 {
+        /* display: inline; */
+        grid-area: intro-2;
+        width: 19rem;
+        margin-left: 2rem;
+        margin-top: 2rem;
+        text-align: justify;
+        font-size: 1.5rem;
+    }
+    .p2 .dina-2m {
+        /* display: inline; */
+        grid-area: dina-2m;
+        margin-top: 0rem;
+        margin-left: -2rem;
+        justify-self: end;
+    }
+
+/* //////////////////////////////////////////////////////// */
+/* Page 3m for Mobile */
+    .p3-m, .p3-m .dina-3m, .intro-3m {
+        display: inline-block;
+    }
+
+    .p3-m {
+      display: inline-grid;
+      grid-template: inline-grid;
+      grid-template: "dina-3m intro-3m" 1fr / 19rem 20rem;
+    }
+    .p3-m .dina-3m {
+        /* display: inline; */
+        grid-area: dina-3m;
+        margin-top: 0rem;
+        margin-left: 0rem;
+        justify-self: end;
+    }
+    .p3-m .intro-3m {
+        /* display: inline-block; */
+        grid-area: intro-3m;
+        width: 18rem;
+        /* margin-left: 2rem; */
+        margin-right: 2rem;
+        margin-top: 2rem;
+        text-align: justify;
+        font-size: 1.5rem;
+    }
+  
+/* //////////////////////////////////////////////////////// */
+/* Page 4m for Mobile */
+    .p4-m, .p4-m .dina-4m, .p4-m .intro-4m {
+        display: inline-block;
+    }
+
+    .p4-m {
+    display: inline-grid;
+    grid-template: inline-grid;
+    grid-template: "intro-4m dina-4m" 1fr / 20rem 19rem;
+    }
+    .p4-m .dina-4m {
+        /* display: inline; */
+        grid-area: dina-4m;
+        margin-top: 0rem;
+        margin-left: -2rem;
+        justify-self: end;
+    }
+    .p4-m .intro-4m {
+        /* display: inline; */
+        grid-area: intro-4m;
+        width: 20rem;
+        margin-left: 2rem;
+        margin-top: 2rem;
+        text-align: justify;
+        font-size: 1.5rem;
+    }
+
+/* /////////////////////////////////////////////////////// */
+/* Page 3 for mobile */
+    .p3 .dina-5m {
+        display: inline-block;
+    }
+
+    .p3 {
+        display: inline-grid;
+        grid-template: inline-grid;
+        grid-template: 
+        "intro-3 intro-3" 17.5rem
+        "dina-5m form" 30.6rem
+        "down down" 6rem
+        / 19rem 20rem;
+    }
+    .p3 p.intro {
+        /* display: inline-block; */
+        grid-area: intro-3;
+        width: 35rem;
+        margin-left: 2rem;
+        margin-right: 2rem;
+        margin-top: 0rem;
+        text-align: justify;
+        font-size: 1.5rem;
+    }
+    .p3 .dina-5m {
+        grid-area: dina-5m;
+        margin-top: 10rem;
+        margin-left: -2rem;
+        justify-self: start;
+    }
+    
+    .p3 .registration {
+        position: relative;
+        grid-area: form;
+        margin-top: 2rem;
+        width: 19rem;
+        height: 31rem;
+        font-size: 1.2rem;
+        background-color: #899A83;
+        border-radius: 5%;
+        background-clip: padding-box;
+        display: grid;
+        grid-template:
+        "title" 1.5rem
+        "nlabel" 1.5rem
+        "name" 1.5rem
+        "elabel" 1.5rem
+        "email" 1.5rem
+        "klabel" 1.5rem
+        "key1" 1rem
+        "key2" 1rem
+        "key3" 1rem
+        "key4" 1rem
+        "key5" 1rem
+        / 19rem;
+    }
+    
+    .p3 .registration .title {
+        grid-area: title;
+        display: inline-block;
+        position: absolute;
+        margin-top: -1.5rem;
+    }
+    .p3 .registration input {
+        outline: none;
+        border: 4px solid #4b4b4b;
+        border-radius: 2rem;
+        align-self: center;
+        height: 1.5rem;
+        width: 15rem;
+        font-size: 1.5rem;
+    }
+    .p3 .registration input:focus {
+        border: 4px dashed #4b4b4b;
+    }
+    .p3 .registration .name-label {
+        grid-area: nlabel;
+        display: block;
+        position: relative;
+        margin-top: 3rem;
+        margin-left: 2rem;
+    }
+    .p3 .registration .name-input {
+        grid-area: name;
+        display: block;
+        position: relative;
+        align-self: center;
+        justify-self: center;
+        width: 15rem;
+        margin-left: 2rem;
+    }
+    .p3 .registration .email-label {
+        grid-area: elabel;
+        display: block;
+        margin-left: 2rem;
+        align-self: center;
+    }
+    .p3 .registration .email-input { 
+        grid-area: email;
+        display: block;
+        width: 15rem;
+        align-self: center;
+        justify-self: center;
+        width: 15rem;
+        margin-left: 2rem;
+    }
+    .p3 .registration .keywords-label {
+        grid-area: klabel;
+        display: block;
+        margin-left: 2rem;
+        align-self: center;
+    }
+    .p3 .registration .keywords-input {
+        margin-top: 0.5rem;
+    }
+    .p3 .registration #keyword1 {
+        grid-area: key1;
+        align-self: center;
+        justify-self: center;
+        margin-left: 2rem;
+    }
+    .p3 .registration #keyword2 {
+        grid-area: key2;
+        align-self: center;
+        justify-self: center;
+        margin-left: 2rem;
+    }
+    .p3 .registration #keyword3 {
+        grid-area: key3;
+        align-self: center;
+        justify-self: center;
+        margin-left: 2rem;
+    }
+    .p3 .registration #keyword4 {
+        grid-area: key4;
+        align-self: center;
+        justify-self: center;
+        margin-left: 2rem;
+    }
+    .p3 .registration #keyword5 {
+        grid-area: key5;
+        align-self: center;
+        justify-self: center;
+        margin-left: 2rem;
+    }
+
+
+    /* //////////////////////////////////////////////////////// */
+
+    .p3 .down {
+        grid-area: down;
+        width: 37rem;
+        position: absolute;
+        margin-left: 1rem;
+        bottom: 0rem;
+    }
+
+    .p3 p.copyright {
+        grid-area: down;
+        position: absolute;
+        margin-left: 8rem;
+        bottom: -1.2rem;
+        font-size: 1rem;
+        color: #FFFFFF;
+        z-index: 2;
+    }
+    /* .p1 .dina, .p1 .wellhead, .p1 .underhead, .p1 .intro, .p1 .developer, */
+    /* .p2 .dina, .p2 .intro, */
+    /* .p3 .dina, .p3 .intro, .p3 .registration, .p3 .down, */
+    /* .p3 .intro, .p3 .registration, .p3 .down,
+    .copyright {
+      width: 20%;
+      margin: 2rem 0;
+      text-align: center;
+      justify-self: center;
+    }
+  
+    .p3 .registration {
+      grid-template: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: auto;
+      padding: 2rem 1rem;
+    }
+  
+    .p3 .registration {
+      width: 20%;
+      margin-bottom: 1rem;
+    }
+  
+    .p3 .registration .name-label,
+    .p3 .registration .email-label,
+    .p3 .registration .keywords-label {
+      margin: 1rem 0 0.5rem 0;
+      text-align: left;
+      width: 20%;
+    }
+  
+    .p3 .down,
+    .p3 p.copyright {
+      width: 40%;
+      position: static;
+      margin: 1rem auto;
+      text-align: center;
+    }
+   */
+    .stored_messages {
+      width: 20%;
+      font-size: 1.6rem;
+    }
+  }
+  

@@ -162,7 +162,7 @@ def compose_email(customers_name, positions_source, positions_html, base_path):
     email_template = email_template.replace("&position_template_place_holder", positions_html)
 
     # Add footer
-    footer_text = 'Developed by <a href="https://hue-salari.ir/" rel="noopener" style="text-decoration: none; color: #52a150;" target="_blank">Hue (MohammadHossein) Salari</a>'
+    footer_text = 'Developed by <a href="https://rahrow.ca/" rel="noopener" style="text-decoration: none; color: #52a150;" target="_blank">Hue (MohammadHossein) Salari & Vahid Kosari</a>'
     email_template = email_template.replace("&footer_place_holder", footer_text)
 
     # Save the final email content
@@ -203,7 +203,7 @@ def compose_and_send_email(
     # send email with the generated text
     send_email(
         recipient_email,
-        f"PhD Positions from {source_name}",
+        f"Positions from {source_name}",
         email_text,
         "html",
     )
