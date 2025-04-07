@@ -38,7 +38,6 @@
         <h2 class="underhead">Your beloved dinosaur that helps you to find your desired positions, while you enjoy a cup
             of coffee.</h2>
         <img class="dina" src="{% static 'fenjan/src/images/mascots/Reciption dina-P1-D.png' %}" alt="Malang Dina">
-        <img class="dina-1m" src="{% static 'fenjan/src/images/mascots/Reception dina-P1-M.png' %}" alt="Malang Dina">
         <p class="intro">
             Fenajan is a tool designed to assist you in finding your dream job, Ph.D. position or any right to the point
             post.
@@ -75,7 +74,6 @@
     <section class="p2">
         <img class="side" src="{% static 'fenjan/src/images/Side-P2-D.png' %}" alt="Left Cloud">
         <img class="dina" src="{% static 'fenjan/src/images/mascots/Guide dina-P2-D.png' %}" alt="Guide Dina">
-        <img class="dina-2m" src="{% static 'fenjan/src/images/mascots/Guide dina-2-M.png' %}" alt="Guide Dina 2M">
         <p class="intro-2">
             Fenajan is a tool designed to assist you in finding your dream job, Ph.D. position or any right to the point
             post.
@@ -118,15 +116,15 @@
         <img class="side" src="{% static 'fenjan/src/images/Side-P3-D.png' %}" alt="Right Cloud">
         <img class="dina" src="{% static 'fenjan/src/images/mascots/Secretary dina-P3-D.png' %}" alt="Secretary Dina"
             usemap="#regbutton">
-        <img class="dina-5m" src="{% static 'fenjan/src/images/mascots/Secretary dina-P3-M.png' %}" alt="Secretary Dina"
-            usemap="#regbutton-m">
         <map class="regbutton" name="regbutton">
             <area href="" onclick="submitForm(event); return false;" target="" alt="Hot Chocolate" title="Hot Chocolate"
-                coords="604,341,633,325,673,325,709,333,
-                        718,343,715,363,740,361,750,374,752,397,743,413,726,422,709,428,706,448,684,457,654,458,632,455,618,
-                        446,617,429,607,380" shape="poly">
+                coords="600,300,710,460" shape="rect">
+            <area href="" onclick="submitForm(event); return false;" target="" alt="Hot Chocolate" title="Hot Chocolate"
+                coords="138,75,168,105" shape="rect">
             <area href="{% url 'admin:index' %}" target="" alt="Dark Chocolate" title="Dark Chocolate"
-                coords="480,305,534,363" shape="rect">
+                coords="470,300,530,360" shape="rect">
+            <area href="{% url 'admin:index' %}" target="" alt="Dark Chocolate" title="Dark Chocolate"
+                coords="108,68,125,85" shape="rect">
         </map>
         <p class="intro">
             Fill out this form if you want to receive a 3 day free trial of personalized email based on your keywords.
