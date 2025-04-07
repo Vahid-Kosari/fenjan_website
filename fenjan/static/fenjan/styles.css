@@ -108,8 +108,9 @@ html, body {
     margin-left: 0rem;
 }
 /* should be revised to work properly to remove underline */
-.icons .a {
+.icons a {
     text-decoration: none;
+    /* color: transparent; */
 }
 img.Redo-icon {
     width: 40px;
@@ -437,14 +438,9 @@ img.Redo-icon {
         margin-left: 0rem;
     } */
     /* should be revised to work properly to remove underline */
-    .icons .a {
-        text-decoration: none;
+    .icons img {
+        width: 2rem;
     }
-    img.Redo-icon {
-        width: 4rem;
-        height: auto;
-    }
-
 
 /* /////////////////////////////////////////////////////// */
 /* Page 2 for mobile */
@@ -542,8 +538,8 @@ img.Redo-icon {
         display: inline-grid;
         grid-template: inline-grid;
         grid-template: 
-        "intro-3 intro-3" 17.5rem
-        "dina-5m form" 30.6rem
+        "intro-3 intro-3" 19rem
+        "dina form" 30.6rem
         "down down" 2rem
         / 19rem 20rem;
     }
@@ -553,12 +549,12 @@ img.Redo-icon {
         width: 35rem;
         margin-left: 2rem;
         margin-right: 2rem;
-        margin-top: 0rem;
+        margin-top: 2rem;
         text-align: justify;
         font-size: 1.5rem;
     }
     .p3 .dina {
-        grid-area: dina-5m;
+        grid-area: dina;
         width: 19rem;
         margin-top: 10rem;
         margin-left: 0rem;
@@ -682,7 +678,6 @@ img.Redo-icon {
         margin-left: 2rem;
     }
 
-
     /* //////////////////////////////////////////////////////// */
 
     .p3 .down {
@@ -697,8 +692,8 @@ img.Redo-icon {
         grid-area: down;
         position: absolute;
         margin-left: 8rem;
-        bottom: -1.02rem;
-        font-size: 1rem;
+        bottom: -0.7rem;
+        font-size: 0.8rem;
         color: #FFFFFF;
         z-index: 2;
     }
