@@ -12,11 +12,7 @@ html, body {
     display: grid;
     justify-items: center;
 }
-/* 
-* {
-    box-sizing: border-box;
-  }
-   */
+
 /* The alert message box */
 .stored_messages {
     position: absolute;
@@ -107,14 +103,12 @@ html, body {
     grid-area: dev;
     margin-left: 0rem;
 }
-/* should be revised to work properly to remove underline */
 .icons a {
     text-decoration: none;
     /* color: transparent; */
 }
-img.Redo-icon {
-    width: 40px;
-    height: auto;
+.icons img {
+    width: 4rem;
 }
 
 
@@ -398,7 +392,7 @@ img.Redo-icon {
         width: 39rem;
         grid-template: 
         "dina-1m well" 19.6rem
-        "underh underh" 6rem
+        "underh underh" 8rem
         "dev dev" 1fr
         / 18rem 21rem;
     }
@@ -422,9 +416,7 @@ img.Redo-icon {
         padding-right: 2rem;
         font-size: 1.9rem;
     }
-    /* .p1 .developer p {
-        display: inline-flexbox;
-    } */
+    
     .p1 .developer {
         grid-area: dev;
         margin-top: 4rem;
@@ -433,11 +425,7 @@ img.Redo-icon {
         justify-items: center;
         justify-self: center;
     }
-    /* .p1 .developer .icons {
-        grid-area: dev;
-        margin-left: 0rem;
-    } */
-    /* should be revised to work properly to remove underline */
+    
     .icons img {
         width: 2rem;
     }
@@ -517,8 +505,9 @@ img.Redo-icon {
     .p4-m .dina-4m {
         /* display: inline; */
         grid-area: dina-4m;
+        width: 18rem;
         margin-top: 0rem;
-        margin-left: -2rem;
+        margin-left: 0rem;
         justify-self: end;
     }
     .p4-m .intro-4m {
@@ -538,7 +527,7 @@ img.Redo-icon {
         display: inline-grid;
         grid-template: inline-grid;
         grid-template: 
-        "intro-3 intro-3" 19rem
+        "intro-3 intro-3" 25rem
         "dina form" 30.6rem
         "down down" 2rem
         / 19rem 20rem;
@@ -556,7 +545,7 @@ img.Redo-icon {
     .p3 .dina {
         grid-area: dina;
         width: 19rem;
-        margin-top: 10rem;
+        margin-top: 15rem;
         margin-left: 0rem;
         justify-self: start;
     }
