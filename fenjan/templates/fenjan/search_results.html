@@ -1,32 +1,32 @@
 {% load static %}
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'fenjan/search_results.css' %}">
     <title>LinkedIn Search Results</title>
+    <link rel="stylesheet" href="{% static 'fenjan/search_results.css' %}">
 </head>
 <body>
     <a href="{% url 'index' %}" class="home-icon">
         <img src="{% static 'fenjan/src/home-icon.png' %}" alt="Home" class="home-img">
     </a>
-        <div class="container">
+
+    <div class="container">
         <h1>LinkedIn Job Search Results for {{ customer }}</h1>
 
         {% if html_content %}
-            <ul>
+            <ul class="results-list">
                 {% for item in html_content %}
-                    <li>{{ item|safe }}</li>  {# Use |safe if HTML content should be rendered as HTML #}
+                    <li class="result-item">{{ item|safe }}</li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p>No results found.</p>
+            <p class="no-results">No results found.</p>
         {% endif %}
-
     </div>
+
     <script src="{% static 'fenjan/index.js' %}"></script>
 </body>
 </html>
