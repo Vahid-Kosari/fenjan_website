@@ -16,6 +16,8 @@ from datetime import datetime
 from urlextract import URLExtract
 from utils.send_email import send_email
 
+from colorama import Fore
+
 
 temp_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), "temp")
 
@@ -115,17 +117,21 @@ def compose_email(customers_name, positions_source, positions, base_path):
 # New compose_email that enteracts with email_template.html
 def compose_email(customers_name, positions_source, positions_html, base_path):
     email_template_path = os.path.join(base_path, "email_template.html")
+    server_static_location = "http://rahrow.ca/web_projects/capstone/fenjan/static"
+    server_utils_location = "http://rahrow.ca/web_projects/capstone/fenjan/utils"
 
     with open(email_template_path, "r", encoding="utf-8") as f:
         email_template = f.read()
 
     # Load images
     logo_names = os.listdir(os.path.join(base_path, "images/logo"))
-    logo_path = f"{base_path}/logo/{random.choice(logo_names)}"
+    logo_path = f"{server_utils_location}/images/logo/{random.choice(logo_names)}"
+    print(Fore.GREEN + f"logo_path: ", logo_path)
+    input("press any key if you have seen the logo_path")
     email_template = email_template.replace("&heder_logo_place_holder", logo_path)
 
     greeting_image_names = os.listdir(os.path.join(base_path, "images/greeting"))
-    greeting_image_path = f"{base_path}/greeting/{random.choice(greeting_image_names)}"
+    greeting_image_path = f"{server_utils_location}/images/greeting/{random.choice(greeting_image_names)}"
     email_template = email_template.replace("&greeting_image_place_holder", greeting_image_path)
 
     # Replace title and greeting
