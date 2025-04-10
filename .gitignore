@@ -2,6 +2,7 @@
 *.env
 fenjan/temp
 .chrome_driver_session
+.chrome_driver_session_ubuntu
 chromedriver-linux64
 chromedriver-win64
 fenjan/.chrome_driver_session

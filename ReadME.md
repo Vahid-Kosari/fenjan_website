@@ -16,7 +16,7 @@ The credentials for accessing LinkedIn's API and the email service used for send
 
 ### Backend Infrastructure
 
-To manage user access and ensure timely updates, Redis and Celery are utilized for task scheduling and background job management. These tools help keep the application scalable and responsive. Users' data is stored in the models.py as Customer class. Also, admin interface enhanced a little to inform the admin about users' state. linkedin_sgai.py and llama3.py are obsolete.
+To manage user access and ensure timely updates, Redis and Celery are utilized for task scheduling and background job management (for windows, ubumtu should be simulated by apps to support). These tools help keep the application scalable and responsive. Users' data is stored in the models.py as Customer and LinkedInSearchResult classes. Also, admin interface enhanced a little to inform the admin about users' state. linkedin_sgai.py and llama3.py are obsolete.
 
 ### Data Extraction and Processing
 

@@ -69,17 +69,19 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 
+
 def make_driver():
     """
     Create and return a Chrome webdriver instance that retains login session.
     """
     # Path to store Chrome user data (this will keep cookies, login sessions, etc.)
     user_data_dir = os.path.join(os.getcwd(), ".chrome_driver_session")
-    
+    # user_data_dir = os.path.join(os.getcwd(), ".chrome_driver_session_ubuntu")
+
     # Create the user data directory if it doesn't exist
     if not os.path.exists(user_data_dir):
         os.makedirs(user_data_dir)
-    
+
     # Set Chrome options
     options = Options()
     # options.add_argument("--headless")  # Run Chrome in headless mode
@@ -93,26 +95,22 @@ def make_driver():
     # options.add_argument("--use-gl=swiftshader")
     options.add_argument("--disable-features=UseSkiaRenderer,UseOzonePlatform")
 
-
-    
-    
     # To download campatible chromedrive for your system reach out here: https://googlechromelabs.github.io/chrome-for-testing
 
     # Utilize Chrome webdriver manually for windows
     # driver_path = "./chromedriver-win64/chromedriver.exe"
     # driver = webdriver.Chrome(executable_path=driver_path, options=options)
-    
+
     # Utilize Chrome webdriver manually for ubuntu
     # driver_path = "./chromedriver-linux64/chromedriver"
     # driver = webdriver.Chrome(executable_path=driver_path, options=options)
 
-
     # Set up Chrome driver with webdriver_manager to install the correct version of chromedriver
     service = Service(ChromeDriverManager().install())
-    
+
     # Initialize Chrome driver with the specified options and service
     driver = webdriver.Chrome(service=service, options=options)
-    
+
     return driver
 
 
@@ -576,7 +574,9 @@ def find_positions(driver, keywords):
                 Fore.LIGHTRED_EX
                 + f"positions_html_block_for_keyword {keyword} is empty!"
             )
-            positions_html_block_for_keyword.append(f"<br><h2> These are NO realted positions for {keyword}: </h2><br>")
+            positions_html_block_for_keyword.append(
+                f"<br><h2> These are NO realted positions for {keyword}: </h2><br>"
+            )
 
     # Check if all_positions_html_block_for_keywords_html_block is populated
     if not all_positions_html_block_for_keywords_html_block:
@@ -618,7 +618,11 @@ def find_positions(driver, keywords):
 
     # return all_positions_html_block_for_keywords_html_block
     print(Fore.YELLOW + "returning extractions form find_positions()", main_extractions)
-    return main_extractions, all_positions_html_block_for_keywords_html_block, html_content
+    return (
+        main_extractions,
+        all_positions_html_block_for_keywords_html_block,
+        html_content,
+    )
     # return main_extractions, html_content
 
 
@@ -660,11 +664,17 @@ def compose_and_send_email(recipient_email, recipient_name, positions, base_path
         base_path (str): base path for any included links
     """
     email_content = compose_email(recipient_name, "LinkedIn", positions, base_path)
-    send_email(recipient_email, "Your search result, related to your keyword(s) from LinkedIn", email_content, "html")
+    send_email(
+        recipient_email,
+        "Your search result, related to your keyword(s) from LinkedIn",
+        email_content,
+        "html",
+    )
 
 
 extractions = {}
 html_content_block = list()
+
 
 def main():
 
@@ -681,7 +691,7 @@ def main():
     # log.info("Searching LinkedIn for Ph.D. Positions")
     # get base path for utils directory
     utils_dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils")
-    
+
     # Define the local file path
     search_results_path = os.path.join(temp_folder, "search_results.html")
     search_results_obsolete_path = os.path.join(
@@ -691,7 +701,6 @@ def main():
     results_path = os.path.join(temp_folder, "results.html")
     html_content_path = os.path.join(temp_folder, "html_content.html")
 
-
     # getting customers info from db
     log.info("Getting customers info.")
     # customers = get_customers_info(dotenv_path)
@@ -700,7 +709,6 @@ def main():
     # Retrieve customer instance from the database
     the_customer = Customer.objects.get(id=the_customer_id)
     # the_customer = Customer.objects.get(id=10)
-
 
     # for customer in customers:
     # if customer.first_name == the_customer.first_name:
@@ -714,10 +722,7 @@ def main():
         # get customer keywords and make them lowercase and remove spaces
         customerkeywords = list(
             set(
-                [
-                    keyword.replace(" ", "").lower()
-                    for keyword in the_customer.keywords
-                ]
+                [keyword.replace(" ", "").lower() for keyword in the_customer.keywords]
                 + the_customer.keywords
             )
         )
@@ -729,20 +734,22 @@ def main():
         login_to_linkedin(driver)
         print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
 
-        extractions_str, html_content_blocks, html_content = find_positions(driver, customerkeywords)
+        extractions_str, html_content_blocks, html_content = find_positions(
+            driver, customerkeywords
+        )
 
         the_customer = Customer.objects.get(id=the_customer_id)
         # Update if exists, otherwise create
         search_result, created = LinkedInSearchResult.objects.update_or_create(
             user=the_customer,  # Associate with a user
-            defaults={  
+            defaults={
                 "keywords": customerkeywords,  # Update keywords if the record exists
                 "html_content": html_content_blocks,  # Update HTML content
                 # "created_at": now().date() if created else search_result.created_at,  # Preserve original if exists
                 "updated_at": now().date(),  # Manually updating timestamp
-            }
+            },
         )
-        
+
         time.sleep(3)
         driver.quit()
 
@@ -772,9 +779,7 @@ def main():
 
         # Write the list to the file
         if html_content_blocks:
-            with open(
-                file_path, "w", encoding="utf-8"
-            ) as relevant_positions_export:
+            with open(file_path, "w", encoding="utf-8") as relevant_positions_export:
                 for position in html_content_blocks:
                     relevant_positions_export.write(
                         # position + "\n" + """ """ """ """ + "\n"
