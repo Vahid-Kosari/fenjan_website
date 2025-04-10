@@ -421,7 +421,7 @@ html, body {
         grid-area: dev;
         margin-top: 4rem;
         margin-left: 2rem;
-        font-size: 1.5rem;
+        font-size: 0.5rem;
         justify-items: center;
         justify-self: center;
     }
