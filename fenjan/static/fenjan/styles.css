@@ -527,7 +527,7 @@ html, body {
         display: inline-grid;
         grid-template: inline-grid;
         grid-template: 
-        "intro-3 intro-3" 25rem
+        "intro-3 intro-3" 35rem
         "dina form" 30.6rem
         "down down" 2rem
         / 19rem 20rem;
