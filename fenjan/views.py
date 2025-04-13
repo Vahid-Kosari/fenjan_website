@@ -176,7 +176,6 @@ def register(request):
 
         try:
             # Check if the customer already exists
-            print("created = Customer")
             customer, created = Customer.objects.get_or_create(email=email, defaults={
                 "username": username,
                 "first_name": first_name,
@@ -185,7 +184,6 @@ def register(request):
                 "registration_state": RegistrationState.TRIAL,
             })
 
-            print("not created = Customer")
             if not created:
                 if customer.registration_state != "Expired":
                     # Update existing customer
@@ -227,7 +225,7 @@ def register(request):
                 )
                 
                 # print(f"LinkedIn script output: {result.stdout.decode()}")
-                print(f"LinkedIn script output: {result.stdout}")
+                # print(f"LinkedIn script output: {result.stdout}")
 
                 if result.returncode == 1359:  # Registration expired
                     messages.error(request, "Your registration has expired. Please renew.")

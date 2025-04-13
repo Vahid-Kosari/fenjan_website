@@ -17,6 +17,8 @@ class RegistrationState(models.TextChoices):
 
 
 class Customer(AbstractUser):
+    username = models.CharField(max_length=150, blank=True, null=True)
+    email = models.EmailField(unique=True)
     registration_state = models.CharField(
         max_length=10,
         choices=RegistrationState.choices,

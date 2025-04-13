@@ -732,7 +732,7 @@ def main():
         driver = make_driver()
         print("[info]: Logging in to LinkedIn 🐢...")
         login_to_linkedin(driver)
-        print("[info]: Searching for Ph.D. positions on LinkedIn 🐷...")
+        print("[info]: Searching for customer positions on LinkedIn 🐷...")
 
         extractions_str, html_content_blocks, html_content = find_positions(
             driver, customerkeywords
