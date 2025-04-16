@@ -302,6 +302,12 @@ def extract_positions_parts(page_source, keyword):
 
     # Loop through processed main containers
     for main_container in processed_main_containers:
+        # Extract post link
+        print("main_container: ", main_container)
+        post_link = main_container.find("a", class_="update-components-mini-update-v2__link-to-details-page")
+        print("post_link: ", post_link)
+        # input("press any key")
+
         # Extract profile name and link
         profile_name_div = main_container.find(
             "div", class_="update-components-actor__meta relative"
@@ -359,6 +365,7 @@ def extract_positions_parts(page_source, keyword):
 
         # Create a structure to store the results
         result = {
+            "post_link": post_link["href"] if post_link else None,
             "profile_name_link": profile_link["href"] if profile_link else None,
             "profile_name_text": (
                 profile_link.get_text(strip=True) if profile_link else None
@@ -386,7 +393,8 @@ def extract_positions_parts(page_source, keyword):
         # Extract post text and preserve structure, keeping non-hashtag hyperlinks clickable
         cleaned_text = (
             clean_text(
-                str(post_commentary_div)
+                str(post_link) if post_link else ""
+                + str(post_commentary_div)
                 + (
                     "<h3>The article below the main post:</h3>\n"
                     + str(article_link_div)
@@ -405,6 +413,7 @@ def extract_positions_parts(page_source, keyword):
 
         extraction = {
             "keyword": keyword,
+            "post_link": post_link,
             "position_html_block": cleaned_text,
             "position_text": result["post_commentary_text"],
         }
