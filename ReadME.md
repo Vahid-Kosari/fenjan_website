@@ -10,9 +10,9 @@ This project has been redeveloped using Django and JavaScript to handle both bac
 
 ## Distinctiveness and Complexity
 
-The Fenjan project allows users to submit keywords and their email address to initiate a web scraping process (currently focused on LinkedIn), organize the results in a structured format, and receive them directly via email.
+The Fenjan project allows users to submit keywords and their email address to initiate a web scraping process (currently focused on LinkedIn), organize the results in a structured format, and receive them directly via email and the results page.
 
-Users are offered a free three-day trial period, during which they can receive job results by email. After the trial, they can request registration under custom conditions to gain full access, including regular email reports and a personalized user panel.
+Users are offered a free three-day trial period, during which they can receive job results by email. After the trial, they can request registration under custom conditions to gain full access, including regular email reports and more keywords combinations.
 
 ---
 
